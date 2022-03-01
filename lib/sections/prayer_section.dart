@@ -77,25 +77,63 @@ class _PrayerPageState extends State<PrayerPage> {
   Widget build(BuildContext context) =>
       Scaffold(
         body: Column(children: [
-          Row(
+          Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(_timeString),
+              Text(
+                _timeString,
+                style: const TextStyle(fontSize: 23.0) 
+              ),
               Text(isAthanActive ? "Start Times - \u062a\u0648\u0642\u064a\u062a \u0627\u0644\u0623\u0630\u0627\u0646" : "Iqamaah Times - \u062a\u0648\u0642\u064a\u062a \u0627\u0644\u0625\u0642\u0627\u0645\u0629")
             ],
           ),
 
-          StreamBuilder(
-            stream: FirebaseFirestore.instance.collection('prayers').snapshots(), // Fetch name and id from Firestore
-            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (snapshot.hasError) return const Text('Error... Something went wrong.');
-              if (snapshot.connectionState == ConnectionState.waiting) return const CircularProgressIndicator();;
-              return ListView.builder(
-                itemCount: snapshot.data!.docs.length,
-                itemBuilder: (context, index) =>
-                  _prayerItem(context, index, snapshot.data!.docs[index]) // Load as many prayer widgets as required
-              );
-            }
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      if (isAthanActive) setState(() => isAthanActive = false);
+                    },
+                    child: const Text("Iqamaah")
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (!isAthanActive) setState(() => isAthanActive = true);
+                    },
+                    child: const Text("Start/Athan")
+                  )
+                ],
+              ),
+
+              StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('prayers')
+                    .snapshots(), // Fetch name and id from Firestore
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Error... Something went wrong.');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+                  ;
+                  return ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) => _prayerItem(
+                          context,
+                          index,
+                          snapshot.data!.docs[
+                              index]) // Load as many prayer widgets as required
+                      );
+                })
+            ],
           )
         ])
       );
