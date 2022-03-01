@@ -54,6 +54,7 @@ class _PrayerWidgetState extends State<PrayerPage> {
   Timer? timer;
   String _timeString = "...";
   bool _isAthanActive = false; // If athan times are selected
+  Map<String, dynamic> _highlightedIndexes = {"iqamah": "...", "start": "..."}; // Selected prayerItem indexes that will be highlighted
   late Future<Map<String, dynamic>> timesFetch; // Prayer times https fetch
 
   @override
@@ -73,13 +74,15 @@ class _PrayerWidgetState extends State<PrayerPage> {
   // Clock and highlight checker update
   void _updateTime() async {
     final String dateTime = DateFormat('KK:mm - EEE. d MMMM').format(DateTime.now()).toString();
-    setState(() => _timeString = dateTime);
-
-    timesFetch.then((value) => checkActivePrayer(value["times"]));
+    setState(() {
+      _timeString = dateTime;
+      timesFetch.then((value) => 
+        _highlightedIndexes = getActivePrayer(value["times"]));
+    });
   }
 
   //Calculate nearest prayer time (highlighted prayer time)
-  Map<String, int> checkActivePrayer(List<PrayerItem> timeList) {
+  Map<String, int> getActivePrayer(List<PrayerItem> timeList) {
     final DateTime now = DateTime.now();
     final int nowTotalMinutes = now.hour * 60 + now.minute; // Current time in minutes
 
@@ -137,7 +140,13 @@ class _PrayerWidgetState extends State<PrayerPage> {
             
             return ListTile(
               title: Row(children: [
-                Text(snapshot.data!["fbSnapshot"][index]['name']),
+                Text(snapshot.data!["fbSnapshot"][index]['name'], style: 
+                  TextStyle(
+                    backgroundColor: (_isAthanActive)
+                      ? (_highlightedIndexes["start"] == index) ? Colors.amber : Colors.transparent
+                      : (_highlightedIndexes["iqamah"] == index) ? Colors.green : Colors.transparent
+                  )
+                ),
                 Text(_selectedTime)
               ],)
             );
