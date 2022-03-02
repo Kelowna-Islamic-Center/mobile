@@ -5,8 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
+import '../widgets/gradient_button.dart';
+
 // TODO: Offline functionality
-// TODO: Enable highlighting
 // TODO: Background checking service
 // API data class (other data is fetched from firestore)
 class PrayerItem {
@@ -122,78 +123,150 @@ class _PrayerWidgetState extends State<PrayerPage> {
       "start": getClosestTime(false)
     };
   }
-
-
-  // Each prayerItem's widget
-  Widget _prayerList() =>
-    FutureBuilder<Map<String, dynamic>>(
-      future: timesFetch,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-
-        return ListView.builder(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          itemCount: snapshot.data!["fbSnapshot"].length,
-          itemBuilder: (context, index) {
-            String _selectedTime = _isAthanActive ? snapshot.data!["times"][index].startTime : snapshot.data!["times"][index].iqamahTime; // Set either athan or iqamah time based on user selection
-            
-            return ListTile(
-              title: Row(children: [
-                Text(snapshot.data!["fbSnapshot"][index]['name'], style: 
-                  TextStyle(
-                    backgroundColor: (_isAthanActive)
-                      ? (_highlightedIndexes["start"] == index) ? Colors.amber : Colors.transparent
-                      : (_highlightedIndexes["iqamah"] == index) ? Colors.green : Colors.transparent
-                  )
-                ),
-                Text(_selectedTime)
-              ],)
-            );
-          } // Load as many prayer widgets as required
-        );
-      }
-    );
     
   @override
   Widget build(BuildContext context) =>
       Scaffold(
         body: Column(children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                _timeString,
-                style: const TextStyle(fontSize: 23.0) 
+          // Top Time Area
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.all(0.0),
+            padding: const EdgeInsets.all(35.0),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: _isAthanActive ? [ Colors.amber, Colors.red ] : [ Colors.green, Colors.teal ] // Switch colours based on athan and iqamah selection
               ),
-              Text(_isAthanActive ? "Start Times - \u062a\u0648\u0642\u064a\u062a \u0627\u0644\u0623\u0630\u0627\u0646" : "Iqamaah Times - \u062a\u0648\u0642\u064a\u062a \u0627\u0644\u0625\u0642\u0627\u0645\u0629")
-            ],
-          ),
-
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_isAthanActive) setState(() => _isAthanActive = false);
-                    },
-                    child: const Text("Iqamaah")
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (!_isAthanActive) setState(() => _isAthanActive = true);
-                    },
-                    child: const Text("Start/Athan")
+              image: const DecorationImage(
+                image: AssetImage('assets/images/pattern_bitmap.png'),
+                repeat: ImageRepeat.repeat
+              )
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(_timeString, style: const TextStyle(
+                  fontSize: 22.0,
+                  color: Colors.white
+                )),
+                Text(_isAthanActive
+                    ? "Start Times - \u062a\u0648\u0642\u064a\u062a \u0627\u0644\u0623\u0630\u0627\u0646"
+                    : "Iqamaah Times - \u062a\u0648\u0642\u064a\u062a \u0627\u0644\u0625\u0642\u0627\u0645\u0629",
+                  style: const TextStyle(
+                    color: Colors.white
                   )
-                ],
-              ),
-            ],
+                )
+              ]
+            )
           ),
 
-          _prayerList()
+          Expanded(child: Container(
+              transform: Matrix4.translationValues(0.0, -15.0, 0.0),
+              child: Column(children: [
+                // Athaan and Iqaamah Buttons
+                  Container(
+                      padding: const EdgeInsets.all(15.0),
+                      decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                          color: Colors.white),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                              child: RaisedGradientButton(
+                                  onPressed: () {
+                                    if (_isAthanActive) setState(() => _isAthanActive = false);
+                                  },
+                                  enabled: _isAthanActive ? false : true,
+                                  text: "Iqamaah")),
+                          const SizedBox(width: 20),
+                          Expanded(
+                              child: RaisedGradientButton(
+                                  onPressed: () {
+                                    if (!_isAthanActive) setState(() => _isAthanActive = true);
+                                  },
+                                  enabled: _isAthanActive ? true : false,
+                                  gradient: const LinearGradient(
+                                      colors: [Colors.amber, Colors.red]),
+                                  text: "Start/Athan"))
+                        ],
+                      )),
+
+
+                  // Prayer Items List
+                  FutureBuilder<Map<String, dynamic>>(
+                      future: timesFetch,
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+
+                        return Expanded(
+                          child: ListView.builder(
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            itemCount: snapshot.data!["fbSnapshot"].length,
+                            itemBuilder: (context, index) {
+                              // Set either athan or iqamah time based on user selection
+                              String _selectedTime = _isAthanActive ? snapshot.data!["times"][index].startTime : snapshot.data!["times"][index].iqamahTime;
+
+                              return ListTile(
+                                  visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
+                                  title: Container(
+                                      padding: const EdgeInsets.fromLTRB(15, 17, 15, 17),
+                                      decoration: BoxDecoration(
+                                        gradient: (_isAthanActive)
+                                            ? (_highlightedIndexes["start"] == index)
+                                                ? const LinearGradient(colors: [Colors.amber, Colors.red])
+                                                : null
+                                            : (_highlightedIndexes["iqamah"] == index)
+                                                ? const LinearGradient(colors: [Colors.green, Colors.teal])
+                                                : null,
+                                        boxShadow: 
+                                            (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
+                                            ? [
+                                                BoxShadow(
+                                                  color: Colors.grey.withOpacity(0.6),
+                                                  spreadRadius: 2,
+                                                  blurRadius: 5,
+                                                  offset: const Offset(0,2), // changes position of shadow
+                                                ),
+                                              ]
+                                            : null,
+                                        image: (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
+                                            ?
+                                              const DecorationImage(
+                                                image: AssetImage('assets/images/pattern_bitmap.png'),
+                                                repeat: ImageRepeat.repeat)
+                                            : null,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(snapshot.data!["fbSnapshot"][index]['name'],
+                                              style: TextStyle(
+                                                  fontFamily: 'Bebas',
+                                                  fontSize: 21,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: (_highlightedIndexes["start"] ==index ||_highlightedIndexes["iqamah"] == index)
+                                                      ? Colors.white
+                                                      : null)),
+                                          Text(_selectedTime,
+                                              style: TextStyle(
+                                                  fontFamily: 'Bebas',
+                                                  fontSize: 21,
+                                                  color: (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
+                                                      ? Colors.white
+                                                      : null)),
+                                        ],
+                                      )));
+                            } // Load as many prayer widgets as required
+                          )
+                        );
+                      })
+              ],)
+          ))
         ])
       );
 }
