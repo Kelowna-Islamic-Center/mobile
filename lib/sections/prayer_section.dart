@@ -201,69 +201,69 @@ class _PrayerWidgetState extends State<PrayerPage> {
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
 
-                        return Expanded(
-                          child: ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            itemCount: snapshot.data!["fbSnapshot"].length,
-                            itemBuilder: (context, index) {
-                              // Set either athan or iqamah time based on user selection
-                              String _selectedTime = _isAthanActive ? snapshot.data!["times"][index].startTime : snapshot.data!["times"][index].iqamahTime;
+                        return ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemCount: snapshot.data!["fbSnapshot"].length,
+                          itemBuilder: (context, index) {
+                            // Set either athan or iqamah time based on user selection
+                            String _selectedTime = _isAthanActive ? snapshot.data!["times"][index].startTime : snapshot.data!["times"][index].iqamahTime;
 
-                              return ListTile(
-                                  visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
-                                  title: Container(
-                                      padding: const EdgeInsets.fromLTRB(15, 17, 15, 17),
-                                      decoration: BoxDecoration(
-                                        gradient: (_isAthanActive)
-                                            ? (_highlightedIndexes["start"] == index)
-                                                ? const LinearGradient(colors: [Colors.amber, Colors.red])
-                                                : null
-                                            : (_highlightedIndexes["iqamah"] == index)
-                                                ? const LinearGradient(colors: [Colors.green, Colors.teal])
-                                                : null,
-                                        boxShadow: 
-                                            (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
-                                            ? [
-                                                BoxShadow(
-                                                  color: Colors.grey.withOpacity(0.6),
-                                                  spreadRadius: 2,
-                                                  blurRadius: 5,
-                                                  offset: const Offset(0,2), // changes position of shadow
-                                                ),
-                                              ]
-                                            : null,
-                                        image: (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
-                                            ?
-                                              const DecorationImage(
-                                                image: AssetImage('assets/images/pattern_bitmap.png'),
-                                                repeat: ImageRepeat.repeat)
-                                            : null,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(snapshot.data!["fbSnapshot"][index]['name'],
-                                              style: TextStyle(
-                                                  fontFamily: 'Bebas',
-                                                  fontSize: 21,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: (_highlightedIndexes["start"] ==index ||_highlightedIndexes["iqamah"] == index)
-                                                      ? Colors.white
-                                                      : null)),
-                                          Text(_selectedTime,
-                                              style: TextStyle(
-                                                  fontFamily: 'Bebas',
-                                                  fontSize: 21,
-                                                  color: (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
-                                                      ? Colors.white
-                                                      : null)),
-                                        ],
-                                      )));
+                            return ListTile(
+                                visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
+                                title: Container(
+                                    padding: const EdgeInsets.fromLTRB(15, 17, 15, 17),
+                                    decoration: BoxDecoration(
+                                      gradient: (_isAthanActive)
+                                          ? (_highlightedIndexes["start"] == index)
+                                              ? const LinearGradient(colors: [Colors.amber, Colors.red])
+                                              : null
+                                          : (_highlightedIndexes["iqamah"] == index)
+                                              ? const LinearGradient(colors: [Colors.green, Colors.teal])
+                                              : null,
+                                      boxShadow: 
+                                          (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
+                                          ? [
+                                              BoxShadow(
+                                                color: Colors.grey.withOpacity(0.6),
+                                                spreadRadius: 2,
+                                                blurRadius: 5,
+                                                offset: const Offset(0,2), // changes position of shadow
+                                              ),
+                                            ]
+                                          : null,
+                                      image: (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
+                                          ?
+                                            const DecorationImage(
+                                              image: AssetImage('assets/images/pattern_bitmap.png'),
+                                              repeat: ImageRepeat.repeat)
+                                          : null,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(snapshot.data!["fbSnapshot"][index]['name'],
+                                            style: TextStyle(
+                                                fontFamily: 'Bebas',
+                                                fontSize: 22,
+                                                fontWeight: FontWeight.w600,
+                                                letterSpacing: 1.5,
+                                                color: (_highlightedIndexes["start"] ==index ||_highlightedIndexes["iqamah"] == index)
+                                                    ? Colors.white
+                                                    : Colors.black54)),
+                                        Text(_selectedTime,
+                                            style: TextStyle(
+                                                fontFamily: 'Bebas',
+                                                fontSize: 22,
+                                                letterSpacing: 1.5,
+                                                color: (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
+                                                    ? Colors.white
+                                                    : Colors.black87)),
+                                      ],
+                                    )));
                             } // Load as many prayer widgets as required
-                          )
-                        );
+                          );
                       })
               ],)
           ))
