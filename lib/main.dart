@@ -19,6 +19,8 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
+        canvasColor: Colors.white, // I'm sorry darkmode users (I'm lazy to impliment darkmode)
+        brightness: Brightness.light, // I'm sorry darkmode users (I'm lazy to impliment darkmode)
         primarySwatch: Colors.green
       ),
       home: const HomePage(),
