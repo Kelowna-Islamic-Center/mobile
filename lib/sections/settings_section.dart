@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../widgets/gradient_button.dart';
 
@@ -23,6 +24,12 @@ class _SettingsWidgetState extends State<SettingsPage> {
     _dropdownIqamaahTime = 15;
     
     super.initState();
+  }
+
+  void _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    }
   }
 
   @override
@@ -60,10 +67,16 @@ class _SettingsWidgetState extends State<SettingsPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   RaisedGradientButton(
-                                    onPressed: () {}, text: "Email Us"),
+                                    onPressed: () {
+                                      _launchURL("mailto:kelowna.secretary@thebcma.com");
+                                    }, 
+                                    text: "Email Us"),
                                   const SizedBox(width: 30),
                                   RaisedGradientButton(
-                                      onPressed: () {}, text: "Website")
+                                      onPressed: () {
+                                        _launchURL("http://org.thebcma.com/kelowna");
+                                      }, 
+                                      text: "Website")
                                 ],
                               )
                             ],
