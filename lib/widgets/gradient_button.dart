@@ -6,9 +6,9 @@ class RaisedGradientButton extends StatelessWidget {
   final Gradient gradient;
   final VoidCallback? onPressed;
   final String text;
-  bool enabled;
+  final bool enabled;
 
-  RaisedGradientButton({
+  const RaisedGradientButton({
     Key? key,
     required this.onPressed,
     required this.text,
