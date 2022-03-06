@@ -4,43 +4,131 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../widgets/gradient_button.dart';
+import '../structs/prayer_item.dart';
 
-// TODO: Offline functionality
+
 // TODO: Background checking service
-// API data class (other data is fetched from firestore)
-class PrayerItem {
-  final String startTime;
-  final String iqamahTime;
 
-  const PrayerItem({
-    required this.startTime,
-    required this.iqamahTime
-  });
+// Get Updated paryer times from server and firestore
+Future<Map<String, dynamic>> fetchTimes() async {
 
-  static listFromJSON(List<dynamic> json) {
-    List<PrayerItem> parsedList = [];
+  final prefs = await SharedPreferences.getInstance();
+  http.Response apiResponse;
+  dynamic fsSnapshot;
 
-    for (int i = 0; i < json.length; i++) {
-      parsedList.add(PrayerItem(
-        startTime: json[i]['start'], 
-        iqamahTime: json[i]['timings']
-      ));
+  int daysBetween(DateTime from, DateTime to) {
+    from = DateTime(from.year, from.month, from.day);
+    to = DateTime(to.year, to.month, to.day);
+    return (to.difference(from).inHours / 24).round();
+  }
+
+  Future<Map<String, dynamic>> loadLocalData() async {
+    String? timeStamp = prefs.getString('prayerTimeStamp');
+    List<dynamic>? rawJSON = prefs.getStringList('prayerTimes');
+
+    // If server has never been contacted, just set timeStamp to today
+    timeStamp ??= DateFormat("yyyy-MM-dd").format(DateTime.now());
+    
+    // If local data is empty and device offline
+    if (rawJSON == null) {
+      return {
+        "timeStampDiff": DateTime.now().difference(DateFormat("yyyy-MM-dd hh:mm:ss").parse(timeStamp)).inDays,
+        "data": <PrayerItem> [
+          const PrayerItem(name: "Fajr", startTime: "No Internet", iqamahTime: "No Internet"),
+          const PrayerItem(name: "Shurooq", startTime: "No Internet", iqamahTime: "No Internet"),
+          const PrayerItem(name: "Duhr", startTime: "No Internet", iqamahTime: "No Internet"),
+          const PrayerItem(name: "Asr", startTime: "No Internet", iqamahTime: "No Internet"),
+          const PrayerItem(name: "Maghrib", startTime: "No Internet", iqamahTime: "No Internet"),
+          const PrayerItem(name: "Isha", startTime: "No Internet", iqamahTime: "No Internet"),
+          const PrayerItem(name: "Jumuah", startTime: "No Internet", iqamahTime: "No Internet")
+        ]
+      };
+    } else {
+      // If local data contains cached data
+      List<dynamic> parsedList = [];
+      for (int i = 0; i < rawJSON.length; i++) {
+        parsedList.add(jsonDecode(rawJSON[i]));
+      }
+
+      return {
+        "timeStampDiff": daysBetween(DateFormat("yyyy-MM-dd").parse(timeStamp), DateTime.now()),
+        "data": PrayerItem.listFromFetchedJson(parsedList)!
+      };
     }
-    return parsedList;
+  }
+
+  // Server request
+  try {
+    apiResponse = await http.get(Uri.parse('https://api.kelownaislamiccenter.org/files/php/data-fetch.php')).timeout(const Duration(seconds: 15)); // BCMA API Request
+    fsSnapshot = await FirebaseFirestore.instance.collection('prayers').get(); // Firebase request
+    
+    // Set local data to server data
+    if (apiResponse.statusCode == 200) {
+      await prefs.setString("prayerTimeStamp", DateFormat("yyyy-MM-dd").format(DateTime.now()));
+      await prefs.setStringList("prayerTimes", PrayerItem.toJsonStringFromList(PrayerItem.listFromFetchedJson(jsonDecode(apiResponse.body), fsSnapshot)));
+    }
+
+    return await loadLocalData(); // Load sharedPreferences data
+  } catch(e) {
+    return await loadLocalData(); // Load sharedPreferences data
   }
 }
 
 
-Future<Map<String, dynamic>> fetchTimes() async {
-  final apiResponse = await http.get(Uri.parse('https://api.kelownaislamiccenter.org/files/php/data-fetch.php')); // BCMA Api Request
-  final fsSnapshot = await FirebaseFirestore.instance.collection('prayers').get(); // Firestore get (dont need realtime data)
-  return {
-    "times": PrayerItem.listFromJSON(jsonDecode(apiResponse.body)),
-    "fbSnapshot": fsSnapshot.docs
-  };
+// Calculate nearest prayer time (highlighted prayer time)
+Map<String, int> getActivePrayer(List<PrayerItem> timeList) {
+  final DateTime now = DateTime.now();
+  final int nowTotalMinutes = now.hour * 60 + now.minute; // Current time in minutes
+
+  int getClosestTime(bool isIqamahTimes) {
+    int activeIndex = 0;
+    int initDiff = 999999;
+
+    for (int i = 0; i < timeList.length; i++) {
+      if (timeList[i].startTime == "No Internet" ||
+          timeList[i].iqamahTime == "No Internet") continue;
+
+      int today = DateTime.now().weekday; // Today's day of the week
+      if (i == 2 && today == DateTime.friday) continue; // Skip if Duhr on Friday
+      if (i == 6 && today != DateTime.friday) continue; // Skip if Jumuah on Other days
+
+      // Parse string into different time parts
+      List<String> stringSplit = isIqamahTimes
+          ? timeList[i].iqamahTime.split(':')
+          : timeList[i].startTime.split(':');
+      int hour = int.parse(stringSplit[0]);
+      int minute = int.parse(stringSplit[1].split(' ')[0]);
+      String amPM = stringSplit[1].split(' ')[1];
+
+      hour = (hour == 12 && amPM.toLowerCase() == "am" ||
+              amPM.toLowerCase() == "a.m.")
+          ? 0
+          : hour; // If midnight then set 12 to 0
+      hour = (hour != 12 && amPM.toLowerCase() == "pm" ||
+              amPM.toLowerCase() == "p.m.")
+          ? hour + 12
+          : hour; // Add 12 hours if PM
+
+      int totalMinutes = hour * 60 + minute;
+      int difference = (totalMinutes - nowTotalMinutes).abs(); // Difference between currentime and a prayerTime
+
+      if (difference <= initDiff) {
+        initDiff = difference; // Set lowest difference
+        activeIndex = i; // Set active index to the current index
+      }
+    }
+
+    return activeIndex;
+  }
+
+  return {"iqamah": getClosestTime(true), "start": getClosestTime(false)};
 }
+
+
+
 
 
 class PrayerPage extends StatefulWidget {
@@ -50,19 +138,21 @@ class PrayerPage extends StatefulWidget {
   State<PrayerPage> createState() => _PrayerWidgetState();
 }
 
+
 class _PrayerWidgetState extends State<PrayerPage> {
+
+  late Future<Map<String, dynamic>> fetchedData;
 
   Timer? timer;
   String _timeString = "...";
   bool _isAthanActive = false; // If athan times are selected
   Map<String, dynamic> _highlightedIndexes = {"iqamah": "...", "start": "..."}; // Selected prayerItem indexes that will be highlighted
-  late Future<Map<String, dynamic>> timesFetch; // Prayer times https fetch
 
   @override
   void initState() {
-    timesFetch = fetchTimes(); // Fetch Prayer Times
-    _updateTime();
-    timer = Timer.periodic(const Duration(seconds: 10), (Timer t) => _updateTime()); // Realtime Clock timer
+    fetchedData = fetchTimes(); // Set to latest Prayer Times
+    _updateTimeDisplay();
+    timer = Timer.periodic(const Duration(seconds: 10), (Timer t) => _updateTimeDisplay()); // Realtime Clock timer
     super.initState();
   }
 
@@ -73,55 +163,13 @@ class _PrayerWidgetState extends State<PrayerPage> {
   }
 
   // Clock and highlight checker update
-  void _updateTime() async {
+  void _updateTimeDisplay() async {
     final String dateTime = DateFormat('KK:mm - EEE. d MMMM').format(DateTime.now()).toString();
     setState(() {
       _timeString = dateTime;
-      timesFetch.then((value) => 
-        _highlightedIndexes = getActivePrayer(value["times"]));
+      fetchedData.then((value) => 
+        _highlightedIndexes = getActivePrayer(value["data"]));
     });
-  }
-
-  //Calculate nearest prayer time (highlighted prayer time)
-  Map<String, int> getActivePrayer(List<PrayerItem> timeList) {
-    final DateTime now = DateTime.now();
-    final int nowTotalMinutes = now.hour * 60 + now.minute; // Current time in minutes
-
-    int getClosestTime(bool isIqamahTimes) {
-      int activeIndex = 0;
-      int initDiff = 999999;
-
-      for (int i = 0; i < timeList.length; i++) {
-        
-        int today = DateTime.now().weekday; // Today's day of the week
-        if (i == 2 && today == DateTime.friday) continue; // Skip if Duhr on Friday
-        if (i == 6 && today != DateTime.friday) continue; // Skip if Jumuah on Other days
-
-        // Parse string into different time parts
-        List<String> stringSplit = isIqamahTimes ? timeList[i].iqamahTime.split(':') : timeList[i].startTime.split(':');
-        int hour = int.parse(stringSplit[0]);
-        int minute = int.parse(stringSplit[1].split(' ')[0]);
-        String amPM = stringSplit[1].split(' ')[1];
-
-        hour = (hour == 12 && amPM.toLowerCase() == "am" || amPM.toLowerCase() == "a.m.") ? 0 : hour; // If midnight then set 12 to 0
-        hour = (hour != 12 && amPM.toLowerCase() == "pm" || amPM.toLowerCase() == "p.m.") ? hour + 12 : hour; // Add 12 hours if PM
-
-        int totalMinutes = hour * 60 + minute;
-        int difference = (totalMinutes - nowTotalMinutes).abs(); // Difference between currentime and a prayerTime
-        
-        if (difference <= initDiff) {
-          initDiff = difference; // Set lowest difference
-          activeIndex = i;// Set active index to the current index
-        }
-      }
-
-      return activeIndex;
-    }
-
-    return {
-      "iqamah": getClosestTime(true),
-      "start": getClosestTime(false)
-    };
   }
     
   @override
@@ -194,76 +242,114 @@ class _PrayerWidgetState extends State<PrayerPage> {
                         ],
                       )),
 
-
                   // Prayer Items List
                   FutureBuilder<Map<String, dynamic>>(
-                      future: timesFetch,
+                      future: fetchedData,
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                        dynamic data = snapshot.data!["data"];
 
-                        return ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemCount: snapshot.data!["fbSnapshot"].length,
-                          itemBuilder: (context, index) {
-                            // Set either athan or iqamah time based on user selection
-                            String _selectedTime = _isAthanActive ? snapshot.data!["times"][index].startTime : snapshot.data!["times"][index].iqamahTime;
+                        return Column(children: [
 
-                            return ListTile(
-                                visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
-                                title: Container(
-                                    padding: const EdgeInsets.fromLTRB(15, 17, 15, 17),
-                                    decoration: BoxDecoration(
-                                      gradient: (_isAthanActive)
-                                          ? (_highlightedIndexes["start"] == index)
-                                              ? const LinearGradient(colors: [Colors.amber, Colors.red])
-                                              : null
-                                          : (_highlightedIndexes["iqamah"] == index)
-                                              ? const LinearGradient(colors: [Colors.green, Colors.teal])
-                                              : null,
-                                      boxShadow: 
-                                          (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
-                                          ? [
+                            /* Offline message if offline */
+                            if (snapshot.data!["timeStampDiff"] > 0)
+                              Container(
+                                  margin: const EdgeInsets.fromLTRB(15, 17, 15, 17),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    child: Container(
+                                        padding: const EdgeInsets.fromLTRB(15, 17, 15, 17),
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(10.0),
+                                            color: Colors.yellow[800],
+                                            boxShadow: [
                                               BoxShadow(
-                                                color: Colors.grey.withOpacity(0.6),
-                                                spreadRadius: 2,
-                                                blurRadius: 5,
-                                                offset: const Offset(0,2), // changes position of shadow
-                                              ),
-                                            ]
-                                          : null,
-                                      image: (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
-                                          ?
-                                            const DecorationImage(
-                                              image: AssetImage('assets/images/pattern_bitmap.png'),
-                                              repeat: ImageRepeat.repeat)
-                                          : null,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(snapshot.data!["fbSnapshot"][index]['name'],
-                                            style: TextStyle(
-                                                fontFamily: 'Bebas',
-                                                fontSize: 22,
-                                                fontWeight: FontWeight.w600,
-                                                letterSpacing: 1.5,
-                                                color: (_highlightedIndexes["start"] ==index ||_highlightedIndexes["iqamah"] == index)
-                                                    ? Colors.white
-                                                    : Colors.black54)),
-                                        Text(_selectedTime,
-                                            style: TextStyle(
-                                                fontFamily: 'Bebas',
-                                                fontSize: 22,
-                                                letterSpacing: 1.5,
-                                                color: (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
-                                                    ? Colors.white
-                                                    : Colors.black87)),
-                                      ],
-                                    )));
-                            } // Load as many prayer widgets as required
-                          );
+                                                  color: Colors.black.withOpacity(0.2),
+                                                  spreadRadius: 1,
+                                                  blurRadius: 4,
+                                                  offset: const Offset(0, 2))
+                                            ]),
+                                        child: Row(children: [
+                                          const Icon(Icons.wifi_off_rounded, color: Colors.white, size: 35),
+                                          const SizedBox(width: 10.0),
+                                          Flexible(
+                                              child: Text(
+                                                  "These times are " + snapshot.data!["timeStampDiff"].toString() + " days old. Connect to the Internet to get the latest times.",
+                                                  style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 13)))
+                                        ])),
+                                  )),
+
+                          
+                            /* Prayer Times List */
+                            ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                itemCount: data.length,
+                                itemBuilder: (context, index) {
+                                  // Set either athan or iqamah time based on user selection
+                                  String _selectedTime = _isAthanActive
+                                      ? data[index].startTime
+                                      : data[index].iqamahTime;
+
+                                  return ListTile(
+                                      visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
+                                      title: Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              15, 17, 15, 17),
+                                          decoration: BoxDecoration(
+                                            gradient: (_isAthanActive)
+                                                ? (_highlightedIndexes["start"] == index)
+                                                    ? const LinearGradient(
+                                                        colors: [Colors.amber, Colors.red])
+                                                    : null
+                                                : (_highlightedIndexes["iqamah"] == index)
+                                                    ? const LinearGradient(
+                                                        colors: [Colors.green,Colors.teal])
+                                                    : null,
+                                            boxShadow:
+                                                (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
+                                                    ? [BoxShadow(
+                                                          color: Colors.grey.withOpacity(0.6),
+                                                          spreadRadius: 2,
+                                                          blurRadius: 5,
+                                                          offset: const Offset(0, 2)),]
+                                                    : null,
+                                            image: (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
+                                                ? const DecorationImage(
+                                                    image: AssetImage('assets/images/pattern_bitmap.png'),
+                                                    repeat: ImageRepeat.repeat)
+                                                : null,
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(data[index].name,
+                                                  style: TextStyle(
+                                                      fontFamily: 'Bebas',
+                                                      fontSize: 22,
+                                                      fontWeight: FontWeight.w600,
+                                                      letterSpacing: 1.5,
+                                                      color: (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
+                                                          ? Colors.white
+                                                          : Colors.black54)),
+                                              Text(_selectedTime,
+                                                  style: TextStyle(
+                                                      fontFamily: 'Bebas',
+                                                      fontSize: 22,
+                                                      letterSpacing: 1.5,
+                                                      color: (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
+                                                          ? Colors.white
+                                                          : Colors.black87)),
+                                            ],
+                                          )));
+                                } // Load as many prayer widgets as required
+                                )
+                          ]);
                       })
               ],)
           ))
