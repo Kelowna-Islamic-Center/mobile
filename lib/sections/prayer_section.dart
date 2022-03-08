@@ -36,7 +36,7 @@ Future<Map<String, dynamic>> fetchTimes() async {
     // If local data is empty and device offline
     if (rawJSON == null) {
       return {
-        "timeStampDiff": DateTime.now().difference(DateFormat("yyyy-MM-dd hh:mm:ss").parse(timeStamp)).inDays,
+        "timeStampDiff": DateTime.now().difference(DateFormat("yyyy-MM-dd").parse(timeStamp)).inDays,
         "data": <PrayerItem> [
           const PrayerItem(name: "Fajr", startTime: "No Internet", iqamahTime: "No Internet"),
           const PrayerItem(name: "Shurooq", startTime: "No Internet", iqamahTime: "No Internet"),
