@@ -36,6 +36,7 @@ dependencies:
   shared_preferences: ^2.0.13
   url_launcher: ^6.0.20
   workmanager: ^0.4.1
+  firebase_messaging: ^11.2.8
 
 dev_dependencies:
   flutter_test:
