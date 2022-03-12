@@ -10,7 +10,6 @@ import '../structs/announcement.dart';
 
 Future<Map<String, dynamic>> announcementsFetch() async {
   final snapshot = await FirebaseFirestore.instance.collection('announcements').get(); // Firestore get (dont need realtime data)
-
   return {
     "offline": snapshot.metadata.isFromCache,
     "data": Announcement.listFromJSON(snapshot.docs)
@@ -38,7 +37,7 @@ class AnnouncementsPage extends StatelessWidget {
                     image: AssetImage('assets/images/pattern_bitmap.png'),
                     repeat: ImageRepeat.repeat)),
             child:
-              Center(child: Text("Announcements".toUpperCase(),
+              Center(child: Text("Masjid Announcements".toUpperCase(),
                   style: const TextStyle(
                     fontSize: 21.0,
                     fontWeight: FontWeight.bold,
@@ -48,10 +47,10 @@ class AnnouncementsPage extends StatelessWidget {
 
         Expanded(
             child: Container(
-                transform: Matrix4.translationValues(0.0, -15.0, 0.0),
+                transform: Matrix4.translationValues(0.0, -10.0, 0.0),
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(15.0))
+                  borderRadius: BorderRadius.all(Radius.circular(10.0))
                 ),
                 child:
                     // Prayer Items List
@@ -97,31 +96,37 @@ class AnnouncementsPage extends StatelessWidget {
                               scrollDirection: Axis.vertical,
                               shrinkWrap: true,
                               itemCount: data.length,
-                              separatorBuilder: (context, index) => const Divider(),
+                              separatorBuilder: (context, index) => Column(children: const [
+                                SizedBox(height: 15),
+                                Divider(thickness: 1, indent: 15, endIndent: 15)]),
                               itemBuilder: (context, index) {
                                 // Announcement Item
                                 return ListTile(
                                     visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
-
                                     title: Container(
                                         padding: const EdgeInsets.fromLTRB(10, 17, 10, 10),
-                                        child: Row(children: [
-                                          const Icon(Icons.notifications, color: Colors.black54),
-                                          const SizedBox(width: 5),
-                                          Text(data[index].title,
-                                            style: const TextStyle(
-                                                fontFamily: 'Bebas',
-                                                fontSize: 24,
-                                                letterSpacing: 1.5,
-                                                color: Colors.black54,
-                                                fontWeight: FontWeight.w600))
+                                        child: Column(children: [
+                                          Row(children: [
+                                            Text(data[index].title,
+                                              style: const TextStyle(
+                                                  fontSize: 26,
+                                                  letterSpacing: -1,
+                                                  color: Colors.black87,
+                                                  fontWeight: FontWeight.w600))
+                                          ]),
+                                          const SizedBox(height: 12),
+                                          Row(children: [
+                                            const Icon(Icons.calendar_month, color: Colors.black87),
+                                            const SizedBox(width: 5),
+                                            Text(data[index].timeString,
+                                                style: const TextStyle(fontSize: 15)),
+                                          ]),
                                         ])),
 
                                     subtitle: Container(
                                         padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
                                         child: Text(data[index].description,
-                                            style: const TextStyle(fontSize: 15)),
-                                    ),
+                                            style: const TextStyle(fontSize: 15, color: Colors.black87))),
                                   );
                               }
                             )
