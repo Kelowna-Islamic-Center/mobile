@@ -111,7 +111,7 @@ class AnnouncementsPage extends StatelessWidget {
                                           Text(data[index].title,
                                             style: const TextStyle(
                                                 fontFamily: 'Bebas',
-                                                fontSize: 23,
+                                                fontSize: 24,
                                                 letterSpacing: 1.5,
                                                 color: Colors.black54,
                                                 fontWeight: FontWeight.w600))
@@ -120,7 +120,7 @@ class AnnouncementsPage extends StatelessWidget {
                                     subtitle: Container(
                                         padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
                                         child: Text(data[index].description,
-                                            style: const TextStyle(fontSize: 13)),
+                                            style: const TextStyle(fontSize: 15)),
                                     ),
                                   );
                               }

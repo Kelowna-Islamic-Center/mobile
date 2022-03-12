@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,7 +17,6 @@ Future<Map<String, dynamic>> fetchTimes() async {
 
   final prefs = await SharedPreferences.getInstance();
   http.Response apiResponse;
-  dynamic fsSnapshot;
 
   int daysBetween(DateTime from, DateTime to) {
     from = DateTime(from.year, from.month, from.day);
@@ -63,13 +61,12 @@ Future<Map<String, dynamic>> fetchTimes() async {
 
   // Server request
   try {
-    apiResponse = await http.get(Uri.parse('https://api.kelownaislamiccenter.org/files/php/data-fetch.php')).timeout(const Duration(seconds: 15)); // BCMA API Request
-    fsSnapshot = await FirebaseFirestore.instance.collection('prayers').get(); // Firebase request
+    apiResponse = await http.get(Uri.parse('https://us-central1-kelownaislamiccenter.cloudfunctions.net/apiFetch')).timeout(const Duration(seconds: 20)); // BCMA API Request
     
     // Set local data to server data
     if (apiResponse.statusCode == 200) {
-      await prefs.setString("prayerTimeStamp", DateFormat("yyyy-MM-dd").format(DateTime.now()));
-      await prefs.setStringList("prayerTimes", PrayerItem.toJsonStringFromList(PrayerItem.listFromFetchedJson(jsonDecode(apiResponse.body), fsSnapshot)));
+      await prefs.setString("prayerTimeStamp", DateFormat("yyyy-MM-dd").format(DateTime.now())); // Cache server date
+      await prefs.setStringList("prayerTimes", PrayerItem.toJsonStringFromList(PrayerItem.listFromFetchedJson(jsonDecode(apiResponse.body)))); // Cache server data
     }
 
     return await loadLocalData(); // Load sharedPreferences data
@@ -104,12 +101,10 @@ Map<String, int> getActivePrayer(List<PrayerItem> timeList) {
       int minute = int.parse(stringSplit[1].split(' ')[0]);
       String amPM = stringSplit[1].split(' ')[1];
 
-      hour = (hour == 12 && amPM.toLowerCase() == "am" ||
-              amPM.toLowerCase() == "a.m.")
+      hour = (hour == 12 && amPM.toLowerCase() == "am" || amPM.toLowerCase() == "a.m.")
           ? 0
           : hour; // If midnight then set 12 to 0
-      hour = (hour != 12 && amPM.toLowerCase() == "pm" ||
-              amPM.toLowerCase() == "p.m.")
+      hour = (hour != 12 && amPM.toLowerCase() == "pm" || amPM.toLowerCase() == "p.m.")
           ? hour + 12
           : hour; // Add 12 hours if PM
 
@@ -342,10 +337,11 @@ class _PrayerWidgetState extends State<PrayerPage> {
                                                   style: TextStyle(
                                                       fontFamily: 'Bebas',
                                                       fontSize: 22,
+                                                      fontWeight: FontWeight.w600,
                                                       letterSpacing: 1.5,
                                                       color: (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
                                                           ? Colors.white
-                                                          : Colors.black87)),
+                                                          : Colors.black54)),
                                             ],
                                           )));
                                 } // Load as many prayer widgets as required

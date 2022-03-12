@@ -7,14 +7,14 @@ class PrayerItem {
   const PrayerItem(
       {required this.startTime, required this.iqamahTime, required this.name});
 
-  static listFromFetchedJson(List<dynamic> json, [dynamic fsSnapshot]) {
+  static listFromFetchedJson(List<dynamic> json) {
     List<PrayerItem> parsedList = [];
 
     for (int i = 0; i < json.length; i++) {
       parsedList.add(PrayerItem(
-          name: fsSnapshot != null ? fsSnapshot.docs[i]['name'] : json[i]['name'],
+          name: json[i]['name'],
           startTime: json[i]['start'],
-          iqamahTime: json[i]['timings']));
+          iqamahTime: json[i]['iqamah']));
     }
     return parsedList;
   }
@@ -23,7 +23,7 @@ class PrayerItem {
     List<String> jsonList = [];
 
     for (int i = 0; i < list.length; i++) {
-      jsonList.add('{"name":"' + list[i].name + '", "start":"' + list[i].startTime + '", "timings":"' + list[i].iqamahTime + '"}');
+      jsonList.add('{"name":"' + list[i].name + '", "start":"' + list[i].startTime + '", "iqamah":"' + list[i].iqamahTime + '"}');
     }
     return jsonList;
   }
