@@ -9,7 +9,8 @@ import 'package:kelowna_islamic_center/services/cms_service.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  CloudMessagingService();
+
+  AnnouncementsCMWorker().init(); // Firebase CMS
   runApp(const App());
 }
 

@@ -1,6 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-class CloudMessagingService {
+class AnnouncementsCMWorker {
 
   // Announcements cloud message receiver
   Future<void> _messageHandler(RemoteMessage message) async {
@@ -9,8 +9,16 @@ class CloudMessagingService {
 
   void init() {
     FirebaseMessaging.onBackgroundMessage(_messageHandler);
-    FirebaseMessaging.instance.subscribeToTopic("announcements");
+    // TODO: If LocalStorage value is null then subscribe to topic
     FirebaseMessaging.instance
         .requestPermission(sound: true, badge: true, alert: true);
+  }
+
+  void subscribe() {
+    FirebaseMessaging.instance.subscribeToTopic("announcements");
+  }
+
+  void unsubscribe() {
+    FirebaseMessaging.instance.unsubscribeFromTopic("announcements");
   }
 }
