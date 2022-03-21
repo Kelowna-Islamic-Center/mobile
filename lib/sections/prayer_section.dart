@@ -208,34 +208,37 @@ class _PrayerWidgetState extends State<PrayerPage> {
           Expanded(child: Container(
             transform: Matrix4.translationValues(0.0, -15.0, 0.0),
             child: Container(
-              padding: const EdgeInsets.all(15.0),
               decoration: const BoxDecoration(
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0)),
                   color: Colors.white),
               child: SingleChildScrollView(child: 
                 Column(children: [                  
                   // Athaan and Iqaamah Buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                          child: RaisedGradientButton(
-                              onPressed: () {
-                                if (_isAthanActive) setState(() => _isAthanActive = false);
-                              },
-                              enabled: _isAthanActive ? false : true,
-                              text: "Iqamaah")),
-                      const SizedBox(width: 20),
-                      Expanded(
-                          child: RaisedGradientButton(
-                              onPressed: () {
-                                if (!_isAthanActive) setState(() => _isAthanActive = true);
-                              },
-                              enabled: _isAthanActive ? true : false,
-                              gradient: const LinearGradient(
-                                  colors: [Colors.amber, Colors.red]),
-                              text: "Start/Athan"))
-                    ],
+                  Container(
+                    padding: const EdgeInsets.all(15.0),
+                    child: 
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                              child: RaisedGradientButton(
+                                  onPressed: () {
+                                    if (_isAthanActive) setState(() => _isAthanActive = false);
+                                  },
+                                  enabled: _isAthanActive ? false : true,
+                                  text: "Iqamaah")),
+                          const SizedBox(width: 20),
+                          Expanded(
+                              child: RaisedGradientButton(
+                                  onPressed: () {
+                                    if (!_isAthanActive) setState(() => _isAthanActive = true);
+                                  },
+                                  enabled: _isAthanActive ? true : false,
+                                  gradient: const LinearGradient(
+                                      colors: [Colors.amber, Colors.red]),
+                                  text: "Start/Athan"))
+                        ],
+                      ),
                   ),
                   
                   // Prayer Items List
@@ -294,8 +297,7 @@ class _PrayerWidgetState extends State<PrayerPage> {
                                   return ListTile(
                                       visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
                                       title: Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              15, 17, 15, 17),
+                                          padding: const EdgeInsets.fromLTRB(15, 17, 15, 17),
                                           decoration: BoxDecoration(
                                             gradient: (_isAthanActive)
                                                 ? (_highlightedIndexes["start"] == index)
@@ -307,12 +309,12 @@ class _PrayerWidgetState extends State<PrayerPage> {
                                                         colors: [Colors.green,Colors.teal])
                                                     : null,
                                             boxShadow:
-                                                (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
+                                                ((_highlightedIndexes["start"] == index && !_isAthanActive) || (_highlightedIndexes["iqamah"] == index && _isAthanActive))
                                                     ? [BoxShadow(
-                                                          color: Colors.grey.withOpacity(0.6),
-                                                          spreadRadius: 2,
-                                                          blurRadius: 5,
-                                                          offset: const Offset(0, 2)),]
+                                                          color: Colors.black45.withOpacity(0.4),
+                                                          spreadRadius: 0,
+                                                          blurRadius: 3,
+                                                          offset: const Offset(0, 1)),]
                                                     : null,
                                             image: (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
                                                 ? const DecorationImage(
@@ -328,7 +330,7 @@ class _PrayerWidgetState extends State<PrayerPage> {
                                               Text(data[index].name,
                                                   style: TextStyle(
                                                       fontFamily: 'Bebas',
-                                                      fontSize: 22,
+                                                      fontSize: 24,
                                                       fontWeight: FontWeight.w600,
                                                       letterSpacing: 1.5,
                                                       color: (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
@@ -337,7 +339,7 @@ class _PrayerWidgetState extends State<PrayerPage> {
                                               Text(_selectedTime,
                                                   style: TextStyle(
                                                       fontFamily: 'Bebas',
-                                                      fontSize: 22,
+                                                      fontSize: 24,
                                                       fontWeight: FontWeight.w600,
                                                       letterSpacing: 1.5,
                                                       color: (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
