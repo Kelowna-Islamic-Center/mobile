@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class Announcement {
@@ -12,13 +13,17 @@ class Announcement {
     List<Announcement> parsedList = [];
 
     for (int i = 0; i < json.length; i++) {
-      final timeStamp = json[i]["timeStamp"]!.seconds * 1000;
+
+      final item = (json[i] is QueryDocumentSnapshot)? json[i].data() : json[i];
+      if (!(item.containsKey("timeStamp") || item.containsKey("title") || item.containsKey("description"))) return;
+      
+      final timeStamp = (item["timeStamp"] is String) ? (int.tryParse(item["timeStamp"]!) ?? 0) : item["timeStamp"]!.seconds * 1000;
 
       parsedList.add(Announcement(
           timeStamp: timeStamp, // Set to timeStamp in milliseconds
           timeString: DateFormat.yMMMMd('en_US').format(DateTime.fromMillisecondsSinceEpoch(timeStamp)),
-          title: json[i]['title'], 
-          description: json[i]['description']
+          title: item['title'], 
+          description: item['description']
       ));
     }
 
@@ -26,5 +31,14 @@ class Announcement {
     parsedList.sort((a, b) => b.timeStamp.compareTo(a.timeStamp));
 
     return parsedList;
+  }
+
+  static toJsonStringFromList(List<Announcement> list) {
+    List<String> jsonList = [];
+
+    for (int i = 0; i < list.length; i++) {
+      jsonList.add('{"title":"' + list[i].title + '", "description":"' + list[i].description + '", "timeStamp":"' + list[i].timeStamp.toString() + '"}');
+    }
+    return jsonList;
   }
 }

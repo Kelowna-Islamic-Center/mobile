@@ -8,11 +8,13 @@ import 'package:kelowna_islamic_center/services/cms_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await AnnouncementsMessageService.init();
   await Firebase.initializeApp();
-
-  AnnouncementsCMWorker().init(); // Firebase CMS
+  
   runApp(const App());
 }
+
+
 
 class App extends StatelessWidget {
   const App({Key? key}) : super(key: key);

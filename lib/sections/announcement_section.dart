@@ -1,18 +1,32 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../structs/announcement.dart';
+import 'package:kelowna_islamic_center/structs/announcement.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-// TODO: Background checking service
 // TODO: Fix overflow
 
 
 Future<Map<String, dynamic>> announcementsFetch() async {
-  final snapshot = await FirebaseFirestore.instance.collection('announcements').get(); // Firestore get (dont need realtime data)
+  final prefs = await SharedPreferences.getInstance();
+  final fbSnapshot = await FirebaseFirestore.instance.collection('announcements').get(); // Firestore get (dont need realtime data)
+  List<dynamic>? localJSON = prefs.getStringList('announcements');
+
+  if (localJSON == null || !fbSnapshot.metadata.isFromCache) {
+    await prefs.setStringList("announcements", Announcement.toJsonStringFromList(Announcement.listFromJSON(fbSnapshot.docs)));
+    localJSON = prefs.getStringList('announcements');
+  }
+  
+  List<dynamic> parsedList = [];
+  for (int i = 0; i < localJSON!.length; i++) {
+    parsedList.add(jsonDecode(localJSON[i]));
+  }
+
   return {
-    "offline": snapshot.metadata.isFromCache,
-    "data": Announcement.listFromJSON(snapshot.docs)
+    "offline": fbSnapshot.metadata.isFromCache,
+    "data": Announcement.listFromJSON(parsedList)
   };
 }
 

@@ -37,6 +37,7 @@ dependencies:
   url_launcher: ^6.0.20
   workmanager: ^0.4.1
   firebase_messaging: ^11.2.8
+  flutter_local_notifications: ^9.4.0
 
 dev_dependencies:
   flutter_test:
