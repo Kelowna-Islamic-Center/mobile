@@ -10,7 +10,6 @@ import '../structs/prayer_item.dart';
 
 
 // TODO: Background checking service
-// TODO: Fix overflow
 
 // Get Updated paryer times from server and firestore
 Future<Map<String, dynamic>> fetchTimes() async {
@@ -207,37 +206,38 @@ class _PrayerWidgetState extends State<PrayerPage> {
           ),
 
           Expanded(child: Container(
-              transform: Matrix4.translationValues(0.0, -15.0, 0.0),
-              child: Column(children: [
-                // Athaan and Iqaamah Buttons
-                  Container(
-                      padding: const EdgeInsets.all(15.0),
-                      decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                          color: Colors.white),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                              child: RaisedGradientButton(
-                                  onPressed: () {
-                                    if (_isAthanActive) setState(() => _isAthanActive = false);
-                                  },
-                                  enabled: _isAthanActive ? false : true,
-                                  text: "Iqamaah")),
-                          const SizedBox(width: 20),
-                          Expanded(
-                              child: RaisedGradientButton(
-                                  onPressed: () {
-                                    if (!_isAthanActive) setState(() => _isAthanActive = true);
-                                  },
-                                  enabled: _isAthanActive ? true : false,
-                                  gradient: const LinearGradient(
-                                      colors: [Colors.amber, Colors.red]),
-                                  text: "Start/Athan"))
-                        ],
-                      )),
-
+            transform: Matrix4.translationValues(0.0, -15.0, 0.0),
+            child: Container(
+              padding: const EdgeInsets.all(15.0),
+              decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0)),
+                  color: Colors.white),
+              child: SingleChildScrollView(child: 
+                Column(children: [                  
+                  // Athaan and Iqaamah Buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                          child: RaisedGradientButton(
+                              onPressed: () {
+                                if (_isAthanActive) setState(() => _isAthanActive = false);
+                              },
+                              enabled: _isAthanActive ? false : true,
+                              text: "Iqamaah")),
+                      const SizedBox(width: 20),
+                      Expanded(
+                          child: RaisedGradientButton(
+                              onPressed: () {
+                                if (!_isAthanActive) setState(() => _isAthanActive = true);
+                              },
+                              enabled: _isAthanActive ? true : false,
+                              gradient: const LinearGradient(
+                                  colors: [Colors.amber, Colors.red]),
+                              text: "Start/Athan"))
+                    ],
+                  ),
+                  
                   // Prayer Items List
                   FutureBuilder<Map<String, dynamic>>(
                       future: fetchedData,
@@ -282,6 +282,7 @@ class _PrayerWidgetState extends State<PrayerPage> {
                             /* Prayer Times List */
                             ListView.builder(
                                 scrollDirection: Axis.vertical,
+                                physics: const NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
                                 itemCount: data.length,
                                 itemBuilder: (context, index) {
@@ -348,7 +349,8 @@ class _PrayerWidgetState extends State<PrayerPage> {
                                 )
                           ]);
                       })
-              ],)
+                ],)
+              ))
           ))
         ])
       );

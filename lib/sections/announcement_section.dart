@@ -6,8 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kelowna_islamic_center/structs/announcement.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// TODO: Fix overflow
-
 
 Future<Map<String, dynamic>> announcementsFetch() async {
   final prefs = await SharedPreferences.getInstance();
@@ -36,8 +34,8 @@ class AnnouncementsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-          body: Column(children: [
-        // Top Time Area
+      body: Column(children: [
+        // Top "Masjid Announcements" Header
         Container(
             width: double.infinity,
             margin: const EdgeInsets.all(0.0),
@@ -66,8 +64,8 @@ class AnnouncementsPage extends StatelessWidget {
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(10.0))
                 ),
-                child:
-                    // Prayer Items List
+                // Prayer Items List
+                child: SingleChildScrollView(child:
                     FutureBuilder<Map<String, dynamic>>(
                         future: announcementsFetch(),
                         builder: (context, snapshot) {
@@ -97,17 +95,18 @@ class AnnouncementsPage extends StatelessWidget {
                                           Icon(Icons.wifi_off_rounded, color: Colors.white, size: 35),
                                           SizedBox(width: 10.0),
                                           Flexible(
-                                              child: Text(
-                                                  "You are offline, these announcements may be old. Connect to the Internet to get the latest announcements.",
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 13)))
+                                            child: Text(
+                                              "You are offline, these announcements may be old. Connect to the Internet to get the latest announcements.",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 13)))
                                         ])),
                                   )),
 
                             ListView.separated(
                               scrollDirection: Axis.vertical,
+                              physics: const NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
                               itemCount: data.length,
                               separatorBuilder: (context, index) => Column(children: const [
@@ -146,6 +145,6 @@ class AnnouncementsPage extends StatelessWidget {
                             )
                           ]);
                         })
-                ))
-      ]));
-}
+                )))
+      ])
+);}
