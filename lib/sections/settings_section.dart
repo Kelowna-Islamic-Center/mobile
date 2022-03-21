@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:kelowna_islamic_center/services/cms_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../widgets/gradient_button.dart';
+
+// Settings Values
+Map<String, dynamic> settings = {
+  "iqamahTimeAlert": true,
+  "iqamahTimeAlertTime": 15,
+  "announcementAlert": true,
+};
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -12,17 +20,9 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsWidgetState extends State<SettingsPage> {
 
-  bool _iqamahTimeSwitch = true;
-  bool _announcementSwitch = true;
-  int _dropdownIqamaahTime = 15;
-
   @override
   void initState() {
-    // TODO: Set to stored values
-    _iqamahTimeSwitch = true;
-    _announcementSwitch = true;
-    _dropdownIqamaahTime = 15;
-    
+    setToValues(); 
     super.initState();
   }
 
@@ -30,6 +30,49 @@ class _SettingsWidgetState extends State<SettingsPage> {
     if (await canLaunch(url)) {
       await launch(url);
     }
+  }
+
+  // Set settings values to data stored in SharedPreferences
+  void setToValues() async {
+    final prefs = await SharedPreferences.getInstance();
+    
+    Map<String, dynamic> data = {
+      "iqamahTimeAlert": prefs.getBool('iqamahTimeAlert'),
+      "iqamahTimeAlertTime": prefs.getInt('iqamahTimeAlertTime'),
+      "announcementAlert": prefs.getBool('announcementAlert'),
+    };
+
+    data.forEach((key, value) async {
+      if (value == null) {
+        // Set SharedPreferences settings to defaults if never set by user
+        if (settings[key] is int) {
+          await prefs.setInt(key, settings[key]);
+        } else if (settings[key] is bool) {
+          await prefs.setBool(key, settings[key]);
+        }
+      } else {
+        // Get the SharedPreferences settings set by user and set everything to match thier values
+        setState(() => settings[key] = value);
+      }
+    });
+  }
+
+  // Update SharedPreferences values on any value change
+  void updateValue(key, value) async {
+    // Functions to run on value change
+    if (key == "announcementAlert" && value is bool) AnnouncementsMessageService.toggleSubscription(value);
+    // TODO: Add iqamah times implimentation
+    
+    // Set SharedPreferences and setState
+    final prefs = await SharedPreferences.getInstance();
+    if (value is int) {
+      await prefs.setInt(key, value);
+    } else if (value is bool) {
+      await prefs.setBool(key, value);
+    } else {
+      return; // Prevent errors by writing as an incorrect type
+    }
+    setState(() => settings[key] = value);
   }
 
   @override
@@ -123,37 +166,33 @@ class _SettingsWidgetState extends State<SettingsPage> {
 
                   // Settings Begin
                   SwitchListTile(
-                    value: _iqamahTimeSwitch,
+                    value: settings["iqamahTimeAlert"],
                     onChanged: (bool newValue) {
-                      setState(() {
-                        _iqamahTimeSwitch = newValue;
-                      });
+                      updateValue("iqamahTimeAlert", newValue);
                     },
                     secondary: const Icon(Icons.access_alarm_rounded),
                     title: const Text("Iqamaah Time Reminder")),
                   ListTile(
-                    enabled: _iqamahTimeSwitch,
+                    enabled: settings["iqamahTimeAlert"],
                     leading: const SizedBox(),
                     title: const Text("Time before Iqamaah"),
                     subtitle: const Text("How much time before Iqamaah should the app send a reminder?"),
                     trailing: DropdownButton<int>(
-                      value: _dropdownIqamaahTime,
+                      value: settings["iqamahTimeAlertTime"],
                       items: <int>[5, 10, 15, 20, 30, 45].map<DropdownMenuItem<int>>((int value) {
                           return DropdownMenuItem<int>(
                             value: value,
                             child: Text(value.toString() + " minutes"),
                           );
                         }).toList(),
-                      onChanged: (_iqamahTimeSwitch) ? (value) { setState(() {
-                        _dropdownIqamaahTime = value!;
-                      });} : null
+                      onChanged: (settings["iqamahTimeAlert"]) ? (value) { 
+                        updateValue("iqamahTimeAlertTime", value);
+                      } : null
                     )),
                   SwitchListTile(
-                      value: _announcementSwitch,
+                      value: settings["announcementAlert"],
                       onChanged: (bool newValue) {
-                        setState(() {
-                          _announcementSwitch = newValue;
-                        });
+                        updateValue("announcementAlert", newValue);
                       },
                       secondary: const Icon(Icons.notification_important),
                       title: const Text("New Announcements Alert"))

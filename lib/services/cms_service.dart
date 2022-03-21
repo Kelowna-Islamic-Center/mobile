@@ -71,15 +71,12 @@ class AnnouncementsMessageService {
       await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(alert: true, badge: true, sound: false);
     }
 
-    AnnouncementsMessageService.subscribe();
-    // TODO: Set notification channel subscription based on sharedPreferences
+    // Subscribe to announcements if the user has never set any settings (first time launch)
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool("announcementAlert") == null) FirebaseMessaging.instance.subscribeToTopic("announcements");
   }
 
-  static void subscribe() {
-    FirebaseMessaging.instance.subscribeToTopic("announcements");
-  }
-
-  static void unsubscribe() {
-    FirebaseMessaging.instance.unsubscribeFromTopic("announcements");
+  static void toggleSubscription(bool enable) {
+    enable ? FirebaseMessaging.instance.subscribeToTopic("announcements") : FirebaseMessaging.instance.unsubscribeFromTopic("announcements");
   }
 }
