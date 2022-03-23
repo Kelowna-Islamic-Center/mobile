@@ -17,6 +17,7 @@ class Announcement {
       final item = (json[i] is QueryDocumentSnapshot)? json[i].data() : json[i];
       if (!(item.containsKey("timeStamp") || item.containsKey("title") || item.containsKey("description"))) return;
       
+      if (item["timeStamp"] == null) return;
       final timeStamp = (item["timeStamp"] is String) ? (int.tryParse(item["timeStamp"]!) ?? 0) : item["timeStamp"]!.seconds * 1000;
 
       parsedList.add(Announcement(
