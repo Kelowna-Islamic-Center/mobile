@@ -46,8 +46,8 @@ class _HomePageState extends State<HomePage> {
   final sections = const [
     PrayerPage(),
     AnnouncementsPage(),
-    EditorPage(),
-    SettingsPage()
+    SettingsPage(),
+    EditorPage()
   ];
 
   @override
@@ -64,8 +64,8 @@ class _HomePageState extends State<HomePage> {
         items: const [
             BottomNavigationBarItem(icon: Icon(Icons.access_time_filled), label: 'Prayer Times'),
             BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Announcements'),
-            BottomNavigationBarItem(icon: Icon(Icons.edit), label: 'Make Changes'),
             BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+            BottomNavigationBarItem(icon: Icon(Icons.edit), label: 'Admin Tools'),
         ]
       ),
     );
