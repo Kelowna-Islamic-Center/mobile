@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../admin-tools/admin_page.dart';
 
 class EditorPage extends StatefulWidget {
   const EditorPage({Key? key}) : super(key: key);
@@ -9,10 +12,49 @@ class EditorPage extends StatefulWidget {
 
 class EditorPageState extends State<EditorPage> {
   
-  String? email;
-  String? password;
+  String email = "";
+  String password = "";
+  bool loading = false;
 
   final _formKey = GlobalKey<FormState>();
+
+  // Authentiction with Firebase auth
+  Future<Map<String, dynamic>> _authenticate() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email, 
+        password: password
+      );
+
+      return {
+        "success": true,
+        "message": "Successful login",
+      };
+      
+    } on FirebaseAuthException catch (e) {
+      String message;
+      if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == 'invalid email') {
+        message = "Incorrect email address or password";
+      } else if (e.code == 'user-disabled') {
+        message = "This account is disabeled";
+      } else {
+        message = "An error occured";
+      }
+      
+      return {
+        "success": false,
+        "message": message,
+      };
+    }
+  }
+
+  // Route to admin tools page on success
+  _navigateOnSuccess() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AdminPage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -55,9 +97,10 @@ class EditorPageState extends State<EditorPage> {
                               TextFormField(
                                 decoration: const InputDecoration(labelText: 'Email Address'),
                                 keyboardType: TextInputType.emailAddress,
-                                onSaved: (String? value) => email = value,
+                                onSaved: (String? value) => email = value!,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) return 'Email Address cannot be empty';
+                                  return null;
                                 },
                               ),
 
@@ -68,28 +111,43 @@ class EditorPageState extends State<EditorPage> {
                                 enableSuggestions: false,
                                 autocorrect: false,
                                 keyboardType: TextInputType.visiblePassword,
-                                onSaved: (String? value) => password = value,
+                                onSaved: (String? value) => password = value!,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) return 'Password cannot be empty';
+                                  return null;
                                 },
                               ),
 
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 16.0),
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    if (_formKey.currentState!.validate()) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Signing In')),
-                                      );
-                                      _formKey.currentState!.save();
-                                      
-                                      // TODO: Handle input
-                                    }
-                                  },
-                                  child: const Text('Login'),
-                                ),
-                              ),
+                                child: Row(children: [
+                                  /* Submit Button */
+                                  ElevatedButton(
+                                    onPressed: () async {
+                                      if (_formKey.currentState!.validate()) {
+                                        loading = true;
+                                        _formKey.currentState!.save();
+
+                                        Map<String, dynamic> auth = await _authenticate();
+                                        loading = false;
+
+                                        if (auth["success"]) {
+                                          _navigateOnSuccess();
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text(auth["message"])),
+                                          );
+                                        }
+                                      }
+                                    },
+                                    child: const Text('Login'),
+                                  ),
+
+                                  const SizedBox(width: 20),
+
+                                  if (loading) const CircularProgressIndicator()
+                                ],
+                              ))
                             ],
                           ),
                         )
