@@ -72,7 +72,7 @@ class AnnouncementsPage extends StatelessWidget {
                     FutureBuilder<Map<String, dynamic>>(
                         future: announcementsFetch(),
                         builder: (context, snapshot) {
-                          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                          if (!snapshot.hasData) return const Center(child: Padding(padding: EdgeInsets.all(25.0), child: CircularProgressIndicator()));
                           List<Announcement> data = snapshot.data!["data"];
 
                           return Column(children: [
