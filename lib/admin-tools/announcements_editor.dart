@@ -130,8 +130,8 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
                                           }
                                         },
                                         text: data[index].description,
-                                        style: const TextStyle(fontSize: 16, color: Colors.black87),
-                                        linkStyle: const TextStyle(fontWeight: FontWeight.bold),  
+                                        style: const TextStyle(fontSize: 14, color: Colors.black87),
+                                        linkStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),  
                                       ),
 
                                       const SizedBox(height: 10.0),

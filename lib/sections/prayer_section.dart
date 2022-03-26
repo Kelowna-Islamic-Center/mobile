@@ -310,7 +310,7 @@ class _PrayerWidgetState extends State<PrayerPage> {
                                                         colors: [Colors.green,Colors.teal])
                                                     : null,
                                             boxShadow:
-                                                ((_highlightedIndexes["start"] == index && !_isAthanActive) || (_highlightedIndexes["iqamah"] == index && _isAthanActive))
+                                                ((_highlightedIndexes["start"] == index && _isAthanActive) || (_highlightedIndexes["iqamah"] == index && !_isAthanActive))
                                                     ? [BoxShadow(
                                                           color: Colors.black45.withOpacity(0.4),
                                                           spreadRadius: 0,
@@ -334,7 +334,7 @@ class _PrayerWidgetState extends State<PrayerPage> {
                                                       fontSize: 24,
                                                       fontWeight: FontWeight.w600,
                                                       letterSpacing: 1.5,
-                                                      color: (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
+                                                      color: ((_highlightedIndexes["start"] == index && _isAthanActive) || (_highlightedIndexes["iqamah"] == index && !_isAthanActive))
                                                           ? Colors.white
                                                           : Colors.black54)),
                                               Text(_selectedTime,
@@ -343,7 +343,7 @@ class _PrayerWidgetState extends State<PrayerPage> {
                                                       fontSize: 24,
                                                       fontWeight: FontWeight.w600,
                                                       letterSpacing: 1.5,
-                                                      color: (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
+                                                      color: ((_highlightedIndexes["start"] == index && _isAthanActive) || (_highlightedIndexes["iqamah"] == index && !_isAthanActive))
                                                           ? Colors.white
                                                           : Colors.black54)),
                                             ],

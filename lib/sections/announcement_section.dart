@@ -152,8 +152,8 @@ class AnnouncementsPage extends StatelessWidget {
                                               }
                                             },
                                             text: data[index].description,
-                                            style: const TextStyle(fontSize: 16, color: Colors.black87),
-                                            linkStyle: const TextStyle(fontWeight: FontWeight.bold),  
+                                            style: const TextStyle(fontSize: 14, color: Colors.black87),
+                                            linkStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),  
                                           )
                                         ),
                                   );
