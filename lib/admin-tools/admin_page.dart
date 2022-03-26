@@ -5,8 +5,6 @@ import 'package:kelowna_islamic_center/admin-tools/prayer_editor.dart';
 class AdminPage extends StatelessWidget {
   const AdminPage({Key? key}) : super(key: key);
 
-  // TODO: Add offline support
-
   @override
   Widget build(BuildContext context) => DefaultTabController(
       length: 2,

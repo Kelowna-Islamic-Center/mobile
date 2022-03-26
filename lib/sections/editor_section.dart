@@ -36,7 +36,9 @@ class EditorPageState extends State<EditorPage> {
       if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == 'invalid email') {
         message = "Incorrect email address or password";
       } else if (e.code == 'user-disabled') {
-        message = "This account is disabeled";
+        message = "This account is disabled";
+      } else if (e.code == 'network-request-failed') {
+        message = "Couldn't login, you might be offline";
       } else {
         message = "An error occured";
       }
