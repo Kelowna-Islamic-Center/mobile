@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:kelowna_islamic_center/sections/announcement_section.dart';
@@ -42,6 +43,30 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int currentIndex = 0;
+  
+  @override
+  void initState() {
+    super.initState();
+    setupNotificationInteractions();
+  }
+
+  // Notification click handler
+  Future<void> setupNotificationInteractions() async {
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+
+    if (initialMessage != null) {
+      _navigateToAnnouncements(initialMessage);
+    }
+
+    FirebaseMessaging.onMessageOpenedApp.listen(_navigateToAnnouncements);
+  }
+
+  void _navigateToAnnouncements(RemoteMessage message) {
+    if (message.from == "/topics/announcements") {
+      setState(() => {currentIndex = 1});
+    }
+  }
+
 
   final sections = const [
     PrayerPage(),

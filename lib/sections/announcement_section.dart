@@ -8,8 +8,6 @@ import 'package:kelowna_islamic_center/structs/announcement.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-// TODO: Make announcement notification clickable
-
 Future<Map<String, dynamic>> announcementsFetch() async {
   final prefs = await SharedPreferences.getInstance();
   final fbSnapshot = await FirebaseFirestore.instance.collection('announcements').get(); // Firestore get (dont need realtime data)
