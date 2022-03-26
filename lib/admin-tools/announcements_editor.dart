@@ -28,7 +28,7 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
   void _navigateForAddAnnouncement() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const NewAnnouncementsPage()),
+      MaterialPageRoute(builder: (context) => NewAnnouncementsPage()),
     );
   }
 
