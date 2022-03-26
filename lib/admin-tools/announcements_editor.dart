@@ -28,7 +28,7 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
   void _navigateForAddAnnouncement() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => NewAnnouncementsPage()),
+      MaterialPageRoute(builder: (context) => const NewAnnouncementsPage()),
     );
   }
 
@@ -140,7 +140,7 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
                                     ],
                                   )));
                         } else {
-                          return const SizedBox(height: 1.0);
+                          return const CircularProgressIndicator();
                         }
                       });
                 })

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class NewAnnouncementsPage extends StatefulWidget {
@@ -16,13 +17,27 @@ class NewAnnouncementsPageState extends State<NewAnnouncementsPage> {
 
   final _formKey = GlobalKey<FormState>();
 
+
   Future<Map<String, dynamic>> _addAnnouncement() async {
-    // TODO: Implement method
-    return {
-      "success": true,
-      "message": "works"
+    Map<String, dynamic> data = {
+      "title": title,
+      "description": description
     };
+
+    try {
+      await FirebaseFirestore.instance.collection("announcements").add(data);
+      return {
+        "success": true,
+        "message": "Successfully added announcement",
+      };
+    } catch (error) {
+      return {
+        "success": false,
+        "message": "An error occured: $error",
+      };
+    }
   }
+
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -87,7 +102,7 @@ class NewAnnouncementsPageState extends State<NewAnnouncementsPage> {
                                   loading = false;
 
                                   if (auth["success"]) {
-                                    
+                                    Navigator.of(context).pop();
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(content: Text(auth["message"])),
