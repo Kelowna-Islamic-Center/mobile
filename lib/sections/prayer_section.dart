@@ -191,13 +191,14 @@ class _PrayerWidgetState extends State<PrayerPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(_timeString, style: const TextStyle(
-                  fontSize: 22.0,
+                  fontSize: 24.0,
                   color: Colors.white
                 )),
                 Text(_isAthanActive
                     ? "Start Times - \u062a\u0648\u0642\u064a\u062a \u0627\u0644\u0623\u0630\u0627\u0646"
                     : "Iqamaah Times - \u062a\u0648\u0642\u064a\u062a \u0627\u0644\u0625\u0642\u0627\u0645\u0629",
                   style: const TextStyle(
+                    fontSize: 17.0,
                     color: Colors.white
                   )
                 )
