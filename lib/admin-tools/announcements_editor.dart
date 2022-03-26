@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:kelowna_islamic_center/structs/announcement.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'new_announcement_page.dart';
 
@@ -116,11 +118,24 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(data[index].description,
-                                          style: const TextStyle(
-                                              fontSize: 15,
-                                              color: Colors.black87)),
+
+                                      Linkify(
+                                        onOpen: (link) async {
+                                          if (await canLaunch(link.url)) {
+                                            await launch(link.url);
+                                          } else {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text("Couldn't open link, something went wrong.")),
+                                            );
+                                          }
+                                        },
+                                        text: data[index].description,
+                                        style: const TextStyle(fontSize: 16, color: Colors.black87),
+                                        linkStyle: const TextStyle(fontWeight: FontWeight.bold),  
+                                      ),
+
                                       const SizedBox(height: 10.0),
+                                      
                                       ElevatedButton(
                                           onPressed: () {
                                             int reversedIndex = (snapshot.data!.docs.length-1) - index;

@@ -2,10 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 
 import 'package:kelowna_islamic_center/structs/announcement.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+// TODO: Make announcement notification clickable
 
 Future<Map<String, dynamic>> announcementsFetch() async {
   final prefs = await SharedPreferences.getInstance();
@@ -138,8 +141,21 @@ class AnnouncementsPage extends StatelessWidget {
 
                                     subtitle: Container(
                                         padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
-                                        child: Text(data[index].description,
-                                            style: const TextStyle(fontSize: 15, color: Colors.black87))),
+                                        child: Linkify(
+                                            onOpen: (link) async {
+                                              if (await canLaunch(link.url)) {
+                                                await launch(link.url);
+                                              } else {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(content: Text("Couldn't open link, something went wrong.")),
+                                                );
+                                              }
+                                            },
+                                            text: data[index].description,
+                                            style: const TextStyle(fontSize: 16, color: Colors.black87),
+                                            linkStyle: const TextStyle(fontWeight: FontWeight.bold),  
+                                          )
+                                        ),
                                   );
                               }
                             )

@@ -38,6 +38,7 @@ dependencies:
   workmanager: ^0.4.1
   firebase_messaging: ^11.2.8
   flutter_local_notifications: ^9.4.0
+  flutter_linkify: ^5.0.2
 
 dev_dependencies:
   flutter_test:
