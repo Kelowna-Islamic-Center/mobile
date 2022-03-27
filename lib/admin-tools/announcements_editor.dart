@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:kelowna_islamic_center/admin-tools/edit_announcement_page.dart';
 import 'package:kelowna_islamic_center/structs/announcement.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -14,7 +15,22 @@ class AnnouncementsEditor extends StatefulWidget {
 }
 
 class AnnouncementsEditorState extends State<AnnouncementsEditor> {
-  Future<void> _removeAnnouncement(BuildContext context, String id) async {
+
+  void _navigateToAddAnnouncement() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const NewAnnouncementsPage()),
+    );
+  }
+
+  void _navigateToEditAnnouncement(String id, Announcement announcement) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditAnnouncementsPage(announcementID: id, announcement: announcement)),
+    );
+  }
+
+  Future<void> _deleteAnnouncement(BuildContext context, String id) async {
     try {
       await FirebaseFirestore.instance.collection('announcements').doc(id).delete();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -25,13 +41,6 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
         SnackBar(content: Text("An error occured: $error")),
       );
     }
-  }
-
-  void _navigateForAddAnnouncement() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const NewAnnouncementsPage()),
-    );
   }
 
   Widget _deletionPopupDialog(BuildContext context, String deleteID) {
@@ -46,7 +55,7 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
         ),
         ElevatedButton(
           onPressed: () async {
-            await _removeAnnouncement(context, deleteID);
+            await _deleteAnnouncement(context, deleteID);
             Navigator.of(context).pop();
           },
           style: ElevatedButton.styleFrom(primary: Colors.red),
@@ -66,7 +75,7 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
             Padding(
               padding: const EdgeInsets.all(15.0),
               child: ElevatedButton(
-                  onPressed: () => _navigateForAddAnnouncement(), 
+                  onPressed: () => _navigateToAddAnnouncement(), 
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: const [
@@ -89,74 +98,88 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
                       shrinkWrap: true,
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
-                        dynamic data = Announcement.listFromJSON(snapshot.data!.docs);
+                        List<Announcement> data = Announcement.listFromJSON(snapshot.data!.docs);
 
-                        if (data != null) {
-                          return ListTile(
-                              visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
-                              title: Container(
-                                  padding: const EdgeInsets.fromLTRB(10, 17, 10, 10),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(data[index].title,
-                                          style: const TextStyle(
-                                              fontSize: 26,
-                                              letterSpacing: -1,
-                                              color: Colors.black87,
-                                              fontWeight: FontWeight.w600)),
-                                      const SizedBox(height: 12),
-                                      Row(children: [
-                                        const Icon(Icons.calendar_month, color: Colors.black87),
-                                        const SizedBox(width: 5),
-                                        Text(data[index].timeString,
-                                            style: const TextStyle(fontSize: 15)),
-                                      ]),
-                                  ])),
-                              subtitle: Container(
-                                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
+                        return ListTile(
+                            visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
+                            title: Container(
+                                padding: const EdgeInsets.fromLTRB(10, 17, 10, 10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(data[index].title,
+                                        style: const TextStyle(
+                                            fontSize: 26,
+                                            letterSpacing: -1,
+                                            color: Colors.black87,
+                                            fontWeight: FontWeight.w600)),
+                                    const SizedBox(height: 12),
+                                    Row(children: [
+                                      const Icon(Icons.calendar_month, color: Colors.black87),
+                                      const SizedBox(width: 5),
+                                      Text(data[index].timeString,
+                                          style: const TextStyle(fontSize: 15)),
+                                    ]),
+                                ])),
+                            subtitle: Container(
+                                padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
 
-                                      Linkify(
-                                        onOpen: (link) async {
-                                          if (await canLaunch(link.url)) {
-                                            await launch(link.url);
-                                          } else {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              const SnackBar(content: Text("Couldn't open link, something went wrong.")),
-                                            );
-                                          }
-                                        },
-                                        text: data[index].description,
-                                        style: const TextStyle(fontSize: 14, color: Colors.black87),
-                                        linkStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),  
-                                      ),
+                                    Linkify(
+                                      onOpen: (link) async {
+                                        if (await canLaunch(link.url)) {
+                                          await launch(link.url);
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(content: Text("Couldn't open link, something went wrong.")),
+                                          );
+                                        }
+                                      },
+                                      text: data[index].description,
+                                      style: const TextStyle(fontSize: 14, color: Colors.black87),
+                                      linkStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),  
+                                    ),
 
-                                      const SizedBox(height: 10.0),
-                                      
+                                    const SizedBox(height: 10.0),
+                                    
+                                    Row(children: [
                                       ElevatedButton(
-                                          onPressed: () {
-                                            int reversedIndex = (snapshot.data!.docs.length-1) - index;
-                                            showDialog(
-                                              context: context,
-                                              builder: (BuildContext context) => _deletionPopupDialog(context, snapshot.data!.docs[reversedIndex].id),
-                                            );
-                                          },
-                                          style: ElevatedButton.styleFrom(primary: Colors.red),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: const [
-                                              Icon(Icons.delete),
-                                              Text("Delete")
-                                            ],
-                                          ))
-                                    ],
-                                  )));
-                        } else {
-                          return const CircularProgressIndicator();
-                        }
+                                        onPressed: () {
+                                          int reversedIndex = (snapshot.data!.docs.length-1) - index;
+                                          _navigateToEditAnnouncement(snapshot.data!.docs[reversedIndex].id, data[index]);
+                                        },
+                                        style: ElevatedButton.styleFrom(primary: Colors.amber),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: const [
+                                            Icon(Icons.edit),
+                                            Text("Edit")
+                                          ],
+                                        )),
+
+                                      const SizedBox(width: 10.0),
+
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          int reversedIndex = (snapshot.data!.docs.length-1) - index;
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) => _deletionPopupDialog(context, snapshot.data!.docs[reversedIndex].id),
+                                          );
+                                        },
+                                        style: ElevatedButton.styleFrom(primary: Colors.red),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: const [
+                                            Icon(Icons.delete),
+                                            Text("Delete")
+                                          ],
+                                        ))
+                                    ],)
+                                  ],
+                                )));
                       });
                 })
           ],
