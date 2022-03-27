@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../admin-tools/admin_page.dart';
 
@@ -17,6 +18,21 @@ class EditorPageState extends State<EditorPage> {
   bool loading = false;
 
   final _formKey = GlobalKey<FormState>();
+  TextEditingController emailController = TextEditingController(text: "");
+
+  @override
+  void initState() {
+    super.initState();
+    
+    // Set initalValue of email to saved email address for easier login
+    SharedPreferences.getInstance().then((prefs) {
+      String? savedEmail = prefs.getString("adminEmail");
+
+      if (savedEmail != null) {
+        setState(() => emailController.text = savedEmail);
+      }
+    });
+  }
 
   // Authentiction with Firebase auth
   Future<Map<String, dynamic>> _authenticate() async {
@@ -26,6 +42,10 @@ class EditorPageState extends State<EditorPage> {
         password: password
       );
 
+      // Save email address for easier login next time
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString("adminEmail", email);
+
       return {
         "success": true,
         "message": "Successful login",
@@ -33,7 +53,7 @@ class EditorPageState extends State<EditorPage> {
       
     } on FirebaseAuthException catch (e) {
       String message;
-      if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == 'invalid email') {
+      if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == 'invalid-email') {
         message = "Incorrect email address or password";
       } else if (e.code == 'user-disabled') {
         message = "This account is disabled";
@@ -97,6 +117,7 @@ class EditorPageState extends State<EditorPage> {
                             children: [
                               /* Email Address Field */
                               TextFormField(
+                                controller: emailController,
                                 decoration: const InputDecoration(labelText: 'Email Address'),
                                 keyboardType: TextInputType.emailAddress,
                                 onSaved: (String? value) => email = value!,
