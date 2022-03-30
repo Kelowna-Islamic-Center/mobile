@@ -5,17 +5,34 @@ import 'package:kelowna_islamic_center/sections/announcement_section.dart';
 import 'package:kelowna_islamic_center/sections/editor_section.dart';
 import 'package:kelowna_islamic_center/sections/prayer_section.dart';
 import 'package:kelowna_islamic_center/sections/settings_section.dart';
-import 'package:kelowna_islamic_center/services/cms_service.dart';
+import 'package:kelowna_islamic_center/services/announcements_notification_service.dart';
+import 'package:kelowna_islamic_center/services/iqamah_notification_service.dart';
+import 'package:workmanager/workmanager.dart'; 
+
+// WorkManager callbackDispatcher for handling background services
+void callbackDispatcher() {
+  final IqamahNotificationService iqamaahService = IqamahNotificationService();
+  
+  Workmanager().executeTask((task, inputData) async {
+    switch (task) {
+      case IqamahNotificationService.taskUniqueName:
+        await iqamaahService.scheduleNextNotification();
+        break;
+    }
+    return Future.value(true);
+  });
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AnnouncementsMessageService.init();
   await Firebase.initializeApp();
-  
+
+  await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+  await IqamahNotificationService().initBackgroundService();
+
   runApp(const App());
 }
-
-
 
 class App extends StatelessWidget {
   const App({Key? key}) : super(key: key);

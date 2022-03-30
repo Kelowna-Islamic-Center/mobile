@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kelowna_islamic_center/services/cms_service.dart';
+import 'package:kelowna_islamic_center/services/announcements_notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../widgets/gradient_button.dart';

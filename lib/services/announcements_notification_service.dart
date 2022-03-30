@@ -6,6 +6,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kelowna_islamic_center/structs/announcement.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_android/shared_preferences_android.dart';
+import 'package:shared_preferences_ios/shared_preferences_ios.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 AndroidNotificationChannel? channel;
@@ -15,11 +17,14 @@ class AnnouncementsMessageService {
   // Announcements cloud message backgroundHandler
   static Future<void> backgroundMessageHandler(RemoteMessage message) async {
     await Firebase.initializeApp();
-    SharedPreferences.setMockInitialValues({}); // No idea why this is needed but it breaks without it
     
+    // Init SharedPreferences
+    if (Platform.isAndroid) SharedPreferencesAndroid.registerWith();
+    if (Platform.isIOS) SharedPreferencesIOS.registerWith();
     final prefs = await SharedPreferences.getInstance();
+    
     final fsSnapshot = await FirebaseFirestore.instance.collection('announcements').get();
-    // Update cached announcements data
+    // Update cached announcements data to data from Firestore
     await prefs.setStringList("announcements", Announcement.toJsonStringFromList(Announcement.listFromJSON(fsSnapshot.docs)));
   }
 
