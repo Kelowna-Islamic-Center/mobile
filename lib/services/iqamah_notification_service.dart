@@ -13,38 +13,32 @@ import 'package:kelowna_islamic_center/structs/prayer_item.dart';
 
 class IqamahNotificationService {
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   static const taskUniqueName = "iqamahAlertServiceTask";
 
-  final NotificationDetails platformChannelSpecifics = const NotificationDetails(
-      android: AndroidNotificationDetails(
-        "iqamah_alert_service",
-        "Iqamah Reminder Alerts",
+  static const NotificationDetails platformChannelSpecifics = NotificationDetails(
+    android: AndroidNotificationDetails(
+        "iqamah_alert_service", "Iqamah Reminders",
         channelDescription: "Receive a reminder a set amount of minutes before Iqamah to go to the Masjid.",
         importance: Importance.max,
-        priority: Priority.max
-      ),
-      iOS: IOSNotificationDetails(
+        priority: Priority.max),
+    iOS: IOSNotificationDetails(
         presentAlert: true,
         presentBadge: true,
         presentSound: true,
-      ),
-    );
-  
+    ),
+  );
 
-
-  Future<void> initBackgroundService() async {
+  static Future<void> initBackgroundService() async {
     // Periodic Task that keeps checking for next Iqamah to schedule notification for
     await Workmanager().registerPeriodicTask(
-        "1", 
+        "1",
         taskUniqueName,
         frequency: const Duration(hours: 1),
     );
   }
 
-
-  Future<void> scheduleNextNotification() async {
-    
+  static Future<void> scheduleNextNotification() async {
     // Init SharedPreferences
     if (Platform.isAndroid) SharedPreferencesAndroid.registerWith();
     if (Platform.isIOS) SharedPreferencesIOS.registerWith();
@@ -53,7 +47,7 @@ class IqamahNotificationService {
     // If user disabled alerts, then return
     bool? isEnabled = prefs.getBool('iqamahTimeAlert');
     if (isEnabled != null && !isEnabled) return;
-    
+
     List<dynamic>? rawJSON = prefs.getStringList('prayerTimes');
     List<dynamic> parsedList = [];
     for (int i = 0; i < rawJSON!.length; i++) {
@@ -73,24 +67,23 @@ class IqamahNotificationService {
   }
 
   // Check which prayer to schedule it for
-  Future<void> scheduleNotification(List<PrayerItem> data, int minutes) async {
+  static Future<void> scheduleNotification(List<PrayerItem> data, int minutes) async {
     for (int i = 0; i < data.length; i++) {
       String iqamahTime = data[i].iqamahTime;
 
       if (iqamahTime == "No Internet") continue;
-      
+
       final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
       // Subtract the set minutes from iqamah time to set as notification time
       DateTime parsedTime = DateFormat.jm().parse(iqamahTime);
       tz.TZDateTime iqamahDateTime = tz.TZDateTime(tz.local, now.year, now.month, now.day, parsedTime.hour, parsedTime.minute);
-      iqamahDateTime.subtract(Duration(minutes: minutes));
+      iqamahDateTime = iqamahDateTime.subtract(Duration(minutes: minutes));
 
       if (now.isAfter(iqamahDateTime)) {
         continue;
       } else {
         // Prevent Duplicate notifications
-        final List<PendingNotificationRequest> pendingNotificationRequests =
-            await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+        final List<PendingNotificationRequest> pendingNotificationRequests = await flutterLocalNotificationsPlugin.pendingNotificationRequests();
         for (var map in pendingNotificationRequests) {
           if (map.id == 50) return;
         }
@@ -99,14 +92,12 @@ class IqamahNotificationService {
         print("Registering ${data[i].name}");
         await flutterLocalNotificationsPlugin.zonedSchedule(
             50, // Iqamah Alert notifications id
-            '$minutes minutes left before ${data[i].name} Iqamah',
-            '${data[i].name} is at ${data[i].iqamahTime} today. Only $minutes minutes remaining.',
+            '$minutes minutes left before ${data[i].name} Iqamah at the Masjid',
+            '${data[i].name} Iqamah is at ${data[i].iqamahTime} today. Only $minutes minutes remaining.',
             iqamahDateTime,
             platformChannelSpecifics,
             androidAllowWhileIdle: true,
-            uiLocalNotificationDateInterpretation:
-                UILocalNotificationDateInterpretation.absoluteTime
-        );
+            uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime);
         break;
       }
     }
