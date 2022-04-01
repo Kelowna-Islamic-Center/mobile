@@ -118,7 +118,10 @@ Map<String, int> getActivePrayer(List<PrayerItem> timeList) {
     return activeIndex;
   }
 
-  return {"iqamah": getClosestTime(true), "start": getClosestTime(false)};
+  return {
+    "iqamah": getClosestTime(true), 
+    "start": getClosestTime(false)
+  };
 }
 
 
@@ -158,7 +161,7 @@ class _PrayerWidgetState extends State<PrayerPage> {
 
   // Clock and highlight checker update
   void _updateTimeDisplay() async {
-    final String dateTime = DateFormat('KK:mm - EEE. d MMMM').format(DateTime.now()).toString();
+    final String dateTime = DateFormat.jm().addPattern(' - EEE. d MMMM').format(DateTime.now()).toString();
     setState(() {
       _timeString = dateTime;
       fetchedData.then((value) => 
