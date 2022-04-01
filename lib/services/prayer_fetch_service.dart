@@ -7,6 +7,7 @@ import 'package:shared_preferences_android/shared_preferences_android.dart';
 import 'package:shared_preferences_ios/shared_preferences_ios.dart';
 import 'package:workmanager/workmanager.dart';
 
+import '../config.dart';
 import '../structs/prayer_item.dart';
 
 
@@ -36,7 +37,7 @@ class ApiFetchService {
 
     // Server request
     try {
-      apiResponse = await http.get(Uri.parse('https://us-central1-kelownaislamiccenter.cloudfunctions.net/apiFetch')).timeout(const Duration(seconds: 20)); // BCMA API Request
+      apiResponse = await http.get(Uri.parse(Config.apiLink)).timeout(const Duration(seconds: 20)); // BCMA API Request
       
       // Set local data to server data
       if (apiResponse.statusCode == 200) {

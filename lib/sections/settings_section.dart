@@ -61,7 +61,6 @@ class _SettingsWidgetState extends State<SettingsPage> {
   void updateValue(key, value) async {
     // Functions to run on value change
     if (key == "announcementAlert" && value is bool) AnnouncementsMessageService.toggleSubscription(value);
-    // TODO: Add iqamah times implimentation
     
     // Set SharedPreferences and setState
     final prefs = await SharedPreferences.getInstance();

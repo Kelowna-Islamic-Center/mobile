@@ -5,11 +5,10 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../config.dart';
 import '../widgets/gradient_button.dart';
 import '../structs/prayer_item.dart';
 
-
-// TODO: Background checking service
 
 // Get Updated paryer times from server and firestore
 Future<Map<String, dynamic>> fetchTimes() async {
@@ -60,7 +59,7 @@ Future<Map<String, dynamic>> fetchTimes() async {
 
   // Server request
   try {
-    apiResponse = await http.get(Uri.parse('https://us-central1-kelownaislamiccenter.cloudfunctions.net/apiFetch')).timeout(const Duration(seconds: 20)); // BCMA API Request
+    apiResponse = await http.get(Uri.parse(Config.apiLink)).timeout(const Duration(seconds: 20)); // BCMA API Request
     
     // Set local data to server data
     if (apiResponse.statusCode == 200) {
