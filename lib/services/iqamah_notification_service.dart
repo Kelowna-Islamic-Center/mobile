@@ -89,7 +89,6 @@ class IqamahNotificationService {
         }
 
         // If no duplicates, schedule next notification
-        print("Registering ${data[i].name}");
         await flutterLocalNotificationsPlugin.zonedSchedule(
             50, // Iqamah Alert notifications id
             '$minutes minutes left before ${data[i].name} Iqamah at the Masjid',
