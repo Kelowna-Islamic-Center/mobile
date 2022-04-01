@@ -11,18 +11,16 @@ import 'package:kelowna_islamic_center/services/prayer_fetch_service.dart';
 import 'package:workmanager/workmanager.dart'; 
 
 // TODO: Disable debug mode for workmanager
+// TODO: Resolve multiple workmanager failures
 // WorkManager callbackDispatcher for handling background services
 void callbackDispatcher() {
-  final IqamahNotificationService iqamaahService = IqamahNotificationService();
-  final ApiFetchService timesApiService = ApiFetchService();
-  
   Workmanager().executeTask((task, inputData) async {
     switch (task) {
       case IqamahNotificationService.taskUniqueName:
-        await iqamaahService.scheduleNextNotification();
+        await IqamahNotificationService.scheduleNextNotification();
         break;
       case ApiFetchService.taskUniqueName:
-        await timesApiService.updateSharedPreferencesTimes();
+        await ApiFetchService.updateSharedPreferencesTimes();
         break;
     }
     return Future.value(true);
@@ -35,8 +33,8 @@ Future<void> main() async {
   await Firebase.initializeApp();
 
   await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-  await IqamahNotificationService().initBackgroundService();
-  await ApiFetchService().initBackgroundService();
+  await IqamahNotificationService.initBackgroundService();
+  await ApiFetchService.initBackgroundService();
 
   runApp(const App());
 }
