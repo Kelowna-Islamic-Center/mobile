@@ -78,6 +78,7 @@ class _SettingsWidgetState extends State<SettingsPage> {
   Widget build(BuildContext context) => Scaffold(
           body: SingleChildScrollView(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     margin: const EdgeInsets.fromLTRB(15, 17, 15, 0),
@@ -162,15 +163,47 @@ class _SettingsWidgetState extends State<SettingsPage> {
                       ),
                   )),
                   
+                  /* Announcements Settings */
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
+                    child: Text(
+                      "Announcements".toUpperCase(),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold
+                      ),
+                    )
+                  ),
 
-                  // Settings Begin
+                  SwitchListTile(
+                      value: settings["announcementAlert"],
+                      onChanged: (bool newValue) {
+                        updateValue("announcementAlert", newValue);
+                      },
+                      secondary: const Icon(Icons.notification_important),
+                      title: const Text("New Announcements Alert"),
+                      subtitle: const Text("Receive a notification whenever there is a new Masjid Announcement.")),
+
+
+                  /* Iqamah Alert Settings */
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
+                    child: Text(
+                      "Iqamah Times Alert".toUpperCase(),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold
+                      ),
+                    )
+                  ),
+
                   SwitchListTile(
                     value: settings["iqamahTimeAlert"],
                     onChanged: (bool newValue) {
                       updateValue("iqamahTimeAlert", newValue);
                     },
                     secondary: const Icon(Icons.access_alarm_rounded),
-                    title: const Text("Iqamaah Time Reminder")),
+                    title: const Text("Iqamaah Time Reminder"),
+                    subtitle: const Text("Receive a reminder notification a few minutes before Iqamah time at the Masjid.")),
+
                   ListTile(
                     enabled: settings["iqamahTimeAlert"],
                     leading: const SizedBox(),
@@ -188,13 +221,6 @@ class _SettingsWidgetState extends State<SettingsPage> {
                         updateValue("iqamahTimeAlertTime", value);
                       } : null
                     )),
-                  SwitchListTile(
-                      value: settings["announcementAlert"],
-                      onChanged: (bool newValue) {
-                        updateValue("announcementAlert", newValue);
-                      },
-                      secondary: const Icon(Icons.notification_important),
-                      title: const Text("New Announcements Alert"))
                 ]
       )));
 }
