@@ -35,6 +35,8 @@ class IqamahNotificationService {
         "1",
         taskUniqueName,
         frequency: const Duration(hours: 1),
+        existingWorkPolicy: ExistingWorkPolicy.keep,
+        initialDelay: const Duration(seconds: 30) // Required otherwise fails on first time setup due to empty sharedPreferences
     );
   }
 

@@ -18,10 +18,11 @@ class ApiFetchService {
   static Future<void> initBackgroundService() async {
     // Periodic Task that keeps checking for next Iqamah to schedule notification for
     await Workmanager().registerPeriodicTask(
-        "0", 
+        "2", 
         taskUniqueName,
         constraints: Constraints(networkType: NetworkType.connected), // Requires network connection
         frequency: const Duration(hours: 8), // Slow api requests, every 8 hours should be enough
+        existingWorkPolicy: ExistingWorkPolicy.keep
     );
   }
 
