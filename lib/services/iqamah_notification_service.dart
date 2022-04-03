@@ -73,7 +73,8 @@ class IqamahNotificationService {
     for (int i = 0; i < data.length; i++) {
       String iqamahTime = data[i].iqamahTime;
 
-      if (iqamahTime == "No Internet") continue;
+      // Skip over Shurooq or any unset times due to no internet
+      if (iqamahTime == "No Internet" || i==1) continue;
 
       final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
       // Subtract the set minutes from iqamah time to set as notification time
