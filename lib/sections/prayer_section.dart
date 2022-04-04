@@ -153,23 +153,25 @@ class _PrayerWidgetState extends State<PrayerPage> {
 
   late Future<Map<String, dynamic>> fetchedData;
 
-  Timer? timer;
+  String _selectedDay = "Today";
+  Timer? _timer;
   String _timeString = "...";
   bool _isAthanActive = false; // If athan times are selected
   Map<String, dynamic> _highlightedIndexes = {"iqamah": "...", "start": "..."}; // Selected prayerItem indexes that will be highlighted
 
   @override
   void initState() {
+    super.initState();
+
     fetchedData = fetchTimes(); // Set to latest Prayer Times
     _updateTimeDisplay();
-    timer = Timer.periodic(const Duration(seconds: 10), (Timer t) => _updateTimeDisplay()); // Realtime Clock timer
-    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 10), (Timer t) => _updateTimeDisplay()); // Realtime Clock timer
   }
 
   @override
   void dispose() {
-    timer!.cancel();
     super.dispose();
+    _timer!.cancel();
   }
 
   // Clock and highlight checker update
@@ -223,152 +225,182 @@ class _PrayerWidgetState extends State<PrayerPage> {
 
           Expanded(child: Container(
             transform: Matrix4.translationValues(0.0, -15.0, 0.0),
-            child: Container(
-              decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0)),
-                  color: Colors.white),
-              child: SingleChildScrollView(child: 
-                Column(children: [                  
-                  // Athaan and Iqaamah Buttons
-                  Container(
-                    padding: const EdgeInsets.all(15.0),
-                    child: 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                              child: RaisedGradientButton(
-                                  onPressed: () {
-                                    if (_isAthanActive) setState(() => _isAthanActive = false);
-                                  },
-                                  enabled: _isAthanActive ? false : true,
-                                  text: "Iqamaah")),
-                          const SizedBox(width: 20),
-                          Expanded(
-                              child: RaisedGradientButton(
-                                  onPressed: () {
-                                    if (!_isAthanActive) setState(() => _isAthanActive = true);
-                                  },
-                                  enabled: _isAthanActive ? true : false,
-                                  gradient: const LinearGradient(
-                                      colors: [Colors.amber, Colors.red]),
-                                  text: "Start/Athan"))
-                        ],
-                      ),
+            child: SingleChildScrollView(child: 
+              Column(children: [        
+
+                // Today and Tomorrow Tab Bar
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0)),
                   ),
-                  
-                  // Prayer Items List
-                  FutureBuilder<Map<String, dynamic>>(
-                      future: fetchedData,
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-                        dynamic data = snapshot.data!["data"];
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListTile(
+                      title: Text(
+                        "Show times for:".toUpperCase(),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.normal,
+                          color: Colors.black87,
+                          letterSpacing: 2.0,
+                          fontSize: 19.0
+                        )
+                      ),
+                      trailing: DropdownButton<String>(
+                        value: _selectedDay,
+                        items: <String>["Today", "Tomorrow"].map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        onChanged: (value) { 
+                          setState(() {
+                            _selectedDay = value!;
+                          });
+                        }
+                    )
+                  )),
+                ),
 
-                        return Column(children: [
+                // Athaan and Iqaamah Buttons
+                Container(
+                  padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 15.0),
+                  child: 
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                            child: RaisedGradientButton(
+                                onPressed: () {
+                                  if (_isAthanActive) setState(() => _isAthanActive = false);
+                                },
+                                enabled: _isAthanActive ? false : true,
+                                text: "Iqamaah")),
+                        const SizedBox(width: 20),
+                        Expanded(
+                            child: RaisedGradientButton(
+                                onPressed: () {
+                                  if (!_isAthanActive) setState(() => _isAthanActive = true);
+                                },
+                                enabled: _isAthanActive ? true : false,
+                                gradient: const LinearGradient(
+                                    colors: [Colors.amber, Colors.red]),
+                                text: "Start/Athan"))
+                      ],
+                    ),
+                ),
+                
+                // Prayer Items List
+                FutureBuilder<Map<String, dynamic>>(
+                    future: fetchedData,
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                      dynamic data = (_selectedDay.toLowerCase() == "today") ? snapshot.data!["data"] : snapshot.data!["dataForNextDay"]; // Set to either today or tomorrow's time based on user selection
 
-                            /* Offline message if offline */
-                            if (snapshot.data!["timeStampDiff"] > 0)
-                              Container(
-                                  margin: const EdgeInsets.fromLTRB(15, 17, 15, 17),
-                                  child: SizedBox(
-                                    width: double.infinity,
-                                    child: Container(
+                      return Column(children: [
+
+                          /* Offline message if offline */
+                          if (snapshot.data!["timeStampDiff"] > 0)
+                            Container(
+                                margin: const EdgeInsets.fromLTRB(15, 17, 15, 17),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: Container(
+                                      padding: const EdgeInsets.fromLTRB(15, 17, 15, 17),
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(10.0),
+                                          color: Colors.yellow[800],
+                                          boxShadow: [
+                                            BoxShadow(
+                                                color: Colors.black.withOpacity(0.2),
+                                                spreadRadius: 1,
+                                                blurRadius: 4,
+                                                offset: const Offset(0, 2))
+                                          ]),
+                                      child: Row(children: [
+                                        const Icon(Icons.wifi_off_rounded, color: Colors.white, size: 35),
+                                        const SizedBox(width: 10.0),
+                                        Flexible(
+                                            child: Text(
+                                                "These times are " + snapshot.data!["timeStampDiff"].toString() + " days old. Connect to the Internet to get the latest times.",
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 13)))
+                                      ])),
+                                )),
+
+                        
+                          /* Prayer Times List */
+                          ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: data.length,
+                              itemBuilder: (context, index) {
+                                // Set either athan or iqamah time based on user selection
+                                String _selectedTime = _isAthanActive ? data[index].startTime : data[index].iqamahTime;
+
+                                return ListTile(
+                                    visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
+                                    title: Container(
                                         padding: const EdgeInsets.fromLTRB(15, 17, 15, 17),
                                         decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(10.0),
-                                            color: Colors.yellow[800],
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  color: Colors.black.withOpacity(0.2),
-                                                  spreadRadius: 1,
-                                                  blurRadius: 4,
-                                                  offset: const Offset(0, 2))
-                                            ]),
-                                        child: Row(children: [
-                                          const Icon(Icons.wifi_off_rounded, color: Colors.white, size: 35),
-                                          const SizedBox(width: 10.0),
-                                          Flexible(
-                                              child: Text(
-                                                  "These times are " + snapshot.data!["timeStampDiff"].toString() + " days old. Connect to the Internet to get the latest times.",
-                                                  style: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 13)))
-                                        ])),
-                                  )),
+                                          gradient: (_isAthanActive)
+                                              ? (_highlightedIndexes["start"] == index && !(_selectedDay.toLowerCase() == "tomorrow"))
+                                                  ? const LinearGradient(
+                                                      colors: [Colors.amber, Colors.red])
+                                                  : null
+                                              : (_highlightedIndexes["iqamah"] == index && !(_selectedDay.toLowerCase() == "tomorrow"))
+                                                  ? const LinearGradient(
+                                                      colors: [Colors.green,Colors.teal])
+                                                  : null,
+                                          boxShadow:
+                                              (((_highlightedIndexes["start"] == index && _isAthanActive) || (_highlightedIndexes["iqamah"] == index && !_isAthanActive)) && !(_selectedDay.toLowerCase() == "tomorrow"))
+                                                  ? [BoxShadow(
+                                                        color: Colors.black45.withOpacity(0.4),
+                                                        spreadRadius: 0,
+                                                        blurRadius: 3,
+                                                        offset: const Offset(0, 1)),]
+                                                  : null,
+                                          image: ((_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index) && !(_selectedDay.toLowerCase() == "tomorrow"))
+                                              ? const DecorationImage(
+                                                  image: AssetImage('assets/images/pattern_bitmap.png'),
+                                                  repeat: ImageRepeat.repeat)
+                                              : null,
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
 
-                          
-                            /* Prayer Times List */
-                            ListView.builder(
-                                scrollDirection: Axis.vertical,
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: data.length,
-                                itemBuilder: (context, index) {
-                                  // Set either athan or iqamah time based on user selection
-                                  String _selectedTime = _isAthanActive
-                                      ? data[index].startTime
-                                      : data[index].iqamahTime;
-
-                                  return ListTile(
-                                      visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
-                                      title: Container(
-                                          padding: const EdgeInsets.fromLTRB(15, 17, 15, 17),
-                                          decoration: BoxDecoration(
-                                            gradient: (_isAthanActive)
-                                                ? (_highlightedIndexes["start"] == index)
-                                                    ? const LinearGradient(
-                                                        colors: [Colors.amber, Colors.red])
-                                                    : null
-                                                : (_highlightedIndexes["iqamah"] == index)
-                                                    ? const LinearGradient(
-                                                        colors: [Colors.green,Colors.teal])
-                                                    : null,
-                                            boxShadow:
-                                                ((_highlightedIndexes["start"] == index && _isAthanActive) || (_highlightedIndexes["iqamah"] == index && !_isAthanActive))
-                                                    ? [BoxShadow(
-                                                          color: Colors.black45.withOpacity(0.4),
-                                                          spreadRadius: 0,
-                                                          blurRadius: 3,
-                                                          offset: const Offset(0, 1)),]
-                                                    : null,
-                                            image: (_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index)
-                                                ? const DecorationImage(
-                                                    image: AssetImage('assets/images/pattern_bitmap.png'),
-                                                    repeat: ImageRepeat.repeat)
-                                                : null,
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(data[index].name,
-                                                  style: TextStyle(
-                                                      fontFamily: 'Bebas',
-                                                      fontSize: 24,
-                                                      fontWeight: FontWeight.w600,
-                                                      letterSpacing: 1.5,
-                                                      color: ((_highlightedIndexes["start"] == index && _isAthanActive) || (_highlightedIndexes["iqamah"] == index && !_isAthanActive))
-                                                          ? Colors.white
-                                                          : Colors.black54)),
-                                              Text(_selectedTime,
-                                                  style: TextStyle(
-                                                      fontFamily: 'Bebas',
-                                                      fontSize: 24,
-                                                      fontWeight: FontWeight.w600,
-                                                      letterSpacing: 1.5,
-                                                      color: ((_highlightedIndexes["start"] == index && _isAthanActive) || (_highlightedIndexes["iqamah"] == index && !_isAthanActive))
-                                                          ? Colors.white
-                                                          : Colors.black54)),
-                                            ],
-                                          )));
-                                } // Load as many prayer widgets as required
-                                )
-                          ]);
-                      })
-                ],)
-              ))
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(data[index].name,
+                                                style: TextStyle(
+                                                    fontFamily: 'Bebas',
+                                                    fontSize: 24,
+                                                    fontWeight: FontWeight.w600,
+                                                    letterSpacing: 1.5,
+                                                    color: (((_highlightedIndexes["start"] == index && _isAthanActive) || (_highlightedIndexes["iqamah"] == index && !_isAthanActive)) && !(_selectedDay.toLowerCase() == "tomorrow"))
+                                                        ? Colors.white
+                                                        : Colors.black54)),
+                                            Text(_selectedTime,
+                                                style: TextStyle(
+                                                    fontFamily: 'Bebas',
+                                                    fontSize: 24,
+                                                    fontWeight: FontWeight.w600,
+                                                    letterSpacing: 1.5,
+                                                    color: (((_highlightedIndexes["start"] == index && _isAthanActive) || (_highlightedIndexes["iqamah"] == index && !_isAthanActive)) && !(_selectedDay.toLowerCase() == "tomorrow"))
+                                                        ? Colors.white
+                                                        : Colors.black54)),
+                                          ],
+                                        )));
+                              } // Load as many prayer widgets as required
+                              )
+                        ]);
+                    })
+              ],)
+            )
           ))
         ])
       );
