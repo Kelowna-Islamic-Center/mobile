@@ -35,15 +35,18 @@ class ApiFetchService {
     final prefs = await SharedPreferences.getInstance();
 
     http.Response apiResponse;
+    http.Response apiResponseForNextDay;
 
     // Server request
     try {
-      apiResponse = await http.get(Uri.parse(Config.apiLink)).timeout(const Duration(seconds: 20)); // BCMA API Request
+      apiResponse = await http.get(Uri.parse(Config.apiLink)).timeout(const Duration(seconds: 30)); // BCMA API Request
+      apiResponseForNextDay = await http.get(Uri.parse(Config.apiLinkForNextDay)).timeout(const Duration(seconds: 30));
       
       // Set local data to server data
       if (apiResponse.statusCode == 200) {
         await prefs.setString("prayerTimeStamp", DateFormat("yyyy-MM-dd").format(DateTime.now())); // Cache server date
-        await prefs.setStringList("prayerTimes", PrayerItem.toJsonStringFromList(PrayerItem.listFromFetchedJson(jsonDecode(apiResponse.body)))); // Cache server data
+        await prefs.setStringList("prayerTimes", PrayerItem.toJsonStringFromList(PrayerItem.listFromFetchedJson(jsonDecode(apiResponse.body)))); // Cache server data for today's times
+        await prefs.setStringList("prayerTimesNextDay", PrayerItem.toJsonStringFromList(PrayerItem.listFromFetchedJson(jsonDecode(apiResponseForNextDay.body)))); // Cache server data for tomorrow's times
       }
     } catch(e) {
       return;
