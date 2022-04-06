@@ -20,11 +20,14 @@ class Announcement {
       if (item["timeStamp"] == null) return;
       final timeStamp = (item["timeStamp"] is String) ? (int.tryParse(item["timeStamp"]!) ?? 0) : item["timeStamp"]!.seconds * 1000;
 
+      String parsedTitle = item["title"].replaceAll("\\n", "\n");
+      String parsedDescription = item['description'].replaceAll("\\n", "\n");
+
       parsedList.add(Announcement(
           timeStamp: timeStamp, // Set to timeStamp in milliseconds
           timeString: DateFormat.yMMMMd('en_US').format(DateTime.fromMillisecondsSinceEpoch(timeStamp)),
-          title: item['title'], 
-          description: item['description']
+          title: parsedTitle, 
+          description: parsedDescription
       ));
     }
 
@@ -38,7 +41,10 @@ class Announcement {
     List<String> jsonList = [];
 
     for (int i = 0; i < list.length; i++) {
-      jsonList.add('{"title":"' + list[i].title + '", "description":"' + list[i].description + '", "timeStamp":"' + list[i].timeStamp.toString() + '"}');
+      String parsedTitle = list[i].title.replaceAll("\n", "\\\\n");
+      String parsedDescription = list[i].description.replaceAll("\n", "\\\\n");
+
+      jsonList.add('{"title":"' + parsedTitle + '", "description":"' + parsedDescription + '", "timeStamp":"' + list[i].timeStamp.toString() + '"}');
     }
     return jsonList;
   }
