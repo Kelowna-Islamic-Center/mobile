@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:kelowna_islamic_center/services/announcements_notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -184,43 +186,45 @@ class _SettingsWidgetState extends State<SettingsPage> {
                       subtitle: const Text("Receive a notification whenever there is a new Masjid Announcement.")),
 
 
-                  /* Iqamah Alert Settings */
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
-                    child: Text(
-                      "Iqamah Times Alert".toUpperCase(),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold
-                      ),
-                    )
-                  ),
+                  /* Iqamah Alert Settings (ANDROID ONLY) */
+                  if (Platform.isAndroid) ...[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
+                      child: Text(
+                        "Iqamah Times Alert".toUpperCase(),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold
+                        ),
+                      )
+                    ),
 
-                  SwitchListTile(
-                    value: settings["iqamahTimeAlert"],
-                    onChanged: (bool newValue) {
-                      updateValue("iqamahTimeAlert", newValue);
-                    },
-                    secondary: const Icon(Icons.access_alarm_rounded),
-                    title: const Text("Iqamaah Time Reminder"),
-                    subtitle: const Text("Receive a reminder notification a few minutes before Iqamah time at the Masjid.")),
+                    SwitchListTile(
+                      value: settings["iqamahTimeAlert"],
+                      onChanged: (bool newValue) {
+                        updateValue("iqamahTimeAlert", newValue);
+                      },
+                      secondary: const Icon(Icons.access_alarm_rounded),
+                      title: const Text("Iqamaah Time Reminder"),
+                      subtitle: const Text("Receive a reminder notification a few minutes before Iqamah time at the Masjid.")),
 
-                  ListTile(
-                    enabled: settings["iqamahTimeAlert"],
-                    leading: const SizedBox(),
-                    title: const Text("Time before Iqamaah"),
-                    subtitle: const Text("How much time before Iqamaah should the app send a reminder?"),
-                    trailing: DropdownButton<int>(
-                      value: settings["iqamahTimeAlertTime"],
-                      items: <int>[5, 10, 15, 20, 30, 45].map<DropdownMenuItem<int>>((int value) {
-                          return DropdownMenuItem<int>(
-                            value: value,
-                            child: Text(value.toString() + " minutes"),
-                          );
-                        }).toList(),
-                      onChanged: (settings["iqamahTimeAlert"]) ? (value) { 
-                        updateValue("iqamahTimeAlertTime", value);
-                      } : null
-                    )),
+                    ListTile(
+                      enabled: settings["iqamahTimeAlert"],
+                      leading: const SizedBox(),
+                      title: const Text("Time before Iqamaah"),
+                      subtitle: const Text("How much time before Iqamaah should the app send a reminder?"),
+                      trailing: DropdownButton<int>(
+                        value: settings["iqamahTimeAlertTime"],
+                        items: <int>[5, 10, 15, 20, 30, 45].map<DropdownMenuItem<int>>((int value) {
+                            return DropdownMenuItem<int>(
+                              value: value,
+                              child: Text(value.toString() + " minutes"),
+                            );
+                          }).toList(),
+                        onChanged: (settings["iqamahTimeAlert"]) ? (value) { 
+                          updateValue("iqamahTimeAlertTime", value);
+                        } : null
+                      )),
+                  ]
                 ]
       )));
 }

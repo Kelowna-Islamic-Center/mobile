@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -31,9 +33,12 @@ Future<void> main() async {
   await AnnouncementsMessageService.init();
   await Firebase.initializeApp();
 
-  await Workmanager().initialize(callbackDispatcher);
-  await ApiFetchService.initBackgroundService();
-  await IqamahNotificationService.initBackgroundService();
+  // Workmanager tasks are android only for the time being
+  if (Platform.isAndroid) {
+    await Workmanager().initialize(callbackDispatcher);
+    await ApiFetchService.initBackgroundService();
+    await IqamahNotificationService.initBackgroundService();
+  }
 
   runApp(const App());
 }
