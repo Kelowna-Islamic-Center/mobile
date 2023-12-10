@@ -11,9 +11,12 @@ class AdminPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Admin Tools"),
-          bottom: const TabBar(tabs: [
-            Tab(text: "Prayer Times"),
-            Tab(text: "Announcements")
+          bottom: const TabBar(
+            labelStyle: TextStyle(color: Colors.green),
+            indicatorColor: Colors.green,
+            tabs: [
+              Tab(text: "Prayer Times"),
+              Tab(text: "Announcements")
           ]),
         ),
         body: const TabBarView(children: [

@@ -224,45 +224,41 @@ class _PrayerWidgetState extends State<PrayerPage> {
           ),
 
           Expanded(child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0)),
+            ),
             transform: Matrix4.translationValues(0.0, -15.0, 0.0),
             child: SingleChildScrollView(child: 
-              Column(children: [        
-
-                // Today and Tomorrow Tab Bar
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0)),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ListTile(
-                      title: Text(
-                        "Show times for:".toUpperCase(),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.normal,
-                          color: Colors.black87,
-                          letterSpacing: 2.0,
-                          fontSize: 19.0
-                        )
-                      ),
-                      trailing: DropdownButton<String>(
-                        value: _selectedDay,
-                        items: <String>["Today", "Tomorrow"].map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                        onChanged: (value) { 
-                          setState(() {
-                            _selectedDay = value!;
-                          });
-                        }
-                    )
-                  )),
-                ),
-
+              Column(children: [
+                // Today and
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ListTile(
+                    title: Text(
+                      "Show times for:".toUpperCase(),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.normal,
+                        color: Colors.black87,
+                        letterSpacing: 2.0,
+                        fontSize: 19.0
+                      )
+                    ),
+                    trailing: DropdownButton<String>(
+                      value: _selectedDay,
+                      items: <String>["Today", "Tomorrow"].map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      onChanged: (value) { 
+                        setState(() {
+                          _selectedDay = value!;
+                        });
+                      }
+                  )
+                )),
                 // Athaan and Iqaamah Buttons
                 Container(
                   padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 15.0),
@@ -295,7 +291,7 @@ class _PrayerWidgetState extends State<PrayerPage> {
                 FutureBuilder<Map<String, dynamic>>(
                     future: fetchedData,
                     builder: (context, snapshot) {
-                      if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                      if (!snapshot.hasData) return const Center(child: CircularProgressIndicator( color: Colors.green ));
                       dynamic data = (_selectedDay.toLowerCase() == "today") ? snapshot.data!["data"] : snapshot.data!["dataForNextDay"]; // Set to either today or tomorrow's time based on user selection
 
                       return Column(children: [

@@ -22,11 +22,6 @@ class IqamahNotificationService {
         channelDescription: "Receive a reminder a set amount of minutes before Iqamah to go to the Masjid.",
         importance: Importance.max,
         priority: Priority.max),
-    iOS: IOSNotificationDetails(
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: true,
-    ),
   );
 
   static Future<void> initBackgroundService() async {
@@ -98,7 +93,7 @@ class IqamahNotificationService {
             '${data[i].name} Iqamah is at ${data[i].iqamahTime} today. Only $minutes minutes remaining.',
             iqamahDateTime,
             platformChannelSpecifics,
-            androidAllowWhileIdle: true,
+            androidScheduleMode: AndroidScheduleMode.exact,
             uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime);
         break;
       }

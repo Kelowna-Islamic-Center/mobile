@@ -108,6 +108,8 @@ class EditAnnouncementsPageState extends State<EditAnnouncementsPage> {
                                   Map<String, dynamic> auth = await _updateAnnouncement();
                                   loading = false;
 
+                                  if (!context.mounted) return;
+                                  
                                   if (auth["success"]) {
                                     Navigator.of(context).pop();
                                   } else {

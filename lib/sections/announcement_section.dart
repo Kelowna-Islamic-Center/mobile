@@ -6,7 +6,7 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 
 import 'package:kelowna_islamic_center/structs/announcement.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 Future<Map<String, dynamic>> announcementsFetch() async {
   final prefs = await SharedPreferences.getInstance();
@@ -92,7 +92,7 @@ class AnnouncementsPage extends StatelessWidget {
                                                   blurRadius: 4,
                                                   offset: const Offset(0, 2))
                                             ]),
-                                        child: Row(children: const [
+                                        child: const Row(children: [
                                           Icon(Icons.wifi_off_rounded, color: Colors.white, size: 35),
                                           SizedBox(width: 10.0),
                                           Flexible(
@@ -110,7 +110,7 @@ class AnnouncementsPage extends StatelessWidget {
                               physics: const NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
                               itemCount: data.length,
-                              separatorBuilder: (context, index) => Column(children: const [
+                              separatorBuilder: (context, index) => const Column(children: [
                                 SizedBox(height: 15),
                                 Divider(thickness: 1, indent: 15, endIndent: 15)]),
                               itemBuilder: (context, index) {
@@ -141,9 +141,10 @@ class AnnouncementsPage extends StatelessWidget {
                                         padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
                                         child: Linkify(
                                             onOpen: (link) async {
-                                              if (await canLaunch(link.url)) {
-                                                await launch(link.url);
+                                              if (await canLaunchUrlString(link.url)) {
+                                                await launchUrlString(link.url);
                                               } else {
+                                                if (!context.mounted) return;
                                                 ScaffoldMessenger.of(context).showSnackBar(
                                                   const SnackBar(content: Text("Couldn't open link, something went wrong.")),
                                                 );

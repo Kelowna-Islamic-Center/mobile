@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:kelowna_islamic_center/services/announcements_notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../widgets/gradient_button.dart';
 
 // Settings Values
@@ -29,8 +29,8 @@ class _SettingsWidgetState extends State<SettingsPage> {
   }
 
   void _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
+    if (await canLaunchUrlString(url)) {
+      await launchUrlString(url);
     }
   }
 
@@ -78,6 +78,7 @@ class _SettingsWidgetState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
+          backgroundColor: Colors.white,
           body: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,6 +88,8 @@ class _SettingsWidgetState extends State<SettingsPage> {
                     child: SizedBox(
                       width: double.infinity,
                       child: Card(
+                        color: Colors.white,
+                        surfaceTintColor: Colors.white,
                         elevation: 4.0,
                         child: Container(
                           padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
@@ -149,8 +152,8 @@ class _SettingsWidgetState extends State<SettingsPage> {
                               image: AssetImage('assets/images/pattern_bitmap.png'),
                               repeat: ImageRepeat.repeat)),
                         child: 
-                          Row(
-                            children: const [
+                          const Row(
+                            children: [
                               Icon(Icons.recommend, color: Colors.white, size: 35),
                               SizedBox(width: 10.0),
                               Flexible(child:
@@ -181,6 +184,7 @@ class _SettingsWidgetState extends State<SettingsPage> {
                       onChanged: (bool newValue) {
                         updateValue("announcementAlert", newValue);
                       },
+                      activeColor: Colors.green,
                       secondary: const Icon(Icons.notification_important),
                       title: const Text("New Announcements Alert"),
                       subtitle: const Text("Receive a notification whenever there is a new Masjid Announcement.")),
@@ -203,6 +207,7 @@ class _SettingsWidgetState extends State<SettingsPage> {
                       onChanged: (bool newValue) {
                         updateValue("iqamahTimeAlert", newValue);
                       },
+                      activeColor: Colors.green,
                       secondary: const Icon(Icons.access_alarm_rounded),
                       title: const Text("Iqamaah Time Reminder"),
                       subtitle: const Text("Receive a reminder notification a few minutes before Iqamah time at the Masjid.")),

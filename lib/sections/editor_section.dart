@@ -80,9 +80,11 @@ class EditorPageState extends State<EditorPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.grey[50],
       body: Center(child: SingleChildScrollView(child:
           Card(
+              color: Colors.white,
+              surfaceTintColor: Colors.white,
               margin: const EdgeInsets.all(15.0),
               elevation: 3,
               child: Padding(
@@ -98,8 +100,8 @@ class EditorPageState extends State<EditorPage> {
 
                         const SizedBox(height: 10.0),
                         
-                        Row(
-                          children: const [
+                        const Row(
+                          children: [
                             Icon(Icons.admin_panel_settings, size: 30),
                             SizedBox(width: 10.0),
                             Flexible(
@@ -146,6 +148,7 @@ class EditorPageState extends State<EditorPage> {
                                 child: Row(children: [
                                   /* Submit Button */
                                   ElevatedButton(
+                                    style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((_) => Colors.green)),
                                     onPressed: () async {
                                       if (_formKey.currentState!.validate()) {
                                         loading = true;
@@ -163,7 +166,7 @@ class EditorPageState extends State<EditorPage> {
                                         }
                                       }
                                     },
-                                    child: const Text('Login'),
+                                    child: const Text('Login', style: TextStyle(color: Colors.white),),
                                   ),
 
                                   const SizedBox(width: 20),

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:kelowna_islamic_center/admin-tools/edit_announcement_page.dart';
 import 'package:kelowna_islamic_center/structs/announcement.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import 'new_announcement_page.dart';
 
@@ -33,10 +33,12 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
   Future<void> _deleteAnnouncement(BuildContext context, String id) async {
     try {
       await FirebaseFirestore.instance.collection('announcements').doc(id).delete();
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Deleted Announcement")),
       );
     } catch (error) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("An error occured: $error")),
       );
@@ -46,20 +48,23 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
   Widget _deletionPopupDialog(BuildContext context, String deleteID) {
     return AlertDialog(
       title: const Text('Are you sure you would like to delete this announcement?'),
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.white,
       actions: <Widget>[
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text('Back'),
+          child: const Text('Back', style: TextStyle(color: Colors.black)),
         ),
         ElevatedButton(
           onPressed: () async {
             await _deleteAnnouncement(context, deleteID);
+            if (!context.mounted) return;
             Navigator.of(context).pop();
           },
-          style: ElevatedButton.styleFrom(primary: Colors.red),
-          child: const Text('Delete'),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+          child: const Text('Delete', style: TextStyle(color: Colors.white)),
         ),
       ],
     );
@@ -68,7 +73,7 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -76,11 +81,12 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
               padding: const EdgeInsets.all(15.0),
               child: ElevatedButton(
                   onPressed: () => _navigateToAddAnnouncement(), 
-                  child: Row(
+                  style: ButtonStyle( backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.green)),
+                  child: const Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(Icons.add),
-                      Text("Add Announcement")
+                    children: [
+                      Icon(Icons.add, color: Colors.white),
+                      Text("Add Announcement", style: TextStyle(color: Colors.white))
                     ]
                   ),
                 )
@@ -129,9 +135,10 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
 
                                     Linkify(
                                       onOpen: (link) async {
-                                        if (await canLaunch(link.url)) {
-                                          await launch(link.url);
+                                        if (await canLaunchUrlString(link.url)) {
+                                          await launchUrlString(link.url);
                                         } else {
+                                          if (!context.mounted) return;
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             const SnackBar(content: Text("Couldn't open link, something went wrong.")),
                                           );
@@ -150,12 +157,12 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
                                           int reversedIndex = (snapshot.data!.docs.length-1) - index;
                                           _navigateToEditAnnouncement(snapshot.data!.docs[reversedIndex].id, data[index]);
                                         },
-                                        style: ElevatedButton.styleFrom(primary: Colors.amber),
-                                        child: Row(
+                                        style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
+                                        child: const Row(
                                           mainAxisSize: MainAxisSize.min,
-                                          children: const [
-                                            Icon(Icons.edit),
-                                            Text("Edit")
+                                          children: [
+                                            Icon(Icons.edit, color: Colors.white),
+                                            Text("Edit", style: TextStyle(color: Colors.white))
                                           ],
                                         )),
 
@@ -169,12 +176,12 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
                                             builder: (BuildContext context) => _deletionPopupDialog(context, snapshot.data!.docs[reversedIndex].id),
                                           );
                                         },
-                                        style: ElevatedButton.styleFrom(primary: Colors.red),
-                                        child: Row(
+                                        style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                                        child: const Row(
                                           mainAxisSize: MainAxisSize.min,
-                                          children: const [
-                                            Icon(Icons.delete),
-                                            Text("Delete")
+                                          children: [
+                                            Icon(Icons.delete, color: Colors.white),
+                                            Text("Delete", style: TextStyle(color: Colors.white))
                                           ],
                                         ))
                                     ],)

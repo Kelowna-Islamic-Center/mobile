@@ -101,6 +101,8 @@ class NewAnnouncementsPageState extends State<NewAnnouncementsPage> {
                                   Map<String, dynamic> auth = await _addAnnouncement();
                                   loading = false;
 
+                                  if (!context.mounted) return;
+
                                   if (auth["success"]) {
                                     Navigator.of(context).pop();
                                   } else {

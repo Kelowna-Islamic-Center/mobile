@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
 
   void _navigateToAnnouncements(RemoteMessage message) {
     if (message.from == "/topics/announcements") {
-      setState(() => {currentIndex = 1});
+      setState(() => currentIndex = 1);
     }
   }
 
@@ -111,7 +111,7 @@ class _HomePageState extends State<HomePage> {
         selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
         currentIndex: currentIndex,
-        onTap: (index) => setState(() => {currentIndex = index}), 
+        onTap: (index) => setState(() => currentIndex = index), 
         items: const [
             BottomNavigationBarItem(icon: Icon(Icons.access_time_filled), label: 'Prayer Times'),
             BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Announcements'),
