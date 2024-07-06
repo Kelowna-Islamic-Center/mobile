@@ -12,8 +12,6 @@ class AdminPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text("Admin Tools"),
           bottom: const TabBar(
-            labelStyle: TextStyle(color: Colors.green),
-            indicatorColor: Colors.green,
             tabs: [
               Tab(text: "Prayer Times"),
               Tab(text: "Announcements")

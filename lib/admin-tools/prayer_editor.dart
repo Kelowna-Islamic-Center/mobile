@@ -5,7 +5,6 @@ class PrayerEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      backgroundColor: Colors.white,
       body: Center(child: SingleChildScrollView(child:
           // Prayer Times cant be changed from here anymore card
           Container(

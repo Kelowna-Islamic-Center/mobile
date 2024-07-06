@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:kelowna_islamic_center/config.dart';
 import 'package:kelowna_islamic_center/sections/announcement_section.dart';
 import 'package:kelowna_islamic_center/sections/editor_section.dart';
 import 'package:kelowna_islamic_center/sections/prayer_section.dart';
@@ -50,11 +51,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        canvasColor: Colors.white, // I'm sorry darkmode users (I'm lazy to impliment darkmode)
-        brightness: Brightness.light, // I'm sorry darkmode users (I'm lazy to impliment darkmode)
-        primarySwatch: Colors.green
-      ),
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
       home: const HomePage(),
     );
   }
@@ -107,9 +105,6 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(child: sections[currentIndex]),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: Colors.green,
-        unselectedItemColor: Colors.grey,
         currentIndex: currentIndex,
         onTap: (index) => setState(() => currentIndex = index), 
         items: const [

@@ -78,7 +78,6 @@ class _SettingsWidgetState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-          backgroundColor: Colors.white,
           body: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,8 +87,6 @@ class _SettingsWidgetState extends State<SettingsPage> {
                     child: SizedBox(
                       width: double.infinity,
                       child: Card(
-                        color: Colors.white,
-                        surfaceTintColor: Colors.white,
                         elevation: 4.0,
                         child: Container(
                           padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),

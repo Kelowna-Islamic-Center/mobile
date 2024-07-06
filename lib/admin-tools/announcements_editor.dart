@@ -48,14 +48,12 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
   Widget _deletionPopupDialog(BuildContext context, String deleteID) {
     return AlertDialog(
       title: const Text('Are you sure you would like to delete this announcement?'),
-      backgroundColor: Colors.white,
-      surfaceTintColor: Colors.white,
       actions: <Widget>[
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text('Back', style: TextStyle(color: Colors.black)),
+          child: const Text('Back'),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -73,7 +71,6 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -117,11 +114,10 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
                                         style: const TextStyle(
                                             fontSize: 26,
                                             letterSpacing: -1,
-                                            color: Colors.black87,
                                             fontWeight: FontWeight.w600)),
                                     const SizedBox(height: 12),
                                     Row(children: [
-                                      const Icon(Icons.calendar_month, color: Colors.black87),
+                                      const Icon(Icons.calendar_month),
                                       const SizedBox(width: 5),
                                       Text(data[index].timeString,
                                           style: const TextStyle(fontSize: 15)),
@@ -145,7 +141,7 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
                                         }
                                       },
                                       text: data[index].description,
-                                      style: const TextStyle(fontSize: 14, color: Colors.black87),
+                                      style: const TextStyle(fontSize: 14),
                                       linkStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),  
                                     ),
 

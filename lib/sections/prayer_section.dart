@@ -224,9 +224,9 @@ class _PrayerWidgetState extends State<PrayerPage> {
           ),
 
           Expanded(child: Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0)),
+            decoration: BoxDecoration(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0)),
             ),
             transform: Matrix4.translationValues(0.0, -15.0, 0.0),
             child: SingleChildScrollView(child: 
@@ -239,7 +239,6 @@ class _PrayerWidgetState extends State<PrayerPage> {
                       "Show times for:".toUpperCase(),
                       style: const TextStyle(
                         fontWeight: FontWeight.normal,
-                        color: Colors.black87,
                         letterSpacing: 2.0,
                         fontSize: 19.0
                       )
@@ -379,7 +378,7 @@ class _PrayerWidgetState extends State<PrayerPage> {
                                                     letterSpacing: 1.5,
                                                     color: (((_highlightedIndexes["start"] == index && _isAthanActive) || (_highlightedIndexes["iqamah"] == index && !_isAthanActive)) && !(_selectedDay.toLowerCase() == "tomorrow"))
                                                         ? Colors.white
-                                                        : Colors.black54)),
+                                                        : null)),
                                             Text(_selectedTime,
                                                 style: TextStyle(
                                                     fontFamily: 'Bebas',
@@ -388,7 +387,7 @@ class _PrayerWidgetState extends State<PrayerPage> {
                                                     letterSpacing: 1.5,
                                                     color: (((_highlightedIndexes["start"] == index && _isAthanActive) || (_highlightedIndexes["iqamah"] == index && !_isAthanActive)) && !(_selectedDay.toLowerCase() == "tomorrow"))
                                                         ? Colors.white
-                                                        : Colors.black54)),
+                                                        : null)),
                                           ],
                                         )));
                               } // Load as many prayer widgets as required

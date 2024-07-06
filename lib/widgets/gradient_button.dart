@@ -40,7 +40,7 @@ class RaisedGradientButton extends StatelessWidget {
           fontWeight: FontWeight.normal,
           letterSpacing: 1.5,
           fontSize: 12.0,
-          color: enabled ? Colors.white : Colors.black54
+          color: enabled ? Colors.white : null
         )),
       ),
     );

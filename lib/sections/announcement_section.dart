@@ -61,9 +61,9 @@ class AnnouncementsPage extends StatelessWidget {
         Expanded(
             child: Container(
                 transform: Matrix4.translationValues(0.0, -10.0, 0.0),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(10.0))
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: const BorderRadius.all(Radius.circular(10.0))
                 ),
                 // Prayer Items List
                 child: SingleChildScrollView(child:
@@ -125,12 +125,11 @@ class AnnouncementsPage extends StatelessWidget {
                                               style: const TextStyle(
                                                   fontSize: 26,
                                                   letterSpacing: -1,
-                                                  color: Colors.black87,
                                                   fontWeight: FontWeight.w600))
                                           ]),
                                           const SizedBox(height: 12),
                                           Row(children: [
-                                            const Icon(Icons.calendar_month, color: Colors.black87),
+                                            const Icon(Icons.calendar_month),
                                             const SizedBox(width: 5),
                                             Text(data[index].timeString,
                                                 style: const TextStyle(fontSize: 15)),
@@ -151,7 +150,7 @@ class AnnouncementsPage extends StatelessWidget {
                                               }
                                             },
                                             text: data[index].description,
-                                            style: const TextStyle(fontSize: 14, color: Colors.black87),
+                                            style: const TextStyle(fontSize: 14),
                                             linkStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),  
                                           )
                                         ),
