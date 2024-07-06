@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:kelowna_islamic_center/config.dart';
+import 'package:kelowna_islamic_center/theme.dart';
 import 'package:kelowna_islamic_center/sections/announcement_section.dart';
 import 'package:kelowna_islamic_center/sections/editor_section.dart';
 import 'package:kelowna_islamic_center/sections/prayer_section.dart';

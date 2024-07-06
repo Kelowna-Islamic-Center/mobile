@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:kelowna_islamic_center/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config.dart';
@@ -193,13 +194,8 @@ class _PrayerWidgetState extends State<PrayerPage> {
             width: double.infinity,
             margin: const EdgeInsets.all(0.0),
             padding: const EdgeInsets.all(35.0),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                colors: _isAthanActive ? [ Colors.amber, Colors.red ] : [ Colors.green, Colors.teal ] // Switch colours based on athan and iqamah selection
-              ),
-              image: const DecorationImage(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
                 image: AssetImage('assets/images/pattern_bitmap.png'),
                 repeat: ImageRepeat.repeat
               )
@@ -209,14 +205,12 @@ class _PrayerWidgetState extends State<PrayerPage> {
               children: [
                 Text(_timeString, style: const TextStyle(
                   fontSize: 24.0,
-                  color: Colors.white
                 )),
                 Text(_isAthanActive
                     ? "Start Times - \u062a\u0648\u0642\u064a\u062a \u0627\u0644\u0623\u0630\u0627\u0646"
                     : "Iqamaah Times - \u062a\u0648\u0642\u064a\u062a \u0627\u0644\u0625\u0642\u0627\u0645\u0629",
                   style: const TextStyle(
-                    fontSize: 17.0,
-                    color: Colors.white
+                    fontSize: 17.0
                   )
                 )
               ]
@@ -270,7 +264,7 @@ class _PrayerWidgetState extends State<PrayerPage> {
                                 onPressed: () {
                                   if (_isAthanActive) setState(() => _isAthanActive = false);
                                 },
-                                enabled: _isAthanActive ? false : true,
+                                enabled: !_isAthanActive,
                                 text: "Iqamaah")),
                         const SizedBox(width: 20),
                         Expanded(
@@ -278,9 +272,7 @@ class _PrayerWidgetState extends State<PrayerPage> {
                                 onPressed: () {
                                   if (!_isAthanActive) setState(() => _isAthanActive = true);
                                 },
-                                enabled: _isAthanActive ? true : false,
-                                gradient: const LinearGradient(
-                                    colors: [Colors.amber, Colors.red]),
+                                enabled: _isAthanActive,
                                 text: "Start/Athan"))
                       ],
                     ),
@@ -290,7 +282,7 @@ class _PrayerWidgetState extends State<PrayerPage> {
                 FutureBuilder<Map<String, dynamic>>(
                     future: fetchedData,
                     builder: (context, snapshot) {
-                      if (!snapshot.hasData) return const Center(child: CircularProgressIndicator( color: Colors.green ));
+                      if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
                       dynamic data = (_selectedDay.toLowerCase() == "today") ? snapshot.data!["data"] : snapshot.data!["dataForNextDay"]; // Set to either today or tomorrow's time based on user selection
 
                       return Column(children: [
@@ -340,17 +332,12 @@ class _PrayerWidgetState extends State<PrayerPage> {
                                 return ListTile(
                                     visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
                                     title: Container(
-                                        padding: const EdgeInsets.fromLTRB(15, 17, 15, 17),
+                                        padding: const EdgeInsets.all(15),
                                         decoration: BoxDecoration(
-                                          gradient: (_isAthanActive)
-                                              ? (_highlightedIndexes["start"] == index && !(_selectedDay.toLowerCase() == "tomorrow"))
-                                                  ? const LinearGradient(
-                                                      colors: [Colors.amber, Colors.red])
-                                                  : null
-                                              : (_highlightedIndexes["iqamah"] == index && !(_selectedDay.toLowerCase() == "tomorrow"))
-                                                  ? const LinearGradient(
-                                                      colors: [Colors.green,Colors.teal])
-                                                  : null,
+                                          gradient:
+                                              ((_highlightedIndexes["start"] == index || _highlightedIndexes["iqamah"] == index) && !(_selectedDay.toLowerCase() == "tomorrow"))
+                                                  ? AppTheme.gradient : null,
+                                              
                                           boxShadow:
                                               (((_highlightedIndexes["start"] == index && _isAthanActive) || (_highlightedIndexes["iqamah"] == index && !_isAthanActive)) && !(_selectedDay.toLowerCase() == "tomorrow"))
                                                   ? [BoxShadow(
@@ -364,7 +351,7 @@ class _PrayerWidgetState extends State<PrayerPage> {
                                                   image: AssetImage('assets/images/pattern_bitmap.png'),
                                                   repeat: ImageRepeat.repeat)
                                               : null,
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(10),
                                         ),
 
                                         child: Row(
@@ -372,19 +359,13 @@ class _PrayerWidgetState extends State<PrayerPage> {
                                           children: [
                                             Text(data[index].name,
                                                 style: TextStyle(
-                                                    fontFamily: 'Bebas',
-                                                    fontSize: 24,
-                                                    fontWeight: FontWeight.w600,
-                                                    letterSpacing: 1.5,
+                                                    fontSize: 22,
                                                     color: (((_highlightedIndexes["start"] == index && _isAthanActive) || (_highlightedIndexes["iqamah"] == index && !_isAthanActive)) && !(_selectedDay.toLowerCase() == "tomorrow"))
                                                         ? Colors.white
                                                         : null)),
                                             Text(_selectedTime,
                                                 style: TextStyle(
-                                                    fontFamily: 'Bebas',
-                                                    fontSize: 24,
-                                                    fontWeight: FontWeight.w600,
-                                                    letterSpacing: 1.5,
+                                                    fontSize: 22,
                                                     color: (((_highlightedIndexes["start"] == index && _isAthanActive) || (_highlightedIndexes["iqamah"] == index && !_isAthanActive)) && !(_selectedDay.toLowerCase() == "tomorrow"))
                                                         ? Colors.white
                                                         : null)),

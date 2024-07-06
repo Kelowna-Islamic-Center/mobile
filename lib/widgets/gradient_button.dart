@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kelowna_islamic_center/theme.dart';
 
 class RaisedGradientButton extends StatelessWidget {
   final double? width;
@@ -14,7 +15,7 @@ class RaisedGradientButton extends StatelessWidget {
     required this.text,
     this.width,
     this.height = 36.0,
-    this.gradient = const LinearGradient(colors: [Colors.green, Colors.teal]),
+    this.gradient = AppTheme.gradient,
     this.enabled = true
   }) : super(key: key);
 
