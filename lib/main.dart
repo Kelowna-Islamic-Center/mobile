@@ -4,10 +4,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:kelowna_islamic_center/theme.dart';
-import 'package:kelowna_islamic_center/sections/announcement_section.dart';
-import 'package:kelowna_islamic_center/sections/editor_section.dart';
-import 'package:kelowna_islamic_center/sections/prayer_section.dart';
-import 'package:kelowna_islamic_center/sections/settings_section.dart';
+import 'package:kelowna_islamic_center/sections/announcements/widget.dart';
+import 'package:kelowna_islamic_center/sections/prayer/widget.dart';
+import 'package:kelowna_islamic_center/sections/settings/widget.dart';
 import 'package:kelowna_islamic_center/services/announcements_notification_service.dart';
 import 'package:kelowna_islamic_center/services/iqamah_notification_service.dart';
 import 'package:kelowna_islamic_center/services/prayer_fetch_service.dart';
@@ -96,7 +95,6 @@ class _HomePageState extends State<HomePage> {
     PrayerPage(),
     AnnouncementsPage(),
     SettingsPage(),
-    EditorPage()
   ];
 
   @override
@@ -111,7 +109,6 @@ class _HomePageState extends State<HomePage> {
             BottomNavigationBarItem(icon: Icon(Icons.access_time_filled), label: 'Prayer Times'),
             BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Announcements'),
             BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
-            BottomNavigationBarItem(icon: Icon(Icons.edit), label: 'Admin Tools'),
         ]
       ),
     );

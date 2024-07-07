@@ -1,10 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:kelowna_islamic_center/admin/auth_guard.dart';
 import 'package:kelowna_islamic_center/services/announcements_notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import '../widgets/gradient_button.dart';
+import '../../widgets/gradient_button.dart';
 
 // Settings Values
 Map<String, dynamic> settings = {
@@ -219,13 +220,24 @@ class _SettingsWidgetState extends State<SettingsPage> {
                         items: <int>[5, 10, 15, 20, 30, 45].map<DropdownMenuItem<int>>((int value) {
                             return DropdownMenuItem<int>(
                               value: value,
-                              child: Text(value.toString() + " minutes"),
+                              child: Text("$value minutes"),
                             );
                           }).toList(),
                         onChanged: (settings["iqamahTimeAlert"]) ? (value) { 
                           updateValue("iqamahTimeAlertTime", value);
                         } : null
                       )),
+
+                      ListTile(
+                        title: const Text("Admin Tools"),
+                        leading: const Icon(Icons.admin_panel_settings),
+                        onTap: () => {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const AdminAuthPage()),
+                          )
+                        },
+                      )
                   ]
                 ]
       )));

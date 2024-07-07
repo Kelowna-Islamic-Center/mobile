@@ -1,33 +1,9 @@
-import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:kelowna_islamic_center/sections/announcements/worker.dart';
 
 import 'package:kelowna_islamic_center/structs/announcement.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-
-Future<Map<String, dynamic>> announcementsFetch() async {
-  final prefs = await SharedPreferences.getInstance();
-  final fbSnapshot = await FirebaseFirestore.instance.collection('announcements').get(); // Firestore get (dont need realtime data)
-  List<dynamic>? localJSON = prefs.getStringList('announcements');
-
-  if (localJSON == null || !fbSnapshot.metadata.isFromCache) {
-    await prefs.setStringList("announcements", Announcement.toJsonStringFromList(Announcement.listFromJSON(fbSnapshot.docs)));
-    localJSON = prefs.getStringList('announcements');
-  }
-  
-  List<dynamic> parsedList = [];
-  for (int i = 0; i < localJSON!.length; i++) {
-    parsedList.add(jsonDecode(localJSON[i]));
-  }
-
-  return {
-    "offline": fbSnapshot.metadata.isFromCache,
-    "data": Announcement.listFromJSON(parsedList)
-  };
-}
 
 
 class AnnouncementsPage extends StatelessWidget {
@@ -68,7 +44,7 @@ class AnnouncementsPage extends StatelessWidget {
                 // Prayer Items List
                 child: SingleChildScrollView(child:
                     FutureBuilder<Map<String, dynamic>>(
-                        future: announcementsFetch(),
+                        future: fetchAnnouncements(),
                         builder: (context, snapshot) {
                           if (!snapshot.hasData) return const Center(child: Padding(padding: EdgeInsets.all(25.0), child: CircularProgressIndicator()));
                           List<Announcement> data = snapshot.data!["data"];

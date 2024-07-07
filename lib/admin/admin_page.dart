@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kelowna_islamic_center/admin-tools/announcements_editor.dart';
-import 'package:kelowna_islamic_center/admin-tools/prayer_editor.dart';
+import 'package:kelowna_islamic_center/admin/announcements_editor.dart';
+import 'package:kelowna_islamic_center/admin/prayer_editor.dart';
 
 class AdminPage extends StatelessWidget {
   const AdminPage({Key? key}) : super(key: key);
