@@ -23,8 +23,7 @@ Future<Map<String, dynamic>> fetchPrayerTimes() async {
   Future<Map<String, dynamic>> loadLocalData() async {
     String? timeStamp = prefs.getString('prayerTimeStamp');
     List<dynamic>? rawJSON = prefs.getStringList('prayerTimes');
-    List<dynamic>? rawJSONForNextDay =
-        prefs.getStringList('prayerTimesNextDay');
+    List<dynamic>? rawJSONForNextDay = prefs.getStringList('prayerTimesNextDay');
 
     // If server has never been contacted, just set timeStamp to today
     timeStamp ??= DateFormat("yyyy-MM-dd").format(DateTime.now());
@@ -35,26 +34,21 @@ Future<Map<String, dynamic>> fetchPrayerTimes() async {
         const PrayerItem(
             name: "Fajr", startTime: "No Internet", iqamahTime: "No Internet"),
         const PrayerItem(
-            name: "Shurooq",
-            startTime: "No Internet",
-            iqamahTime: "No Internet"),
+            name: "Shurooq", startTime: "No Internet", iqamahTime: "No Internet"),
         const PrayerItem(
             name: "Duhr", startTime: "No Internet", iqamahTime: "No Internet"),
         const PrayerItem(
             name: "Asr", startTime: "No Internet", iqamahTime: "No Internet"),
         const PrayerItem(
-            name: "Maghrib",
-            startTime: "No Internet",
-            iqamahTime: "No Internet"),
+            name: "Maghrib", startTime: "No Internet", iqamahTime: "No Internet"),
         const PrayerItem(
             name: "Isha", startTime: "No Internet", iqamahTime: "No Internet"),
         const PrayerItem(
             name: "Jumuah", startTime: "No Internet", iqamahTime: "No Internet")
       ];
+      
       return {
-        "timeStampDiff": DateTime.now()
-            .difference(DateFormat("yyyy-MM-dd").parse(timeStamp))
-            .inDays,
+        "timeStampDiff": -1,
         "data": noInternetList,
         "dataForNextDay": noInternetList
       };
@@ -80,32 +74,40 @@ Future<Map<String, dynamic>> fetchPrayerTimes() async {
     }
   }
 
+
+  final localData = await loadLocalData();
+
   // Server request
   try {
-    apiResponse = await http
-        .get(Uri.parse(Config.apiLink))
-        .timeout(const Duration(seconds: 20)); // BCMA API Request for today
-    apiResponseForNextDay = await http
-        .get(Uri.parse(Config.apiLinkForNextDay))
-        .timeout(const Duration(seconds: 20)); // BCMA API Request for tomorrow
+    // Update local data only if times are outdated
+    if (localData["timeStampDiff"] > 0 || localData["timeStampDiff"] == -1) {
+      apiResponse = await http
+          .get(Uri.parse(Config.apiLink))
+          .timeout(const Duration(seconds: 20)); // API Request for today
+      apiResponseForNextDay = await http
+          .get(Uri.parse(Config.apiLinkForNextDay))
+          .timeout(const Duration(seconds: 20)); // API Request for tomorrow
 
-    // Set local data to server data
-    if (apiResponse.statusCode == 200) {
-      await prefs.setString("prayerTimeStamp",
-          DateFormat("yyyy-MM-dd").format(DateTime.now())); // Cache server date
-      await prefs.setStringList(
-          "prayerTimes",
-          PrayerItem.toJsonStringFromList(PrayerItem.listFromFetchedJson(
-              jsonDecode(apiResponse.body)))); // Cache server data
-      await prefs.setStringList(
-          "prayerTimesNextDay",
-          PrayerItem.toJsonStringFromList(PrayerItem.listFromFetchedJson(
-              jsonDecode(apiResponseForNextDay.body)))); // Cache server data
+      // Set local data to server data
+      if (apiResponse.statusCode == 200) {
+        await prefs.setString("prayerTimeStamp",
+            DateFormat("yyyy-MM-dd").format(DateTime.now())); // Cache server date
+        await prefs.setStringList(
+            "prayerTimes",
+            PrayerItem.toJsonStringFromList(PrayerItem.listFromFetchedJson(
+                jsonDecode(apiResponse.body)))); // Cache server data
+        await prefs.setStringList(
+            "prayerTimesNextDay",
+            PrayerItem.toJsonStringFromList(PrayerItem.listFromFetchedJson(
+                jsonDecode(apiResponseForNextDay.body)))); // Cache server data
+      }
+
+      return await loadLocalData(); // Reload localData after update
+    } else {
+      return localData;
     }
-
-    return await loadLocalData(); // Load sharedPreferences data
   } catch (e) {
-    return await loadLocalData(); // Load sharedPreferences data
+    return localData;
   }
 }
 
@@ -115,7 +117,7 @@ Map<String, int> getActivePrayer(List<PrayerItem> timeList) {
   final int nowTotalMinutes =
       now.hour * 60 + now.minute; // Current time in minutes
 
-  int getClosestTime(bool isIqamahTimes) {
+  int getClosestTime(bool isAthanTimes) {
     int activeIndex = 0;
     int initDiff = 999999;
 
@@ -130,9 +132,9 @@ Map<String, int> getActivePrayer(List<PrayerItem> timeList) {
         continue; // Skip if Jumuah on Other days
 
       // Parse string into different time parts
-      List<String> stringSplit = isIqamahTimes
-          ? timeList[i].iqamahTime.split(':')
-          : timeList[i].startTime.split(':');
+      List<String> stringSplit = isAthanTimes
+          ? timeList[i].startTime.split(':')
+          : timeList[i].iqamahTime.split(':');
       int hour = int.parse(stringSplit[0]);
       int minute = int.parse(stringSplit[1].split(' ')[0]);
       String amPM = stringSplit[1].split(' ')[1];
@@ -148,7 +150,7 @@ Map<String, int> getActivePrayer(List<PrayerItem> timeList) {
 
       int totalMinutes = hour * 60 + minute;
       int difference = (totalMinutes - nowTotalMinutes)
-          .abs(); // Difference between currentime and a prayerTime
+          .abs(); // Difference between current time and a prayerTime
 
       if (difference <= initDiff) {
         initDiff = difference; // Set lowest difference
@@ -159,5 +161,5 @@ Map<String, int> getActivePrayer(List<PrayerItem> timeList) {
     return activeIndex;
   }
 
-  return {"iqamah": getClosestTime(true), "start": getClosestTime(false)};
+  return {"iqamah": getClosestTime(false), "start": getClosestTime(true)};
 }

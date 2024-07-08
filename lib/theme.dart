@@ -15,7 +15,7 @@ class AppTheme {
   static final dark = _baseTheme(Brightness.dark);
 
   static const LinearGradient gradient = LinearGradient(colors: [
-    Color(0xff128c3f), Color(0xff109e8e),
+    Color.fromARGB(255, 29, 174, 82), Color.fromARGB(255, 9, 168, 152),
   ]);
 }
 

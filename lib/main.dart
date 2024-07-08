@@ -106,8 +106,8 @@ class _HomePageState extends State<HomePage> {
         currentIndex: currentIndex,
         onTap: (index) => setState(() => currentIndex = index), 
         items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.access_time_filled), label: 'Prayer Times'),
-            BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Announcements'),
+            BottomNavigationBarItem(icon: Icon(Icons.mosque_rounded), label: 'Prayer Times'),
+            BottomNavigationBarItem(icon: Icon(Icons.notifications_rounded), label: 'Announcements'),
             BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
         ]
       ),
