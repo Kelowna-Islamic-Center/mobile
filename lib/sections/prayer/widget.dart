@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kelowna_islamic_center/sections/prayer/prayer_list.dart';
-import 'package:kelowna_islamic_center/theme.dart';
+import 'package:kelowna_islamic_center/theme/theme.dart';
 
 class PrayerPage extends StatefulWidget {
   const PrayerPage({Key? key}) : super(key: key);

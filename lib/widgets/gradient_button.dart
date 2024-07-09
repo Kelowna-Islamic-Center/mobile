@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kelowna_islamic_center/theme.dart';
+import 'package:kelowna_islamic_center/theme/theme.dart';
 
 class RaisedGradientButton extends StatelessWidget {
   final double? width;

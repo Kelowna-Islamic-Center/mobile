@@ -3,7 +3,7 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:kelowna_islamic_center/sections/announcements/worker.dart';
 
 import 'package:kelowna_islamic_center/structs/announcement.dart';
-import 'package:kelowna_islamic_center/theme.dart';
+import 'package:kelowna_islamic_center/theme/theme.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 

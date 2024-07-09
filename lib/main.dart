@@ -3,13 +3,16 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:kelowna_islamic_center/theme.dart';
+import 'package:kelowna_islamic_center/theme/theme.dart';
 import 'package:kelowna_islamic_center/sections/announcements/widget.dart';
 import 'package:kelowna_islamic_center/sections/prayer/widget.dart';
 import 'package:kelowna_islamic_center/sections/settings/widget.dart';
 import 'package:kelowna_islamic_center/services/announcements_notification_service.dart';
 import 'package:kelowna_islamic_center/services/iqamah_notification_service.dart';
 import 'package:kelowna_islamic_center/services/prayer_fetch_service.dart';
+import 'package:kelowna_islamic_center/theme/theme_mode_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart'; 
 
 
@@ -30,9 +33,14 @@ void callbackDispatcher() {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final prefs = await SharedPreferences.getInstance();
+
+  // Firebase Services
   await AnnouncementsMessageService.init();
   await Firebase.initializeApp();
 
+  // App Services
   // Workmanager tasks are android only for the time being
   if (Platform.isAndroid) {
     await Workmanager().initialize(callbackDispatcher);
@@ -40,18 +48,25 @@ Future<void> main() async {
     await IqamahNotificationService.initBackgroundService();
   }
 
-  runApp(const App());
+  runApp(ChangeNotifierProvider(
+    create: (context) => ThemeModeProvider(prefs: prefs),
+    child: const App(),
+  ));
 }
 
 class App extends StatelessWidget {
+  
   const App({Key? key}) : super(key: key);
+
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    
     return MaterialApp(
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
+      themeMode: Provider.of<ThemeModeProvider>(context).themeMode,
       home: const HomePage(),
     );
   }

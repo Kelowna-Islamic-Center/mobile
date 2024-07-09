@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:kelowna_islamic_center/sections/prayer/worker.dart';
 import 'package:kelowna_islamic_center/structs/prayer_item.dart';
-import 'package:kelowna_islamic_center/theme.dart';
+import 'package:kelowna_islamic_center/theme/theme.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 
