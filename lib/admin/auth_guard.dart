@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../admin/admin_page.dart';
 
@@ -19,29 +18,11 @@ class AdminAuthPageState extends State<AdminAuthPage> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController emailController = TextEditingController(text: "");
 
-  @override
-  void initState() {
-    super.initState();
-
-    // Set initalValue of email to saved email address for easier login
-    SharedPreferences.getInstance().then((prefs) {
-      String? savedEmail = prefs.getString("adminEmail");
-
-      if (savedEmail != null) {
-        setState(() => emailController.text = savedEmail);
-      }
-    });
-  }
-
-  // Authentiction with Firebase auth
+  // Authentication with Firebase auth
   Future<Map<String, dynamic>> _authenticate() async {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-
-      // Save email address for easier login next time
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString("adminEmail", email);
 
       return {
         "success": true,
@@ -58,7 +39,7 @@ class AdminAuthPageState extends State<AdminAuthPage> {
       } else if (e.code == 'network-request-failed') {
         message = "Couldn't login, you might be offline";
       } else {
-        message = "An error occured";
+        message = "An error occurred";
       }
 
       return {
@@ -119,8 +100,9 @@ class AdminAuthPageState extends State<AdminAuthPage> {
                                     keyboardType: TextInputType.emailAddress,
                                     onSaved: (String? value) => email = value!,
                                     validator: (value) {
-                                      if (value == null || value.isEmpty)
+                                      if (value == null || value.isEmpty) {
                                         return 'Email Address cannot be empty';
+                                      }
                                       return null;
                                     },
                                   ),

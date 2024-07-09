@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:kelowna_islamic_center/admin/admin_page.dart';
 import 'package:kelowna_islamic_center/admin/auth_guard.dart';
 import 'package:kelowna_islamic_center/services/announcements_notification_service.dart';
 import 'package:kelowna_islamic_center/theme/theme.dart';
@@ -197,7 +199,10 @@ class _SettingsWidgetState extends State<SettingsPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const AdminAuthPage()),
+                      builder: (context) => 
+                      (FirebaseAuth.instance.currentUser == null) 
+                        ? const AdminAuthPage()
+                        : const AdminPage()),
                 )
               },
             ),
