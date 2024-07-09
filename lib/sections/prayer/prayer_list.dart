@@ -170,13 +170,13 @@ class _PrayerListState extends State<PrayerList> {
                                   children: [
                                     Text(data[index].name,
                                         style: TextStyle(
-                                            fontSize: 22,
+                                            fontSize: 20,
                                             color: isItemActive(index)
                                                 ? Colors.white
                                                 : null)),
                                     Text(selectedTime,
                                         style: TextStyle(
-                                            fontSize: 22,
+                                            fontSize: 20,
                                             color: isItemActive(index)
                                                 ? Colors.white
                                                 : null)),

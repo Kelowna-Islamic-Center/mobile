@@ -3,6 +3,7 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:kelowna_islamic_center/sections/announcements/worker.dart';
 
 import 'package:kelowna_islamic_center/structs/announcement.dart';
+import 'package:kelowna_islamic_center/theme.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 
@@ -12,26 +13,22 @@ class AnnouncementsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
       body: Column(children: [
-        // Top "Masjid Announcements" Header
+        // Top "Announcements" Title Header
         Container(
             width: double.infinity,
             margin: const EdgeInsets.all(0.0),
-            padding: const EdgeInsets.all(45.0),
+            padding: const EdgeInsets.fromLTRB(30.0, 50.0, 30.0, 30.0),
             decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
-                    colors: [Colors.green,Colors.teal]),
+                gradient: AppTheme.gradient,
                 image: DecorationImage(
                     image: AssetImage('assets/images/pattern_bitmap.png'),
                     repeat: ImageRepeat.repeat)),
             child:
-              Center(child: Text("Masjid Announcements".toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 21.0,
-                    fontWeight: FontWeight.bold,
+              const Text("Announcements",
+                  style: TextStyle(
+                    fontSize: 30.0,
                     color: Colors.white)
-                  ))
+                  )
             ),
 
         Expanded(
@@ -92,7 +89,6 @@ class AnnouncementsPage extends StatelessWidget {
                               itemBuilder: (context, index) {
                                 // Announcement Item
                                 return ListTile(
-                                    visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
                                     title: Container(
                                         padding: const EdgeInsets.fromLTRB(10, 17, 10, 10),
                                         child: Column(children: [
@@ -104,12 +100,14 @@ class AnnouncementsPage extends StatelessWidget {
                                                   fontWeight: FontWeight.w600))
                                           ]),
                                           const SizedBox(height: 12),
-                                          Row(children: [
-                                            const Icon(Icons.calendar_month),
-                                            const SizedBox(width: 5),
-                                            Text(data[index].timeString,
-                                                style: const TextStyle(fontSize: 15)),
-                                          ]),
+                                          Row(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              const Icon(Icons.event),
+                                              const SizedBox(width: 10),
+                                              Text(data[index].timeString,
+                                                  style: const TextStyle(fontSize: 16)),
+                                            ]),
                                         ])),
 
                                     subtitle: Container(
@@ -126,7 +124,7 @@ class AnnouncementsPage extends StatelessWidget {
                                               }
                                             },
                                             text: data[index].description,
-                                            style: const TextStyle(fontSize: 14),
+                                            style: const TextStyle(fontSize: 16),
                                             linkStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),  
                                           )
                                         ),

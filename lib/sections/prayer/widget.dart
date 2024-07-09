@@ -84,17 +84,17 @@ class _PrayerWidgetState extends State<PrayerPage> {
                               style: TextStyle(
                                   fontWeight: FontWeight.normal,
                                   fontSize: 18.0)),
-                          trailing: DropdownMenu<String>(
-                            initialSelection: selectedDay,
-                            onSelected: (String? value) {
+                          trailing: DropdownButton<String>(
+                            value: selectedDay,
+                            onChanged: (String? value) {
                               setState(() {
                                 selectedDay = value!;
                               });
                             },
-                            dropdownMenuEntries: ["Today", "Tomorrow"]
-                                .map<DropdownMenuEntry<String>>((String value) {
-                              return DropdownMenuEntry<String>(
-                                  value: value, label: value);
+                            items: ["Today", "Tomorrow"]
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                  value: value, child: Text(value));
                             }).toList(),
                           ))),
                   const TabBar(
