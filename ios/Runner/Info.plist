@@ -4,6 +4,7 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
+		<string>com.gdelataillade.fetch</string>
 		<string>workmanager.background.task</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
@@ -34,6 +35,7 @@
 	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>audio</string>
 		<string>fetch</string>
 		<string>processing</string>
 		<string>remote-notification</string>
