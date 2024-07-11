@@ -4,11 +4,19 @@ import 'package:kelowna_islamic_center/sections/announcements/worker.dart';
 
 import 'package:kelowna_islamic_center/structs/announcement.dart';
 import 'package:kelowna_islamic_center/theme/theme.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 
 class AnnouncementsPage extends StatelessWidget {
   const AnnouncementsPage({Key? key}) : super(key: key);
+  
+  // Data to use for skeleton loader
+  final List<Announcement> skeletonData = const [
+    Announcement(title: "Loading...", description: "This announcement is currently being loaded and this is just dummy datat", timeStamp: 0, timeString: "March 20, 2000"),
+    Announcement(title: "Loading...", description: "This announcement is currently being loaded and this is just dummy datat", timeStamp: 0, timeString: "March 20, 2000"),
+    Announcement(title: "Loading...", description: "This announcement is currently being loaded and this is just dummy datat", timeStamp: 0, timeString: "March 20, 2000")
+  ];
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -43,93 +51,117 @@ class AnnouncementsPage extends StatelessWidget {
                     FutureBuilder<Map<String, dynamic>>(
                         future: fetchAnnouncements(),
                         builder: (context, snapshot) {
-                          if (!snapshot.hasData) return const Center(child: Padding(padding: EdgeInsets.all(25.0), child: CircularProgressIndicator()));
-                          List<Announcement> data = snapshot.data!["data"];
+                          List<Announcement> data = skeletonData;
+
+                          if (snapshot.hasData) {
+                            data = snapshot.data!["data"];
+                          }
 
                           return Column(children: [
                             // Show offline message if offline
-                            if (snapshot.data!["offline"])
-                              Container(
-                                  margin: const EdgeInsets.fromLTRB(15, 17, 15, 17),
-                                  child: SizedBox(
-                                    width: double.infinity,
-                                    child: Container(
-                                        padding: const EdgeInsets.fromLTRB(15, 17, 15, 17),
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(10.0),
-                                            color: Colors.yellow[800],
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  color: Colors.black.withOpacity(0.2),
-                                                  spreadRadius: 1,
-                                                  blurRadius: 4,
-                                                  offset: const Offset(0, 2))
-                                            ]),
-                                        child: const Row(children: [
-                                          Icon(Icons.wifi_off_rounded, color: Colors.white, size: 35),
-                                          SizedBox(width: 10.0),
-                                          Flexible(
-                                            child: Text(
-                                              "You are offline, these announcements may be old. Connect to the Internet to get the latest announcements.",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 13)))
-                                        ])),
-                                  )),
+                            if (snapshot.hasData)
+                              if (snapshot.data!["offline"])
+                                Container(
+                                    margin: const EdgeInsets.fromLTRB(15, 17, 15, 17),
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      child: Container(
+                                          padding: const EdgeInsets.fromLTRB(15, 17, 15, 17),
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(10.0),
+                                              color: Colors.yellow[800],
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    color: Colors.black.withOpacity(0.2),
+                                                    spreadRadius: 1,
+                                                    blurRadius: 4,
+                                                    offset: const Offset(0, 2))
+                                              ]),
+                                          child: const Row(children: [
+                                            Icon(Icons.wifi_off_rounded, color: Colors.white, size: 35),
+                                            SizedBox(width: 10.0),
+                                            Flexible(
+                                              child: Text(
+                                                "You are offline, these announcements may be old. Connect to the Internet to get the latest announcements.",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 13)))
+                                          ])),
+                                    )),
 
-                            ListView.separated(
-                              scrollDirection: Axis.vertical,
-                              physics: const NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: data.length,
-                              separatorBuilder: (context, index) => const Column(children: [
-                                SizedBox(height: 15),
-                                Divider(thickness: 1, indent: 15, endIndent: 15)]),
-                              itemBuilder: (context, index) {
-                                // Announcement Item
-                                return ListTile(
-                                    title: Container(
-                                        padding: const EdgeInsets.fromLTRB(10, 17, 10, 10),
-                                        child: Column(children: [
-                                          Row(children: [
-                                            Text(data[index].title,
-                                              style: const TextStyle(
-                                                  fontSize: 26,
-                                                  letterSpacing: -1,
-                                                  fontWeight: FontWeight.w600))
-                                          ]),
-                                          const SizedBox(height: 12),
-                                          Row(
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              const Icon(Icons.event),
-                                              const SizedBox(width: 10),
-                                              Text(data[index].timeString,
-                                                  style: const TextStyle(fontSize: 16)),
-                                            ]),
-                                        ])),
 
-                                    subtitle: Container(
-                                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
-                                        child: Linkify(
-                                            onOpen: (link) async {
-                                              if (await canLaunchUrlString(link.url)) {
-                                                await launchUrlString(link.url);
-                                              } else {
-                                                if (!context.mounted) return;
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  const SnackBar(content: Text("Couldn't open link, something went wrong.")),
-                                                );
-                                              }
-                                            },
-                                            text: data[index].description,
-                                            style: const TextStyle(fontSize: 16),
-                                            linkStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),  
-                                          )
-                                        ),
-                                  );
-                              }
+                            Skeletonizer (
+                              enabled: !snapshot.hasData,
+                              child: ListView.separated(
+                                    scrollDirection: Axis.vertical,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount: data.length,
+                                    separatorBuilder: (context, index) =>
+                                        const Column(children: [
+                                          SizedBox(height: 15),
+                                          Divider(
+                                              thickness: 1,
+                                              indent: 15,
+                                              endIndent: 15)
+                                        ]),
+                                    itemBuilder: (context, index) {
+                                      // Announcement Item
+                                      return ListTile(
+                                        title: Container(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                10, 17, 10, 10),
+                                            child: Column(children: [
+                                              Row(children: [
+                                                Text(data[index].title,
+                                                    style: const TextStyle(
+                                                        fontSize: 26,
+                                                        letterSpacing: -1,
+                                                        fontWeight:
+                                                            FontWeight.w600))
+                                              ]),
+                                              const SizedBox(height: 12),
+                                              Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    const Icon(Icons.event),
+                                                    const SizedBox(width: 10),
+                                                    Text(data[index].timeString,
+                                                        style: const TextStyle(
+                                                            fontSize: 16)),
+                                                  ]),
+                                            ])),
+                                        subtitle: Container(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                10, 0, 10, 8),
+                                            child: Linkify(
+                                              onOpen: (link) async {
+                                                if (await canLaunchUrlString(
+                                                    link.url)) {
+                                                  await launchUrlString(
+                                                      link.url);
+                                                } else {
+                                                  if (!context.mounted) return;
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    const SnackBar(
+                                                        content: Text(
+                                                            "Couldn't open link, something went wrong.")),
+                                                  );
+                                                }
+                                              },
+                                              text: data[index].description,
+                                              style:
+                                                  const TextStyle(fontSize: 16),
+                                              linkStyle: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold),
+                                            )),
+                                      );
+                                    })
                             )
                           ]);
                         })
