@@ -8,7 +8,7 @@ import 'package:kelowna_islamic_center/sections/announcements/widget.dart';
 import 'package:kelowna_islamic_center/sections/prayer/widget.dart';
 import 'package:kelowna_islamic_center/sections/settings/widget.dart';
 import 'package:kelowna_islamic_center/services/announcements_notification_service.dart';
-import 'package:kelowna_islamic_center/services/iqamah_notification_service.dart';
+import 'package:kelowna_islamic_center/services/prayer_notification_service.dart';
 import 'package:kelowna_islamic_center/services/prayer_fetch_service.dart';
 import 'package:kelowna_islamic_center/theme/theme_mode_provider.dart';
 import 'package:provider/provider.dart';
@@ -20,13 +20,14 @@ import 'package:workmanager/workmanager.dart';
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     switch (task) {
-      case IqamahNotificationService.taskUniqueName:
-        await IqamahNotificationService.scheduleNextNotification();
+      case PrayerNotificationService.taskUniqueName:
+        await PrayerNotificationService.scheduleNextNotifications();
         break;
       case ApiFetchService.taskUniqueName:
         await ApiFetchService.updateSharedPreferencesTimes();
         break;
     }
+    
     return Future.value(true);
   });
 }
@@ -45,7 +46,7 @@ Future<void> main() async {
   if (Platform.isAndroid) {
     await Workmanager().initialize(callbackDispatcher);
     await ApiFetchService.initBackgroundService();
-    await IqamahNotificationService.initBackgroundService();
+    await PrayerNotificationService.initBackgroundService();
   }
 
   runApp(ChangeNotifierProvider(
