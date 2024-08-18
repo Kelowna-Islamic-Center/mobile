@@ -47,6 +47,8 @@ dependencies:
   provider: ^6.1.2
   alarm: ^3.1.4
   auto_start_flutter: ^0.1.1
+  permission_handler: ^11.3.1
+  timezone: ^0.9.4
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +74,7 @@ flutter:
           weight: 600
   assets:
     - assets/images/pattern_bitmap.png
+    - assets/athan.mp3
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:

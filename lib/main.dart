@@ -1,8 +1,13 @@
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:auto_start_flutter/auto_start_flutter.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:kelowna_islamic_center/services/notifications/athan_alarm_scheduler.dart';
+import 'package:kelowna_islamic_center/services/notifications/iqamah_notification_scheduler.dart';
+import 'package:kelowna_islamic_center/structs/prayer_item.dart';
 import 'package:kelowna_islamic_center/theme/theme.dart';
 import 'package:kelowna_islamic_center/sections/announcements/widget.dart';
 import 'package:kelowna_islamic_center/sections/prayer/widget.dart';
@@ -11,9 +16,13 @@ import 'package:kelowna_islamic_center/services/announcements_notification_servi
 import 'package:kelowna_islamic_center/services/prayer_notification_service.dart';
 import 'package:kelowna_islamic_center/services/prayer_fetch_service.dart';
 import 'package:kelowna_islamic_center/theme/theme_mode_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart'; 
+import 'package:alarm/alarm.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 
 // WorkManager callbackDispatcher for handling background services
@@ -27,7 +36,7 @@ void callbackDispatcher() {
         await ApiFetchService.updateSharedPreferencesTimes();
         break;
     }
-    
+
     return Future.value(true);
   });
 }
@@ -44,7 +53,10 @@ Future<void> main() async {
   // App Services
   // Workmanager tasks are android only for the time being
   if (Platform.isAndroid) {
-    await Workmanager().initialize(callbackDispatcher);
+    await Alarm.init();
+
+    await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+
     await ApiFetchService.initBackgroundService();
     await PrayerNotificationService.initBackgroundService();
   }
@@ -87,6 +99,27 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     setupNotificationInteractions();
+    requestPermissions();
+  }
+
+  Future<void> requestPermissions() async {
+    print("Checking permissions");
+    // Notification and alarm requests
+    await Permission.notification.isDenied.then((value) {
+      print("Notification request");
+      if (value) {
+        Permission.notification.request();
+      }
+    });
+
+    await Permission.scheduleExactAlarm.isDenied.then((value) {
+      if (value) {
+        Permission.scheduleExactAlarm.request();
+      }
+    });
+
+    // Permission to allow Athan Alarms to wake android phones
+    await getAutoStartPermission();
   }
 
   // Notification click handler
