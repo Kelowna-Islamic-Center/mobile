@@ -1,28 +1,22 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:auto_start_flutter/auto_start_flutter.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:kelowna_islamic_center/services/notifications/athan_alarm_scheduler.dart';
-import 'package:kelowna_islamic_center/services/notifications/iqamah_notification_scheduler.dart';
-import 'package:kelowna_islamic_center/structs/prayer_item.dart';
 import 'package:kelowna_islamic_center/theme/theme.dart';
-import 'package:kelowna_islamic_center/sections/announcements/widget.dart';
-import 'package:kelowna_islamic_center/sections/prayer/widget.dart';
-import 'package:kelowna_islamic_center/sections/settings/widget.dart';
-import 'package:kelowna_islamic_center/services/announcements_notification_service.dart';
-import 'package:kelowna_islamic_center/services/prayer_notification_service.dart';
-import 'package:kelowna_islamic_center/services/prayer_fetch_service.dart';
+import 'package:kelowna_islamic_center/sections/announcements/announcements_view.dart';
+import 'package:kelowna_islamic_center/sections/prayer/prayer_view.dart';
+import 'package:kelowna_islamic_center/sections/settings/settings_view.dart';
+import 'package:kelowna_islamic_center/services/announcements/announcements_message_service.dart';
+import 'package:kelowna_islamic_center/services/prayer/prayer_notification_service.dart';
+import 'package:kelowna_islamic_center/services/api/api_fetch_service.dart';
 import 'package:kelowna_islamic_center/theme/theme_mode_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart'; 
 import 'package:alarm/alarm.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
 
 // WorkManager callbackDispatcher for handling background services
@@ -55,7 +49,7 @@ Future<void> main() async {
   if (Platform.isAndroid) {
     await Alarm.init();
 
-    await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+    await Workmanager().initialize(callbackDispatcher);
 
     await ApiFetchService.initBackgroundService();
     await PrayerNotificationService.initBackgroundService();
@@ -103,10 +97,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> requestPermissions() async {
-    print("Checking permissions");
     // Notification and alarm requests
     await Permission.notification.isDenied.then((value) {
-      print("Notification request");
       if (value) {
         Permission.notification.request();
       }
@@ -141,9 +133,9 @@ class _HomePageState extends State<HomePage> {
 
 
   final sections = const [
-    PrayerPage(),
-    AnnouncementsPage(),
-    SettingsPage(),
+    PrayerView(),
+    AnnouncementsView(),
+    SettingsView(),
   ];
 
   @override

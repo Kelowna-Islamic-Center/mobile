@@ -73,8 +73,8 @@ flutter:
         - asset: fonts/BebasNeue-Regular.otf
           weight: 600
   assets:
-    - assets/images/pattern_bitmap.png
-    - assets/athan.mp3
+    - assets/images/
+    - assets/audio/
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:

@@ -1,17 +1,18 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'package:kelowna_islamic_center/sections/prayer/prayer_list.dart';
 import 'package:kelowna_islamic_center/theme/theme.dart';
 
-class PrayerPage extends StatefulWidget {
-  const PrayerPage({Key? key}) : super(key: key);
+class PrayerView extends StatefulWidget {
+  const PrayerView({Key? key}) : super(key: key);
 
   @override
-  State<PrayerPage> createState() => _PrayerWidgetState();
+  State<PrayerView> createState() => _PrayerWidgetState();
 }
 
-class _PrayerWidgetState extends State<PrayerPage> {
+class _PrayerWidgetState extends State<PrayerView> {
 
   String selectedDay = "Today";
   Timer? timer;

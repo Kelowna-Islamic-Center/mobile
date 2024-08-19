@@ -2,23 +2,23 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:kelowna_islamic_center/admin/admin_page.dart';
-import 'package:kelowna_islamic_center/admin/auth_guard.dart';
-import 'package:kelowna_islamic_center/services/announcements_notification_service.dart';
+import 'package:kelowna_islamic_center/sections/settings/admin/admin_page.dart';
+import 'package:kelowna_islamic_center/sections/settings/admin/auth_guard.dart';
+import 'package:kelowna_islamic_center/services/announcements/announcements_message_service.dart';
 import 'package:kelowna_islamic_center/theme/theme.dart';
 import 'package:kelowna_islamic_center/theme/theme_mode_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:provider/provider.dart';
 
-class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+class SettingsView extends StatefulWidget {
+  const SettingsView({Key? key}) : super(key: key);
 
   @override
-  State<SettingsPage> createState() => _SettingsWidgetState();
+  State<SettingsView> createState() => _SettingsWidgetState();
 }
 
-class _SettingsWidgetState extends State<SettingsPage> {
+class _SettingsWidgetState extends State<SettingsView> {
 
   final Map<String, dynamic> settings = {
     // Default Values
@@ -109,7 +109,7 @@ class _SettingsWidgetState extends State<SettingsPage> {
                     style: TextStyle(fontSize: 30.0, color: Colors.white))),
 
             ListTile(
-                leading: Icon(Icons.dark_mode_rounded),
+                leading: const Icon(Icons.dark_mode_rounded),
                 title: const Text(
                     "Colour Theme"),
                 trailing: DropdownButton<String>(

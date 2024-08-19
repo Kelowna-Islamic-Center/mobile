@@ -44,7 +44,7 @@ class Announcement {
       String parsedTitle = list[i].title.replaceAll("\n", "\\\\n");
       String parsedDescription = list[i].description.replaceAll("\n", "\\\\n");
 
-      jsonList.add('{"title":"' + parsedTitle + '", "description":"' + parsedDescription + '", "timeStamp":"' + list[i].timeStamp.toString() + '"}');
+      jsonList.add('{"title":"$parsedTitle", "description":"$parsedDescription", "timeStamp":"${list[i].timeStamp.toString()}"}');
     }
     return jsonList;
   }

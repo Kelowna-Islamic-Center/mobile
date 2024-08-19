@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:intl/intl.dart';
 
-import 'package:kelowna_islamic_center/services/notifications/athan_alarm_scheduler.dart';
-import 'package:kelowna_islamic_center/services/notifications/iqamah_notification_scheduler.dart';
+import 'package:kelowna_islamic_center/services/prayer/athan_alarm_scheduler.dart';
+import 'package:kelowna_islamic_center/services/prayer/iqamah_notification_scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_android/shared_preferences_android.dart';
 import 'package:shared_preferences_ios/shared_preferences_ios.dart';

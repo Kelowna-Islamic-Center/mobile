@@ -8,7 +8,7 @@ import 'package:kelowna_islamic_center/structs/prayer_item.dart';
 
 class AthanAlarmScheduler {
 
-  static const String athanPath = "assets/athan.mp3";
+  static const String athanPath = "assets/audio/athan.mp3";
 
   // Check which prayer to schedule it for
   static Future<void> scheduleAlarm(tz.TZDateTime dateTime, PrayerItem prayer) async {

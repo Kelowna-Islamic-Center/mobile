@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:kelowna_islamic_center/sections/settings/admin/admin_page.dart';
 
-import '../admin/admin_page.dart';
 
 class AdminAuthPage extends StatefulWidget {
   const AdminAuthPage({Key? key}) : super(key: key);
@@ -118,8 +118,9 @@ class AdminAuthPageState extends State<AdminAuthPage> {
                                     onSaved: (String? value) =>
                                         password = value!,
                                     validator: (value) {
-                                      if (value == null || value.isEmpty)
+                                      if (value == null || value.isEmpty) {
                                         return 'Password cannot be empty';
+                                      }
                                       return null;
                                     },
                                   ),

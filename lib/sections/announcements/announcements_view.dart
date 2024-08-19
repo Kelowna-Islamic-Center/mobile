@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:kelowna_islamic_center/sections/announcements/worker.dart';
-
-import 'package:kelowna_islamic_center/structs/announcement.dart';
-import 'package:kelowna_islamic_center/theme/theme.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+import 'package:kelowna_islamic_center/theme/theme.dart';
+import 'package:kelowna_islamic_center/structs/announcement.dart';
+import 'package:kelowna_islamic_center/sections/announcements/announcements_controller.dart';
 
-class AnnouncementsPage extends StatelessWidget {
-  const AnnouncementsPage({Key? key}) : super(key: key);
+
+class AnnouncementsView extends StatelessWidget {
+  const AnnouncementsView({Key? key}) : super(key: key);
   
   // Data to use for skeleton loader
   final List<Announcement> skeletonData = const [
@@ -49,7 +49,7 @@ class AnnouncementsPage extends StatelessWidget {
                 // Prayer Items List
                 child: SingleChildScrollView(child:
                     FutureBuilder<Map<String, dynamic>>(
-                        future: fetchAnnouncements(),
+                        future: AnnouncementsController.fetchAnnouncements(),
                         builder: (context, snapshot) {
                           List<Announcement> data = skeletonData;
 

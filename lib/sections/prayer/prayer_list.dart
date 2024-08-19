@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:kelowna_islamic_center/sections/prayer/worker.dart';
-import 'package:kelowna_islamic_center/structs/prayer_item.dart';
-import 'package:kelowna_islamic_center/theme/theme.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import 'package:kelowna_islamic_center/sections/prayer/prayer_controller.dart';
+import 'package:kelowna_islamic_center/structs/prayer_item.dart';
+import 'package:kelowna_islamic_center/theme/theme.dart';
 
 class PrayerList extends StatefulWidget {
   final bool isAthanTimesActive;
   final bool isTodayActive;
 
-  PrayerList({Key? key, required this.isAthanTimesActive, required this.isTodayActive}) : super(key: key);
+  const PrayerList({Key? key, required this.isAthanTimesActive, required this.isTodayActive}) : super(key: key);
 
   @override
   State<PrayerList> createState() => _PrayerListState();
@@ -39,7 +39,7 @@ class _PrayerListState extends State<PrayerList> {
   @override
   void initState() {
     super.initState();
-    fetchedData = fetchPrayerTimes(); // Set to latest Prayer Times
+    fetchedData = PrayerController.fetchPrayerTimes(); // Set to latest Prayer Times
     updateHighlightedPrayer();
     timer = Timer.periodic(
         const Duration(seconds: 20), (Timer t) => updateHighlightedPrayer());
@@ -55,7 +55,7 @@ class _PrayerListState extends State<PrayerList> {
   void updateHighlightedPrayer() async {
     setState(() {
       fetchedData.then(
-          (value) => _highlightedIndexes = getActivePrayer(value["data"]));
+          (value) => _highlightedIndexes = PrayerController.getActivePrayer(value["data"]));
     });
   }
 

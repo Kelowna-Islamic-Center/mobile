@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:kelowna_islamic_center/admin/edit_announcement_page.dart';
+import 'package:kelowna_islamic_center/sections/settings/admin/edit_announcement_page.dart';
 import 'package:kelowna_islamic_center/structs/announcement.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 

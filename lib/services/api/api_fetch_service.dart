@@ -7,8 +7,8 @@ import 'package:shared_preferences_android/shared_preferences_android.dart';
 import 'package:shared_preferences_ios/shared_preferences_ios.dart';
 import 'package:workmanager/workmanager.dart';
 
-import '../config.dart';
-import '../structs/prayer_item.dart';
+import '../../config.dart';
+import '../../structs/prayer_item.dart';
 
 
 class ApiFetchService {
