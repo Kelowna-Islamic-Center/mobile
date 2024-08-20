@@ -23,7 +23,7 @@ class PrayerItem {
     List<String> jsonList = [];
 
     for (int i = 0; i < list.length; i++) {
-      jsonList.add('{"name":${list[i].name}, "start":"${list[i].startTime}", "iqamah":"${list[i].iqamahTime}"}');
+      jsonList.add('{"name":"${list[i].name}", "start":"${list[i].startTime}", "iqamah":"${list[i].iqamahTime}"}');
     }
     return jsonList;
   }

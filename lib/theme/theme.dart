@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static ThemeData _baseTheme(Brightness brightness) {
     return ThemeData(
+      fontFamily: "Inter",
       colorScheme: ColorScheme.fromSeed(
         brightness: brightness,
         seedColor: Colors.green,
