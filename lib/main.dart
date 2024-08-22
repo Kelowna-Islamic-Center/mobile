@@ -50,21 +50,27 @@ Future<void> main() async {
   // Workmanager tasks are android only for the time being
   if (Platform.isAndroid) {
     await Alarm.init();
-    await Workmanager().initialize(callbackDispatcher);
+    await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
     await ApiFetchService.initBackgroundService();
     await PrayerNotificationService.initBackgroundService();
   }
 
+  // Check if user has skipped the intro
+  bool? isIntroDone = prefs.getBool("isIntroDone");
+  isIntroDone ??= false;
+
   runApp(ChangeNotifierProvider(
     create: (context) => ThemeModeProvider(prefs: prefs),
-    child: const App(),
+    child: App(isIntroDone: isIntroDone),
   ));
 }
 
 
 class App extends StatelessWidget {
+
+  final bool isIntroDone; 
   
-  const App({Key? key}) : super(key: key);
+  const App({Key? key, required this.isIntroDone}) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -74,7 +80,7 @@ class App extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: Provider.of<ThemeModeProvider>(context).themeMode,
-      home: const HomeScreenView(),
+      home: (isIntroDone) ? const HomeScreenView() : const IntroView(),
     );
   }
 }
