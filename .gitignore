@@ -48,3 +48,6 @@ app.*.map.json
 /android/app/google-services.json
 /lib/firebase_options.dart
 firebase.json
+
+# Config
+/lib/config.dart

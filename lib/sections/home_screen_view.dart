@@ -1,5 +1,6 @@
 import 'package:auto_start_flutter/auto_start_flutter.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:kelowna_islamic_center/config.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 
@@ -56,7 +57,7 @@ class _HomeScreenState extends State<HomeScreenView> {
   }
 
   void _navigateToAnnouncements(RemoteMessage message) {
-    if (message.from == "/topics/announcements") {
+    if (message.from == "/topics/${Config.announcementTopic}") {
       setState(() => currentIndex = 1);
     }
   }

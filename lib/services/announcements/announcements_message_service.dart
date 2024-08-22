@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:kelowna_islamic_center/config.dart';
 import 'package:kelowna_islamic_center/structs/announcement.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_android/shared_preferences_android.dart';
@@ -81,10 +82,10 @@ class AnnouncementsMessageService {
 
     // Subscribe to announcements if the user has never set any settings (first time launch)
     final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool("announcementAlert") == null) FirebaseMessaging.instance.subscribeToTopic("announcements");
+    if (prefs.getBool("announcementAlert") == null) FirebaseMessaging.instance.subscribeToTopic(Config.announcementTopic);
   }
 
   static void toggleSubscription(bool enable) {
-    enable ? FirebaseMessaging.instance.subscribeToTopic("announcements") : FirebaseMessaging.instance.unsubscribeFromTopic("announcements");
+    enable ? FirebaseMessaging.instance.subscribeToTopic(Config.announcementTopic) : FirebaseMessaging.instance.unsubscribeFromTopic(Config.announcementTopic);
   }
 }
