@@ -7,6 +7,7 @@ import 'package:kelowna_islamic_center/sections/settings/admin/auth_guard.dart';
 import 'package:kelowna_islamic_center/services/announcements/announcements_message_service.dart';
 import 'package:kelowna_islamic_center/theme/theme.dart';
 import 'package:kelowna_islamic_center/theme/theme_mode_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:provider/provider.dart';
@@ -30,10 +31,12 @@ class _SettingsWidgetState extends State<SettingsView> {
 
   final List<int> iqamahTimeValues = [5, 10, 15, 20, 30, 45];
   final List<String> themeValues = ["Dark", "Light", "Default"];
+  bool isNotificationsDisabled = false;
 
   @override
   void initState() {
     setToStoredValues();
+    verifyNotificationPermissionStatus();
     super.initState();
   }
 
@@ -41,6 +44,10 @@ class _SettingsWidgetState extends State<SettingsView> {
     if (await canLaunchUrlString(url)) {
       await launchUrlString(url);
     }
+  }
+
+  Future<void> verifyNotificationPermissionStatus() async {
+    isNotificationsDisabled = !(await Permission.notification.isGranted);
   }
 
   // Set settings values to data stored in SharedPreferences
@@ -132,6 +139,26 @@ class _SettingsWidgetState extends State<SettingsView> {
                     style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 15))),
 
+            // Disabled Notifications Card
+            if (isNotificationsDisabled) ...{
+              Container(
+                  margin: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Card(
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                        child: Container(
+                          padding: EdgeInsets.fromLTRB(15, 17, 15, 17),
+                          child: Row(children: [
+                          Icon(Icons.notifications_off_rounded),
+                          SizedBox(width: 10.0),
+                          Flexible(
+                              child: Text(
+                                  "Notifications are disabled. Enable them in settings again to receive notifications.",
+                                  style: TextStyle(fontWeight: FontWeight.bold)))
+                        ]))),
+                  )),
+            },
 
             /* Iqamah Alert Settings (ANDROID ONLY) */
             if (Platform.isAndroid) ...[
