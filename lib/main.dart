@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:kelowna_islamic_center/firebase_options.dart';
 import 'package:kelowna_islamic_center/sections/intro/intro_view.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +16,8 @@ import 'package:kelowna_islamic_center/services/announcements/announcements_mess
 import 'package:kelowna_islamic_center/services/prayer/prayer_notification_service.dart';
 import 'package:kelowna_islamic_center/services/api/api_fetch_service.dart';
 import 'package:kelowna_islamic_center/theme/theme_mode_provider.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 // WorkManager callbackDispatcher for handling background services
@@ -77,9 +80,14 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     
     return MaterialApp(
+      // Localization
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      // Theming
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: Provider.of<ThemeModeProvider>(context).themeMode,
+      
       home: (isIntroDone) ? const HomeScreenView() : const IntroView(),
     );
   }
