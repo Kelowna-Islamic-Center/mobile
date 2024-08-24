@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kelowna_islamic_center/sections/settings/admin/admin_page.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AdminAuthPage extends StatefulWidget {
   const AdminAuthPage({Key? key}) : super(key: key);
@@ -30,16 +31,24 @@ class AdminAuthPageState extends State<AdminAuthPage> {
       };
     } on FirebaseAuthException catch (e) {
       String message;
+
+      if (!context.mounted) {
+        return {
+          "success": false,
+          "message": "Failure",
+        };
+      }
+      
       if (e.code == 'user-not-found' ||
           e.code == 'wrong-password' ||
           e.code == 'invalid-email') {
-        message = "Incorrect email address or password";
+        message = AppLocalizations.of(context)!.incorrectPassword;
       } else if (e.code == 'user-disabled') {
-        message = "This account is disabled";
+        message = AppLocalizations.of(context)!.disabledAccount;
       } else if (e.code == 'network-request-failed') {
-        message = "Couldn't login, you might be offline";
+        message = AppLocalizations.of(context)!.offlineLogin;
       } else {
-        message = "An error occurred";
+        message = AppLocalizations.of(context)!.errorLogin;
       }
 
       return {
@@ -60,7 +69,7 @@ class AdminAuthPageState extends State<AdminAuthPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
-          title: const Text("Admin Tools"),
+          title: Text(AppLocalizations.of(context)!.adminLoginTitle),
         ),
       body: Center(
           child: SingleChildScrollView(
@@ -73,18 +82,18 @@ class AdminAuthPageState extends State<AdminAuthPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text("Admin Login",
-                                style: TextStyle(
+                            Text(AppLocalizations.of(context)!.adminLoginTitle,
+                                style: const TextStyle(
                                     fontSize: 30.0,
                                     fontWeight: FontWeight.bold)),
                             const SizedBox(height: 10.0),
-                            const Row(children: [
-                              Icon(Icons.admin_panel_settings, size: 30),
-                              SizedBox(width: 10.0),
+                            Row(children: [
+                              const Icon(Icons.admin_panel_settings, size: 30),
+                              const SizedBox(width: 10.0),
                               Flexible(
                                   child: Text(
-                                      "This page is for admin use only and require an Admin Login. Contact the Masjid Board for further information.",
-                                      style: TextStyle(fontSize: 14)))
+                                      AppLocalizations.of(context)!.adminDescription,
+                                      style: const TextStyle(fontSize: 14)))
                             ]),
                             const SizedBox(height: 20.0),
                             Form(
@@ -95,13 +104,13 @@ class AdminAuthPageState extends State<AdminAuthPage> {
                                   /* Email Address Field */
                                   TextFormField(
                                     controller: emailController,
-                                    decoration: const InputDecoration(
-                                        labelText: 'Email Address'),
+                                    decoration: InputDecoration(
+                                        labelText: AppLocalizations.of(context)!.emailPlaceholder),
                                     keyboardType: TextInputType.emailAddress,
                                     onSaved: (String? value) => email = value!,
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Email Address cannot be empty';
+                                        return AppLocalizations.of(context)!.emailRequired;
                                       }
                                       return null;
                                     },
@@ -109,8 +118,8 @@ class AdminAuthPageState extends State<AdminAuthPage> {
 
                                   /* Password Field */
                                   TextFormField(
-                                    decoration: const InputDecoration(
-                                        labelText: 'Password'),
+                                    decoration: InputDecoration(
+                                        labelText: AppLocalizations.of(context)!.passwordPlaceholder),
                                     obscureText: true,
                                     enableSuggestions: false,
                                     autocorrect: false,
@@ -119,7 +128,7 @@ class AdminAuthPageState extends State<AdminAuthPage> {
                                         password = value!,
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Password cannot be empty';
+                                        return AppLocalizations.of(context)!.passwordRequired;
                                       }
                                       return null;
                                     },
@@ -154,7 +163,7 @@ class AdminAuthPageState extends State<AdminAuthPage> {
                                                 }
                                               }
                                             },
-                                            child: const Text('Login'),
+                                            child: Text(AppLocalizations.of(context)!.login),
                                           ),
                                           const SizedBox(width: 20),
                                           if (loading)

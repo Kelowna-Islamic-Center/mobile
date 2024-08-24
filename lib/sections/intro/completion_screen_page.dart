@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class CompletionScreenPage extends StatelessWidget {
+
+  const CompletionScreenPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -25,15 +30,15 @@ class CompletionScreenPage extends StatelessWidget {
             ),
           )),
           Container(
-              padding: EdgeInsets.all(20.0),
-              child: const Column(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
                 children: [
                   // Icon(Icons.check_circle_outline_rounded, size: 70,),
-                  SizedBox(height: 25),
+                  const SizedBox(height: 25),
                   Text(
-                    "All done! Setup complete.",
+                    AppLocalizations.of(context)!.setupComplete,
                     style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0),
+                        const TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0),
                   ),
                 ],
               ))

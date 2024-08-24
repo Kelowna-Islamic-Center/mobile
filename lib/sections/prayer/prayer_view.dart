@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:kelowna_islamic_center/sections/prayer/prayer_list.dart';
 import 'package:kelowna_islamic_center/theme/theme.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class PrayerView extends StatefulWidget {
   const PrayerView({Key? key}) : super(key: key);
 
@@ -14,14 +16,13 @@ class PrayerView extends StatefulWidget {
 
 class _PrayerWidgetState extends State<PrayerView> {
 
-  String selectedDay = "Today";
+  String selectedDay = "today";
   Timer? timer;
-  String timeString = "...";
+  String timeString = "";
 
   @override
   void initState() {
     super.initState();
-    updateTimeDisplay();
     timer = Timer.periodic(const Duration(seconds: 1),
         (Timer t) => updateTimeDisplay()); // Realtime Clock timer
   }
@@ -34,17 +35,21 @@ class _PrayerWidgetState extends State<PrayerView> {
 
   // Clock and highlight checker update
   void updateTimeDisplay() async {
-    final String dateTime = DateFormat.jm()
+    String myLocale = Localizations.localeOf(context).languageCode;
+    final String dateTime = DateFormat.jm(myLocale)
         .addPattern(' - EEE. d MMMM')
-        .format(DateTime.now())
-        .toString();
+        .format(DateTime.now());
     setState(() {
       timeString = dateTime;
     });
   }
 
   @override
-  Widget build(BuildContext context) => DefaultTabController(
+  Widget build(BuildContext context) {
+
+    updateTimeDisplay();
+
+    return DefaultTabController(
       initialIndex: 0,
       length: 2,
       child: Scaffold(
@@ -81,8 +86,9 @@ class _PrayerWidgetState extends State<PrayerView> {
                       padding: const EdgeInsets.fromLTRB(8.0, 12.0, 8.0, 12.0),
                       child: ListTile(
                           leading: const Icon(Icons.calendar_month_rounded),
-                          title: const Text("Prayer Times For:",
-                              style: TextStyle(
+                          title: Text(
+                              AppLocalizations.of(context)!.prayerTimesFor,
+                              style: const TextStyle(
                                   fontWeight: FontWeight.normal,
                                   fontSize: 18.0)),
                           trailing: DropdownButton<String>(
@@ -92,29 +98,35 @@ class _PrayerWidgetState extends State<PrayerView> {
                                 selectedDay = value!;
                               });
                             },
-                            items: ["Today", "Tomorrow"]
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                  value: value, child: Text(value));
-                            }).toList(),
+                            items: [
+                              DropdownMenuItem(
+                                value: "today", 
+                                child: Text(AppLocalizations.of(context)!.today),
+                              ),
+                              DropdownMenuItem(
+                                value: "tomorrow", 
+                                child: Text(AppLocalizations.of(context)!.tomorrow),
+                              )
+                            ],
                           ))),
-                  const TabBar(
+                  TabBar(
                     tabs: <Widget>[
                       Tab(
-                        icon: Icon(Icons.record_voice_over_rounded),
-                        text: "Iqamaah Times",
+                        icon: const Icon(Icons.record_voice_over_rounded),
+                        text: AppLocalizations.of(context)!.iqamahTimes
                       ),
                       Tab(
-                        icon: Icon(Icons.mosque_rounded),
-                        text: "Athan Times",
+                        icon: const Icon(Icons.mosque_rounded),
+                        text: AppLocalizations.of(context)!.athanTimes,
                       ),
                     ],
                   ),
                   Expanded(
                       child: TabBarView(children: [
-                        PrayerList(isAthanTimesActive: false, isTodayActive: selectedDay == "Today"),
-                        PrayerList(isAthanTimesActive: true, isTodayActive: selectedDay == "Today")
+                        PrayerList(isAthanTimesActive: false, isTodayActive: selectedDay == "today"),
+                        PrayerList(isAthanTimesActive: true, isTodayActive: selectedDay == "today")
                   ]))
                 ]))),
       ])));
+  }
 }

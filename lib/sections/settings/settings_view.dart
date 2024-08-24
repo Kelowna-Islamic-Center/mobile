@@ -2,15 +2,19 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+import 'package:provider/provider.dart';
+
 import 'package:kelowna_islamic_center/sections/settings/admin/admin_page.dart';
 import 'package:kelowna_islamic_center/sections/settings/admin/auth_guard.dart';
 import 'package:kelowna_islamic_center/services/announcements/announcements_message_service.dart';
 import 'package:kelowna_islamic_center/theme/theme.dart';
 import 'package:kelowna_islamic_center/theme/theme_mode_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher_string.dart';
-import 'package:provider/provider.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingsView extends StatefulWidget {
   const SettingsView({Key? key}) : super(key: key);
@@ -30,7 +34,6 @@ class _SettingsWidgetState extends State<SettingsView> {
   };
 
   final List<int> iqamahTimeValues = [5, 10, 15, 20, 30, 45];
-  final List<String> themeValues = ["Dark", "Light", "Default"];
   bool isNotificationsDisabled = false;
 
   @override
@@ -112,32 +115,38 @@ class _SettingsWidgetState extends State<SettingsView> {
                     image: DecorationImage(
                         image: AssetImage('assets/images/pattern_bitmap.png'),
                         repeat: ImageRepeat.repeat)),
-                child: const Text("Settings",
-                    style: TextStyle(fontSize: 30.0, color: Colors.white))),
+                child: Text(AppLocalizations.of(context)!.settings,
+                    style: const TextStyle(fontSize: 30.0, color: Colors.white))),
 
             ListTile(
                 leading: const Icon(Icons.dark_mode_rounded),
-                title: const Text(
-                    "Colour Theme"),
+                title: Text(AppLocalizations.of(context)!.colorTheme),
                 trailing: DropdownButton<String>(
                     value: Provider.of<ThemeModeProvider>(context).themeModeStringValue,
-                    items: 
-                      themeValues.map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                    items: [
+                      DropdownMenuItem<String>(
+                          value: "Default",
+                          child: Text(AppLocalizations.of(context)!.defaultTheme),
+                        ),
+                      DropdownMenuItem<String>(
+                          value: "Light",
+                          child: Text(AppLocalizations.of(context)!.lightTheme),
+                        ),
+                      DropdownMenuItem<String>(
+                          value: "Dark",
+                          child: Text(AppLocalizations.of(context)!.darkTheme),
+                        )
+                    ],
                     onChanged: (value) {
                       Provider.of<ThemeModeProvider>(context, listen: false).setThemeMode(value);
                     })),
 
 
             // Notifications Section
-            const ListTile(
-                title: Text("Notifications",
+            ListTile(
+                title: Text(AppLocalizations.of(context)!.notifications,
                     style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 15))),
+                        const TextStyle(fontWeight: FontWeight.bold, fontSize: 15))),
 
             // Disabled Notifications Card
             if (isNotificationsDisabled) ...{
@@ -148,15 +157,15 @@ class _SettingsWidgetState extends State<SettingsView> {
                     child: Card(
                         color: Theme.of(context).colorScheme.inversePrimary,
                         child: Container(
-                          padding: EdgeInsets.fromLTRB(15, 17, 15, 17),
+                          padding: const EdgeInsets.fromLTRB(15, 17, 15, 17),
                           child: Row(children: [
-                          Icon(Icons.notifications_off_rounded),
-                          SizedBox(width: 10.0),
-                          Flexible(
-                              child: Text(
-                                  "Notifications are disabled. Enable them in settings again to receive notifications.",
-                                  style: TextStyle(fontWeight: FontWeight.bold)))
-                        ]))),
+                            const Icon(Icons.notifications_off_rounded),
+                            const SizedBox(width: 10.0),
+                            Flexible(
+                                child: Text(
+                                    AppLocalizations.of(context)!.notificationsDisabledWarning,
+                                    style: const TextStyle(fontWeight: FontWeight.bold)))
+                          ]))),
                   )),
             },
 
@@ -168,9 +177,8 @@ class _SettingsWidgetState extends State<SettingsView> {
                     updateValue("athanTimeAlert", newValue);
                   },
                   secondary: const Icon(Icons.timer_rounded),
-                  title: const Text("Athan Reminder"),
-                  subtitle: const Text(
-                      "Notification and Athan when it's Athan Time.")),
+                  title: Text(AppLocalizations.of(context)!.athanReminder),
+                  subtitle: Text(AppLocalizations.of(context)!.athanReminderDescription)),
 
               SwitchListTile(
                   value: settings["iqamahTimeAlert"],
@@ -178,22 +186,24 @@ class _SettingsWidgetState extends State<SettingsView> {
                     updateValue("iqamahTimeAlert", newValue);
                   },
                   secondary: const Icon(Icons.record_voice_over_rounded),
-                  title: const Text("Iqamaah Reminder"),
-                  subtitle: const Text(
-                      "Notification a few minutes before Iqamah time at Masjid")),
+                  title: Text(AppLocalizations.of(context)!.iqamaahReminder),
+                  subtitle: Text(AppLocalizations.of(context)!.iqamaahReminderDescription)),
 
               ListTile(
                   enabled: settings["iqamahTimeAlert"],
                   leading: const SizedBox(),
-                  subtitle: const Text(
-                      "How much time before Iqamaah the app sends a reminder"),
+                  subtitle: Text(AppLocalizations.of(context)!.howManyMinutesBefore),
                   trailing: DropdownButton<int>(
                       value: settings["iqamahTimeAlertTime"],
                       items:
                         iqamahTimeValues.map<DropdownMenuItem<int>>((int value) {
+                          final String locale = AppLocalizations.of(context)!.localeName;
+                          final String localeWithCountry = (locale == "ar") ? "${locale}_EG" : locale;
                           return DropdownMenuItem<int>(
                             value: value,
-                            child: Text("$value minutes"),
+                            child: Text(
+                              AppLocalizations.of(context)!.minutes(
+                                NumberFormat("###", localeWithCountry).format(value))),
                           );
                         }).toList(),
                       onChanged: (settings["iqamahTimeAlert"])
@@ -209,18 +219,17 @@ class _SettingsWidgetState extends State<SettingsView> {
                   updateValue("announcementAlert", newValue);
                 },
                 secondary: const Icon(Icons.notification_important_rounded),
-                title: const Text("New Announcements"),
-                subtitle:
-                    const Text("Notifications on new Masjid Announcements")),
+                title: Text(AppLocalizations.of(context)!.newAnnouncements),
+                subtitle: Text(AppLocalizations.of(context)!.newAnnouncementsDescription)),
 
             // Info Section
-            const ListTile(
-                title: Text("Information",
-                    style: TextStyle(
+            ListTile(
+                title: Text(AppLocalizations.of(context)!.information,
+                    style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 15))),
 
             ListTile(
-              title: const Text("Admin Tools"),
+              title: Text(AppLocalizations.of(context)!.adminTools),
               leading: const Icon(Icons.admin_panel_settings),
               onTap: () => {
                 Navigator.push(
@@ -235,13 +244,13 @@ class _SettingsWidgetState extends State<SettingsView> {
             ),
 
             ListTile(
-              title: const Text("Masjid Website"),
+              title: Text(AppLocalizations.of(context)!.masjidWebsite),
               leading: const Icon(Icons.link),
               onTap: () => {launchURL("http://org.thebcma.com/kelowna")},
             ),
 
             ListTile(
-              title: const Text("Email Address"),
+              title: Text(AppLocalizations.of(context)!.emailAddress),
               leading: const Icon(Icons.link),
               onTap: () => {launchURL("mailto:kelowna.secretary@thebcma.com")},
             ),
@@ -267,13 +276,13 @@ class _SettingsWidgetState extends State<SettingsView> {
                                 image: AssetImage(
                                     'assets/images/pattern_bitmap.png'),
                                 repeat: ImageRepeat.repeat)),
-                        child: const Row(children: [
-                          Icon(Icons.recommend, color: Colors.white, size: 35),
-                          SizedBox(width: 10.0),
+                        child: Row(children: [
+                          const Icon(Icons.recommend, color: Colors.white, size: 35),
+                          const SizedBox(width: 10.0),
                           Flexible(
                               child: Text(
-                                  "Support this app by donating to the Masjid & leaving a review",
-                                  style: TextStyle(
+                                  AppLocalizations.of(context)!.supportTheApp,
+                                  style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 17)))

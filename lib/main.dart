@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:kelowna_islamic_center/firebase_options.dart';
 import 'package:kelowna_islamic_center/sections/intro/intro_view.dart';
 import 'package:provider/provider.dart';
@@ -87,7 +86,7 @@ class App extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: Provider.of<ThemeModeProvider>(context).themeMode,
-      
+
       home: (isIntroDone) ? const HomeScreenView() : const IntroView(),
     );
   }

@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import 'package:kelowna_islamic_center/sections/prayer/prayer_controller.dart';
 import 'package:kelowna_islamic_center/structs/prayer_item.dart';
 import 'package:kelowna_islamic_center/theme/theme.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PrayerList extends StatefulWidget {
   final bool isAthanTimesActive;
@@ -112,7 +115,11 @@ class _PrayerListState extends State<PrayerList> {
                               const SizedBox(width: 10.0),
                               Flexible(
                                   child: Text(
-                                      "These times are ${snapshot.data!["timeStampDiff"]} days old. Connect to the Internet to get the latest times.",
+                                      AppLocalizations.of(context)!.timesOutdatedWarning(
+                                        NumberFormat("###", 
+                                          (AppLocalizations.of(context)!.localeName == "ar") ? "ar_EG" : AppLocalizations.of(context)!.localeName
+                                        ).format(snapshot.data!["timeStampDiff"])
+                                      ),
                                       style: const TextStyle(
                                           color: Colors.white,
                                           fontWeight:

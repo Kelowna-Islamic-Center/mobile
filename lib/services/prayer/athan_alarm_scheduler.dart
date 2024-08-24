@@ -27,6 +27,10 @@ class AthanAlarmScheduler {
         enableNotificationOnKill: Platform.isIOS,
       );
 
-      await Alarm.set(alarmSettings: alarmSettings);
+      try {
+        await Alarm.set(alarmSettings: alarmSettings);
+      } catch (e) {
+        print(e);
+      }
   }
 }

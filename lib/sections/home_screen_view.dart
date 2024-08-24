@@ -1,5 +1,6 @@
 import 'package:auto_start_flutter/auto_start_flutter.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:kelowna_islamic_center/config.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:kelowna_islamic_center/sections/announcements/announcements_view
 import 'package:kelowna_islamic_center/sections/prayer/prayer_view.dart';
 import 'package:kelowna_islamic_center/sections/settings/settings_view.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeScreenView extends StatefulWidget {
   const HomeScreenView({Key? key}) : super(key: key);
@@ -23,6 +25,7 @@ class _HomeScreenState extends State<HomeScreenView> {
   void initState() {
     super.initState();
     requestPermissions();
+    initializeDateFormatting();
     setupNotificationInteractions();
   }
 
@@ -77,10 +80,19 @@ class _HomeScreenState extends State<HomeScreenView> {
         type: BottomNavigationBarType.fixed,
         currentIndex: currentIndex,
         onTap: (index) => setState(() => currentIndex = index), 
-        items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.mosque_rounded), label: 'Prayer Times'),
-            BottomNavigationBarItem(icon: Icon(Icons.notifications_rounded), label: 'Announcements'),
-            BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+        items: [
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.mosque_rounded), 
+              label: AppLocalizations.of(context)!.prayerTimes
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.notifications_rounded), 
+              label: AppLocalizations.of(context)!.announcements
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.settings), 
+              label: AppLocalizations.of(context)!.settings
+            ),
         ]
       ),
     );

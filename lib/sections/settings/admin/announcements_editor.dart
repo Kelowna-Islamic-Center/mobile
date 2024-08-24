@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:kelowna_islamic_center/sections/settings/admin/edit_announcement_page.dart';
-import 'package:kelowna_islamic_center/structs/announcement.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-import 'new_announcement_page.dart';
+import 'package:kelowna_islamic_center/sections/settings/admin/edit_announcement_page.dart';
+import 'package:kelowna_islamic_center/sections/settings/admin/new_announcement_page.dart';
+import 'package:kelowna_islamic_center/structs/announcement.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AnnouncementsEditor extends StatefulWidget {
   const AnnouncementsEditor({Key? key}) : super(key: key);
@@ -35,25 +37,25 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
       await FirebaseFirestore.instance.collection('announcements').doc(id).delete();
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Deleted Announcement")),
+        SnackBar(content: Text(AppLocalizations.of(context)!.announcementDeleted)),
       );
     } catch (error) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("An error occured: $error")),
+        SnackBar(content: Text(AppLocalizations.of(context)!.somethingWentWrong)),
       );
     }
   }
 
   Widget _deletionPopupDialog(BuildContext context, String deleteID) {
     return AlertDialog(
-      title: const Text('Are you sure you would like to delete this announcement?'),
+      title: Text(AppLocalizations.of(context)!.areYouSureYouWantToDelete),
       actions: <Widget>[
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text('Back'),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -61,8 +63,8 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
             if (!context.mounted) return;
             Navigator.of(context).pop();
           },
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-          child: const Text('Delete', style: TextStyle(color: Colors.white)),
+          style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+          child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: Theme.of(context).colorScheme.onError)),
         ),
       ],
     );
@@ -74,25 +76,17 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: ElevatedButton(
-                  onPressed: () => _navigateToAddAnnouncement(), 
-                  style: ButtonStyle( backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.green)),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.add, color: Colors.white),
-                      Text("Add Announcement", style: TextStyle(color: Colors.white))
-                    ]
-                  ),
-                )
+            ListTile(
+              tileColor: Theme.of(context).hoverColor,
+              onTap: () => _navigateToAddAnnouncement(),
+              title: Text(AppLocalizations.of(context)!.addAnnouncement, style: const TextStyle(fontWeight: FontWeight.bold)),
+              trailing: const Icon(Icons.add)
             ),
             StreamBuilder(
                 stream: FirebaseFirestore.instance.collection('announcements').orderBy('timeStamp').snapshots(),
                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   
-                  if (snapshot.hasError) return const Text('Error... Something went wrong.');
+                  if (snapshot.hasError) return Text(AppLocalizations.of(context)!.somethingWentWrong);
                   if (snapshot.connectionState == ConnectionState.waiting) return const CircularProgressIndicator();
 
                   return ListView.builder(
@@ -136,7 +130,7 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
                                         } else {
                                           if (!context.mounted) return;
                                           ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(content: Text("Couldn't open link, something went wrong.")),
+                                            SnackBar(content: Text(AppLocalizations.of(context)!.unableToOpenLink)),
                                           );
                                         }
                                       },
@@ -145,7 +139,7 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
                                       linkStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),  
                                     ),
 
-                                    const SizedBox(height: 10.0),
+                                    const SizedBox(height: 25.0),
                                     
                                     Row(children: [
                                       ElevatedButton(
@@ -153,16 +147,17 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
                                           int reversedIndex = (snapshot.data!.docs.length-1) - index;
                                           _navigateToEditAnnouncement(snapshot.data!.docs[reversedIndex].id, data[index]);
                                         },
-                                        style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
-                                        child: const Row(
+                                        style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.secondary),
+                                        child: Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            Icon(Icons.edit, color: Colors.white),
-                                            Text("Edit", style: TextStyle(color: Colors.white))
+                                            Icon(Icons.edit, color: Theme.of(context).colorScheme.onSecondary),
+                                            const SizedBox(width: 10),
+                                            Text(AppLocalizations.of(context)!.edit, style: TextStyle(color: Theme.of(context).colorScheme.onSecondary))
                                           ],
                                         )),
 
-                                      const SizedBox(width: 10.0),
+                                      const SizedBox(width: 15.0),
 
                                       ElevatedButton(
                                         onPressed: () {
@@ -172,12 +167,13 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
                                             builder: (BuildContext context) => _deletionPopupDialog(context, snapshot.data!.docs[reversedIndex].id),
                                           );
                                         },
-                                        style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-                                        child: const Row(
+                                        style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+                                        child: Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            Icon(Icons.delete, color: Colors.white),
-                                            Text("Delete", style: TextStyle(color: Colors.white))
+                                            Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
+                                            const SizedBox(width: 10),
+                                            Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: Theme.of(context).colorScheme.onError))
                                           ],
                                         ))
                                     ],)

@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class NewAnnouncementsPage extends StatefulWidget {
   const NewAnnouncementsPage({Key? key}) : super(key: key);
 
@@ -24,16 +26,23 @@ class NewAnnouncementsPageState extends State<NewAnnouncementsPage> {
       "description": description
     };
 
+    if (!context.mounted) {
+      return {
+        "success": false,
+        "message": "Failure"
+      };
+    }
+
     try {
       await FirebaseFirestore.instance.collection("announcements").add(data);
       return {
         "success": true,
-        "message": "Successfully added announcement",
+        "message": AppLocalizations.of(context)!.successfullyAddedAnnouncement,
       };
     } catch (error) {
       return {
         "success": false,
-        "message": "An error occured: $error",
+        "message": AppLocalizations.of(context)!.somethingWentWrong,
       };
     }
   }
@@ -42,7 +51,7 @@ class NewAnnouncementsPageState extends State<NewAnnouncementsPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: const Text("Add an Announcement"),
+      title: Text(AppLocalizations.of(context)!.addAnnouncement),
     ),
 
     body: SingleChildScrollView(child: 
@@ -53,13 +62,6 @@ class NewAnnouncementsPageState extends State<NewAnnouncementsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Add Announcement".toUpperCase(),
-                style: const TextStyle(
-                  fontSize: 20.0, 
-                  fontWeight: FontWeight.bold)),
-
-              const SizedBox(height: 10.0),
-
               Form(
                 key: _formKey,
                 child: Column(
@@ -67,23 +69,23 @@ class NewAnnouncementsPageState extends State<NewAnnouncementsPage> {
                   children: [
                     /* Email Address Field */
                     TextFormField(
-                      decoration: const InputDecoration(labelText: 'Enter Title'),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context)!.enterTitle),
                       keyboardType: TextInputType.text,
                       onSaved: (String? value) => title = value!,
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Title cannot be empty';
+                        if (value == null || value.isEmpty) return AppLocalizations.of(context)!.thisFieldIsRequired;
                         return null;
                       },
                     ),
 
                     /* Password Field */
                     TextFormField(
-                      decoration: const InputDecoration(labelText: 'Enter Description'),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context)!.enterDescription),
                       keyboardType: TextInputType.multiline,
                       maxLines: null,
                       onSaved: (String? value) => description = value!,
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Description cannot be empty';
+                        if (value == null || value.isEmpty) return AppLocalizations.of(context)!.thisFieldIsRequired;
                         return null;
                       },
                     ),
@@ -112,7 +114,7 @@ class NewAnnouncementsPageState extends State<NewAnnouncementsPage> {
                                   }
                                 }
                               },
-                              child: const Text('Add Announcement'),
+                              child: Text(AppLocalizations.of(context)!.addAnnouncement),
                             ),
                             const SizedBox(width: 20),
                             if (loading) const CircularProgressIndicator()

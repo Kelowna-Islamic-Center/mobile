@@ -7,6 +7,7 @@ import 'package:kelowna_islamic_center/theme/theme.dart';
 import 'package:kelowna_islamic_center/structs/announcement.dart';
 import 'package:kelowna_islamic_center/sections/announcements/announcements_controller.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AnnouncementsView extends StatelessWidget {
   const AnnouncementsView({Key? key}) : super(key: key);
@@ -32,8 +33,8 @@ class AnnouncementsView extends StatelessWidget {
                     image: AssetImage('assets/images/pattern_bitmap.png'),
                     repeat: ImageRepeat.repeat)),
             child:
-              const Text("Announcements",
-                  style: TextStyle(
+              Text(AppLocalizations.of(context)!.announcementsTitle,
+                  style: const TextStyle(
                     fontSize: 30.0,
                     color: Colors.white)
                   )
@@ -77,13 +78,13 @@ class AnnouncementsView extends StatelessWidget {
                                                     blurRadius: 4,
                                                     offset: const Offset(0, 2))
                                               ]),
-                                          child: const Row(children: [
-                                            Icon(Icons.wifi_off_rounded, color: Colors.white, size: 35),
-                                            SizedBox(width: 10.0),
+                                          child: Row(children: [
+                                            const Icon(Icons.wifi_off_rounded, color: Colors.white, size: 35),
+                                            const SizedBox(width: 10.0),
                                             Flexible(
                                               child: Text(
-                                                "You are offline, these announcements may be old. Connect to the Internet to get the latest announcements.",
-                                                style: TextStyle(
+                                                AppLocalizations.of(context)!.outdatedAnnouncementsWarning,
+                                                style: const TextStyle(
                                                     color: Colors.white,
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 13)))

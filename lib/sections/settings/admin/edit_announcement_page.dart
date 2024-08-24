@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import '../../../structs/announcement.dart';
+import 'package:kelowna_islamic_center/structs/announcement.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EditAnnouncementsPage extends StatefulWidget {
   final String announcementID;
@@ -23,6 +25,14 @@ class EditAnnouncementsPageState extends State<EditAnnouncementsPage> {
 
 
   Future<Map<String, dynamic>> _updateAnnouncement() async {
+
+    if (!context.mounted) {
+      return {
+        "success": false,
+        "message": "Failure"
+      };
+    }
+
     try {
       CollectionReference collection = FirebaseFirestore.instance.collection("announcements");
       
@@ -33,12 +43,12 @@ class EditAnnouncementsPageState extends State<EditAnnouncementsPage> {
 
       return {
         "success": true,
-        "message": "Made changes successfully",
+        "message": AppLocalizations.of(context)!.successfullyUpdatedAnnouncement,
       };
     } catch (error) {
       return {
         "success": false,
-        "message": "An error occured: $error",
+        "message": AppLocalizations.of(context)!.somethingWentWrong,
       };
     }
   }
@@ -47,7 +57,7 @@ class EditAnnouncementsPageState extends State<EditAnnouncementsPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: const Text("Change an Announcement"),
+      title: Text(AppLocalizations.of(context)!.changeAnAnnouncement),
     ),
 
     body: SingleChildScrollView(child: 
@@ -58,13 +68,6 @@ class EditAnnouncementsPageState extends State<EditAnnouncementsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Edit Announcement".toUpperCase(),
-                style: const TextStyle(
-                  fontSize: 20.0, 
-                  fontWeight: FontWeight.bold)),
-
-              const SizedBox(height: 10.0),
-
               Form(
                 key: _formKey,
                 child: Column(
@@ -73,11 +76,11 @@ class EditAnnouncementsPageState extends State<EditAnnouncementsPage> {
                     /* Email Address Field */
                     TextFormField(
                       initialValue: widget.announcement.title,
-                      decoration: const InputDecoration(labelText: 'Enter Title'),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context)!.enterTitle),
                       keyboardType: TextInputType.text,
                       onSaved: (String? value) => title = value!,
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Title cannot be empty';
+                        if (value == null || value.isEmpty) return AppLocalizations.of(context)!.thisFieldIsRequired;
                         return null;
                       },
                     ),
@@ -85,12 +88,12 @@ class EditAnnouncementsPageState extends State<EditAnnouncementsPage> {
                     /* Password Field */
                     TextFormField(
                       initialValue: widget.announcement.description,
-                      decoration: const InputDecoration(labelText: 'Enter Description'),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context)!.enterDescription),
                       keyboardType: TextInputType.multiline,
                       maxLines: null,
                       onSaved: (String? value) => description = value!,
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Description cannot be empty';
+                        if (value == null || value.isEmpty) return AppLocalizations.of(context)!.thisFieldIsRequired;
                         return null;
                       },
                     ),
@@ -119,7 +122,7 @@ class EditAnnouncementsPageState extends State<EditAnnouncementsPage> {
                                   }
                                 }
                               },
-                              child: const Text('Update Announcement'),
+                              child: Text(AppLocalizations.of(context)!.updateAnnouncement),
                             ),
                             const SizedBox(width: 20),
                             if (loading) const CircularProgressIndicator()

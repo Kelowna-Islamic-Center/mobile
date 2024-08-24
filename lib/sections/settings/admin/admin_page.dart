@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kelowna_islamic_center/sections/settings/admin/announcements_editor.dart';
-import 'package:kelowna_islamic_center/sections/settings/admin/prayer_editor.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AdminPage extends StatelessWidget {
   const AdminPage({Key? key}) : super(key: key);
@@ -11,12 +12,7 @@ class AdminPage extends StatelessWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Admin Tools"),
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: "Prayer Times"),
-              Tab(text: "Announcements")
-          ]),
+          title: Text(AppLocalizations.of(context)!.adminTools),
           actions: [
             PopupMenuButton(
               onSelected: (_) => {
@@ -25,20 +21,17 @@ class AdminPage extends StatelessWidget {
                 })
               },
               itemBuilder: (BuildContext context) {
-                return [ "Logout" ].map((String choice) {
-                  return PopupMenuItem(
-                    value: choice,
-                    child: Text(choice)
-                  );
-                }).toList();
+                return [
+                  PopupMenuItem(
+                    value: "logout",
+                    child: Text(AppLocalizations.of(context)!.logout)
+                  )
+                ];
               }
             )
           ],
         ),
-        body: const TabBarView(children: [
-          PrayerEditor(),
-          AnnouncementsEditor()
-        ])
+        body: const AnnouncementsEditor()
       )
     );
 }

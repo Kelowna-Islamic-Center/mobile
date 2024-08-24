@@ -1,11 +1,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:kelowna_islamic_center/sections/home_screen_view.dart';
 import 'package:kelowna_islamic_center/sections/intro/completion_screen_page.dart';
 import 'package:kelowna_islamic_center/sections/intro/pref_dialog_screen_page.dart';
 import 'package:kelowna_islamic_center/sections/intro/welcome_screen_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class IntroView extends StatefulWidget {
   const IntroView({Key? key}) : super(key: key);
@@ -26,23 +29,23 @@ class _IntroViewState extends State<IntroView> {
     return IntroductionScreen(
       key: key,
       rawPages: [
-        WelcomeScreenPage(),
+        const WelcomeScreenPage(),
         PrefDialogScreenPage(
-          text: "Would you like to receive athan alarms?", 
+          text: AppLocalizations.of(context)!.introReceiveAthan,
           prefKey: "athanTimeAlert", 
           incrementKey: incrementIntroKey
         ),
         PrefDialogScreenPage(
-          text: "Would you like to receive a notification a few minutes before Iqamaah at the Masjid?", 
+          text: AppLocalizations.of(context)!.introReceiveIqamaah, 
           prefKey: "iqamahTimeAlert", 
           incrementKey: incrementIntroKey
         ),
-        CompletionScreenPage()
+        const CompletionScreenPage()
       ],
       showSkipButton: false,
       showNextButton: true,
-      done: const Text("Finish Setup ->"),
-      next: const Text("Continue ->"),
+      done: Text(AppLocalizations.of(context)!.finishSetup),
+      next: Text(AppLocalizations.of(context)!.continueSetup),
       baseBtnStyle: const ButtonStyle(
         alignment: Alignment.centerRight
       ),

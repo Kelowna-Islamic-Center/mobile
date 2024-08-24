@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class PrefDialogScreenPage extends StatelessWidget {
   final VoidCallback incrementKey;
   final String text;
@@ -30,21 +32,21 @@ class PrefDialogScreenPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Row(children: [
-                        Image(
+                      Row(children: [
+                        const Image(
                           image: AssetImage("assets/images/ic_launcher.png"),
                           width: 50.0,
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Text(
-                          "Kelowna Islamic Center",
-                          style: TextStyle(fontSize: 18),
+                          AppLocalizations.of(context)!.kelownaIslamicCenter,
+                          style: const TextStyle(fontSize: 18),
                         )
                       ]),
                       const SizedBox(height: 25),
-                      const Text(
-                        "Would you like to receive a notification a few minutes before Iqamaah at the Masjid?",
-                        style: TextStyle(
+                      Text(
+                        text,
+                        style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 30.0),
                       ),
                       const SizedBox(height: 25),
@@ -54,14 +56,14 @@ class PrefDialogScreenPage extends StatelessWidget {
                             onPressed: () {
                               updateValue(true);
                             },
-                            child: const Text("Yes"),
+                            child: Text(AppLocalizations.of(context)!.yes),
                           ),
                           const SizedBox(width: 10),
                           OutlinedButton(
                             onPressed: () {
                               updateValue(false);
                             },
-                            child: const Text("No"),
+                            child: Text(AppLocalizations.of(context)!.no),
                           )
                         ],
                       )
