@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:kelowna_islamic_center/config.dart';
 
 import 'package:kelowna_islamic_center/structs/announcement.dart';
 
@@ -34,7 +35,7 @@ class EditAnnouncementsPageState extends State<EditAnnouncementsPage> {
     }
 
     try {
-      CollectionReference collection = FirebaseFirestore.instance.collection("announcements");
+      CollectionReference collection = FirebaseFirestore.instance.collection(Config.announcementCollection);
       
       await collection.doc(widget.announcementID).update({
         "title": title,

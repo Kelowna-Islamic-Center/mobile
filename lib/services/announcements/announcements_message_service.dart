@@ -24,9 +24,9 @@ class AnnouncementsMessageService {
     if (Platform.isIOS) SharedPreferencesIOS.registerWith();
     final prefs = await SharedPreferences.getInstance();
     
-    final fsSnapshot = await FirebaseFirestore.instance.collection('announcements').get();
+    final fsSnapshot = await FirebaseFirestore.instance.collection(Config.announcementCollection).get();
     // Update cached announcements data to data from Firestore
-    await prefs.setStringList("announcements", Announcement.toJsonStringFromList(Announcement.listFromJSON(fsSnapshot.docs)));
+    await prefs.setStringList(Config.announcementCollection, Announcement.toJsonStringFromList(Announcement.listFromJSON(fsSnapshot.docs)));
   }
 
   // Announcements cloud message foregroundHandler

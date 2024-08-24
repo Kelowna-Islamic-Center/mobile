@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:kelowna_islamic_center/config.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import 'package:kelowna_islamic_center/sections/settings/admin/edit_announcement_page.dart';
@@ -34,7 +35,7 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
 
   Future<void> _deleteAnnouncement(BuildContext context, String id) async {
     try {
-      await FirebaseFirestore.instance.collection('announcements').doc(id).delete();
+      await FirebaseFirestore.instance.collection(Config.announcementCollection).doc(id).delete();
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context)!.announcementDeleted)),
@@ -83,7 +84,7 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
               trailing: const Icon(Icons.add)
             ),
             StreamBuilder(
-                stream: FirebaseFirestore.instance.collection('announcements').orderBy('timeStamp').snapshots(),
+                stream: FirebaseFirestore.instance.collection(Config.announcementCollection).orderBy('timeStamp').snapshots(),
                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   
                   if (snapshot.hasError) return Text(AppLocalizations.of(context)!.somethingWentWrong);
