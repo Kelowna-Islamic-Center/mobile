@@ -14,9 +14,9 @@ class AnnouncementsView extends StatelessWidget {
   
   // Data to use for skeleton loader
   final List<Announcement> skeletonData = const [
-    Announcement(title: "Loading...", description: "This announcement is currently being loaded and this is just dummy datat", timeStamp: 0, timeString: "March 20, 2000"),
-    Announcement(title: "Loading...", description: "This announcement is currently being loaded and this is just dummy datat", timeStamp: 0, timeString: "March 20, 2000"),
-    Announcement(title: "Loading...", description: "This announcement is currently being loaded and this is just dummy datat", timeStamp: 0, timeString: "March 20, 2000")
+    Announcement(title: "Loading...", description: "This announcement is currently being loaded and this is just dummy datat", timeStamp: 0, timeString: "March 20, 2000", platforms: []),
+    Announcement(title: "Loading...", description: "This announcement is currently being loaded and this is just dummy datat", timeStamp: 0, timeString: "March 20, 2000", platforms: []),
+    Announcement(title: "Loading...", description: "This announcement is currently being loaded and this is just dummy datat", timeStamp: 0, timeString: "March 20, 2000", platforms: [])
   ];
 
   @override
@@ -114,26 +114,26 @@ class AnnouncementsView extends StatelessWidget {
                                         title: Container(
                                             padding: const EdgeInsets.fromLTRB(
                                                 10, 17, 10, 10),
-                                            child: Column(children: [
-                                              Row(children: [
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
                                                 Text(data[index].title,
                                                     style: const TextStyle(
                                                         fontSize: 26,
                                                         letterSpacing: -1,
                                                         fontWeight:
-                                                            FontWeight.w600))
-                                              ]),
-                                              const SizedBox(height: 12),
-                                              Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    const Icon(Icons.event),
-                                                    const SizedBox(width: 10),
-                                                    Text(data[index].timeString,
-                                                        style: const TextStyle(
-                                                            fontSize: 16)),
-                                                  ]),
+                                                            FontWeight.w600)),
+                                                const SizedBox(height: 12),
+                                                Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.center,
+                                                    children: [
+                                                      const Icon(Icons.event),
+                                                      const SizedBox(width: 10),
+                                                      Text(data[index].timeString,
+                                                          style: const TextStyle(
+                                                              fontSize: 16)),
+                                                    ]),
                                             ])),
                                         subtitle: Container(
                                             padding: const EdgeInsets.fromLTRB(

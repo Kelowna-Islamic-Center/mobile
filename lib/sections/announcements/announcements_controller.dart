@@ -12,7 +12,9 @@ class AnnouncementsController {
     final prefs = await SharedPreferences.getInstance();
     final fbSnapshot = await FirebaseFirestore.instance
         .collection(Config.announcementCollection)
-        .get(); // Firestore get (don't need realtime data)
+        .where("platforms", arrayContains: "mobile")
+        .get();
+
     List<dynamic>? localJSON = prefs.getStringList('announcements');
 
     if (localJSON == null || !fbSnapshot.metadata.isFromCache) {

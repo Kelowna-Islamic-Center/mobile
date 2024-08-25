@@ -137,7 +137,28 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
                                       },
                                       text: data[index].description,
                                       style: const TextStyle(fontSize: 14),
-                                      linkStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),  
+                                      linkStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),  
+                                    ),
+
+                                    const SizedBox(height: 25.0),
+
+                                    Row(
+                                      children: [
+                                        for (String platform in data[index].platforms)
+                                          Chip(
+                                            avatar: Icon(
+                                              (platform == "mobile") 
+                                                ? Icons.smartphone_rounded 
+                                                : Icons.desktop_windows_outlined
+                                            ),
+                                            label: Text(
+                                              (platform == "mobile")
+                                                ? AppLocalizations.of(context)!.mobilePlatform
+                                                : (platform == "web") 
+                                                  ? AppLocalizations.of(context)!.webPlatform
+                                                  : platform
+                                            ))
+                                      ],
                                     ),
 
                                     const SizedBox(height: 25.0),

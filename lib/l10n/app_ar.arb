@@ -65,5 +65,14 @@
     "enterDescription": "اكتب وصفا",
     "successfullyAddedAnnouncement": "تمت إضافة الإعلان بنجاح",
     "successfullyUpdatedAnnouncement": "تم تحديث الإعلان بنجاح",
-    "thisFieldIsRequired": "هذا النص مطلوب"
+    "thisFieldIsRequired": "هذا النص مطلوب",
+    "webPlatform": "مسجد صلاح للكمبيوتر",
+    "mobilePlatform": "تطبيق الهاتف",
+    "fajr": "الفجر",
+    "shurooq": "الشروق",
+    "duhr": "الظهر",
+    "asr": "العصر",
+    "maghrib": "المغرب",
+    "isha": "العشاء",
+    "jumuah": "الجمعة"
 }

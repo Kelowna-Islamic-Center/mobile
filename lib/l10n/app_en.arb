@@ -65,5 +65,14 @@
     "enterDescription": "Enter a Description",
     "successfullyAddedAnnouncement": "Successfully Added Announcement",
     "successfullyUpdatedAnnouncement": "Successfully Updated Announcement",
-    "thisFieldIsRequired": "This field is required"
+    "thisFieldIsRequired": "This field is required",
+    "webPlatform": "Prayer Times Display",
+    "mobilePlatform": "Mobile App",
+    "fajr": "Fajr - الفجر",
+    "shurooq": "Shurooq - الشروق",
+    "duhr": "Duhr - الظهر",
+    "asr": "Asr - العصر",
+    "maghrib": "Maghrib - المغرب",
+    "isha": "Isha - العشاء",
+    "jumuah": "Jumuah - الجمعة"
 }
