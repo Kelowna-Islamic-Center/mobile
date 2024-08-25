@@ -24,14 +24,14 @@ class _PrayerListState extends State<PrayerList> {
   Timer? timer;
   late Future<Map<String, dynamic>> fetchedData;
 
-  final skeletonData = const [
-    PrayerItem(startTime: "00:00 AM", iqamahTime: "00:00 AM", name: "Prayer - \u0635\u0644\u0627\u062D "),
-    PrayerItem(startTime: "00:00 AM", iqamahTime: "00:00 AM", name: "Prayer - \u0635\u0644\u0627\u062D "),
-    PrayerItem(startTime: "00:00 AM", iqamahTime: "00:00 AM", name: "Prayer - \u0635\u0644\u0627\u062D "),
-    PrayerItem(startTime: "00:00 AM", iqamahTime: "00:00 AM", name: "Prayer - \u0635\u0644\u0627\u062D "),
-    PrayerItem(startTime: "00:00 AM", iqamahTime: "00:00 AM", name: "Prayer - \u0635\u0644\u0627\u062D "),
-    PrayerItem(startTime: "00:00 AM", iqamahTime: "00:00 AM", name: "Prayer - \u0635\u0644\u0627\u062D "),
-    PrayerItem(startTime: "00:00 AM", iqamahTime: "00:00 AM", name: "Prayer - \u0635\u0644\u0627\u062D ")
+  final skeletonData = [
+    PrayerItem(id: "loading", startTime: "00:00 AM", iqamahTime: "00:00 AM", name: "Prayer - \u0635\u0644\u0627\u062D "),
+    PrayerItem(id: "loading", startTime: "00:00 AM", iqamahTime: "00:00 AM", name: "Prayer - \u0635\u0644\u0627\u062D "),
+    PrayerItem(id: "loading", startTime: "00:00 AM", iqamahTime: "00:00 AM", name: "Prayer - \u0635\u0644\u0627\u062D "),
+    PrayerItem(id: "loading", startTime: "00:00 AM", iqamahTime: "00:00 AM", name: "Prayer - \u0635\u0644\u0627\u062D "),
+    PrayerItem(id: "loading", startTime: "00:00 AM", iqamahTime: "00:00 AM", name: "Prayer - \u0635\u0644\u0627\u062D "),
+    PrayerItem(id: "loading", startTime: "00:00 AM", iqamahTime: "00:00 AM", name: "Prayer - \u0635\u0644\u0627\u062D "),
+    PrayerItem(id: "loading", startTime: "00:00 AM", iqamahTime: "00:00 AM", name: "Prayer - \u0635\u0644\u0627\u062D ")
   ];
 
   Map<String, dynamic> _highlightedIndexes = {

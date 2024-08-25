@@ -74,5 +74,6 @@
     "asr": "العصر",
     "maghrib": "المغرب",
     "isha": "العشاء",
-    "jumuah": "الجمعة"
+    "jumuah": "الجمعة",
+    "unknownPrayer": "الصلاة"
 }

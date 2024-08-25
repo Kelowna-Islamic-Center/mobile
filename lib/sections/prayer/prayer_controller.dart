@@ -11,6 +11,7 @@ class PrayerController {
 
   // Get Updated prayer times from server and firestore
   static Future<Map<String, dynamic>> fetchPrayerTimes() async {
+
     final prefs = await SharedPreferences.getInstance();
     http.Response apiResponse;
     http.Response apiResponseForNextDay;
@@ -22,10 +23,10 @@ class PrayerController {
     }
 
     Future<Map<String, dynamic>> loadLocalData() async {
+
       String? timeStamp = prefs.getString('prayerTimeStamp');
       List<dynamic>? rawJSON = prefs.getStringList('prayerTimes');
-      List<dynamic>? rawJSONForNextDay =
-          prefs.getStringList('prayerTimesNextDay');
+      List<dynamic>? rawJSONForNextDay = prefs.getStringList('prayerTimesNextDay');
 
       // If server has never been contacted, just set timeStamp to today
       timeStamp ??= DateFormat("yyyy-MM-dd").format(DateTime.now());
@@ -33,30 +34,32 @@ class PrayerController {
       // If local data for today or tomorrow is empty and device offline
       if (rawJSON == null || rawJSONForNextDay == null) {
         List<PrayerItem> noInternetList = <PrayerItem>[
-          const PrayerItem(
-              name: "Fajr",
+          PrayerItem(
+              id: "fajr",
               startTime: "No Internet",
               iqamahTime: "No Internet"),
-          const PrayerItem(
-              name: "Shurooq",
+          PrayerItem(
+              id: "shurooq",
               startTime: "No Internet",
               iqamahTime: "No Internet"),
-          const PrayerItem(
-              name: "Duhr",
+          PrayerItem(
+              id: "Duhr",
               startTime: "No Internet",
               iqamahTime: "No Internet"),
-          const PrayerItem(
-              name: "Asr", startTime: "No Internet", iqamahTime: "No Internet"),
-          const PrayerItem(
-              name: "Maghrib",
+          PrayerItem(
+              id: "Asr", 
+              startTime: "No Internet", 
+              iqamahTime: "No Internet"),
+          PrayerItem(
+              id: "Maghrib",
               startTime: "No Internet",
               iqamahTime: "No Internet"),
-          const PrayerItem(
-              name: "Isha",
+          PrayerItem(
+              id: "Isha",
               startTime: "No Internet",
               iqamahTime: "No Internet"),
-          const PrayerItem(
-              name: "Jumuah",
+          PrayerItem(
+              id: "Jumuah",
               startTime: "No Internet",
               iqamahTime: "No Internet")
         ];
@@ -80,11 +83,9 @@ class PrayerController {
         }
 
         return {
-          "timeStampDiff": daysBetween(
-              DateFormat("yyyy-MM-dd").parse(timeStamp), DateTime.now()),
-          "data": PrayerItem.listFromFetchedJson(parsedList)!,
-          "dataForNextDay":
-              PrayerItem.listFromFetchedJson(parsedListForNextDay)!
+          "timeStampDiff": daysBetween(DateFormat("yyyy-MM-dd").parse(timeStamp), DateTime.now()),
+          "data": await PrayerItem.listFromFetchedJson(parsedList),
+          "dataForNextDay": await PrayerItem.listFromFetchedJson(parsedListForNextDay)
         };
       }
     }
@@ -102,21 +103,21 @@ class PrayerController {
             .get(Uri.parse(Config.apiLinkForNextDay))
             .timeout(const Duration(seconds: 20)); // API Request for tomorrow
 
+        String timeStamp = DateFormat("yyyy-MM-dd").format(DateTime.now());
+
+        List<String> timesList = PrayerItem.toJsonStringFromList(
+            await PrayerItem.listFromFetchedJson(
+              jsonDecode(apiResponse.body)));
+
+        List<String> timesNextDayList = PrayerItem.toJsonStringFromList(
+            await PrayerItem.listFromFetchedJson(
+                jsonDecode(apiResponseForNextDay.body)));
+
         // Set local data to server data
         if (apiResponse.statusCode == 200) {
-          await prefs.setString(
-              "prayerTimeStamp",
-              DateFormat("yyyy-MM-dd")
-                  .format(DateTime.now())); // Cache server date
-          await prefs.setStringList(
-              "prayerTimes",
-              PrayerItem.toJsonStringFromList(PrayerItem.listFromFetchedJson(
-                  jsonDecode(apiResponse.body)))); // Cache server data
-          await prefs.setStringList(
-              "prayerTimesNextDay",
-              PrayerItem.toJsonStringFromList(PrayerItem.listFromFetchedJson(
-                  jsonDecode(
-                      apiResponseForNextDay.body)))); // Cache server data
+          await prefs.setString("prayerTimeStamp", timeStamp); // Cache server date
+          await prefs.setStringList("prayerTimes", timesList); // Cache server data
+          await prefs.setStringList("prayerTimesNextDay", timesNextDayList); // Cache server data
         }
 
         return await loadLocalData(); // Reload localData after update

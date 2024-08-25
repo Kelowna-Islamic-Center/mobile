@@ -41,12 +41,26 @@ class ApiFetchService {
     try {
       apiResponse = await http.get(Uri.parse(Config.apiLink)).timeout(const Duration(seconds: 30)); // BCMA API Request
       apiResponseForNextDay = await http.get(Uri.parse(Config.apiLinkForNextDay)).timeout(const Duration(seconds: 30));
+
+      String timeStamp = DateFormat("yyyy-MM-dd").format(DateTime.now());
+
+      List<String> timesList = PrayerItem.toJsonStringFromList(
+        await PrayerItem.listFromFetchedJson(
+          jsonDecode(apiResponse.body)
+        )
+      );
+
+      List<String> timesNextDayList = PrayerItem.toJsonStringFromList(
+        await PrayerItem.listFromFetchedJson(
+          jsonDecode(apiResponseForNextDay.body)
+        )
+      );
       
       // Set local data to server data
       if (apiResponse.statusCode == 200) {
-        await prefs.setString("prayerTimeStamp", DateFormat("yyyy-MM-dd").format(DateTime.now())); // Cache server date
-        await prefs.setStringList("prayerTimes", PrayerItem.toJsonStringFromList(PrayerItem.listFromFetchedJson(jsonDecode(apiResponse.body)))); // Cache server data for today's times
-        await prefs.setStringList("prayerTimesNextDay", PrayerItem.toJsonStringFromList(PrayerItem.listFromFetchedJson(jsonDecode(apiResponseForNextDay.body)))); // Cache server data for tomorrow's times
+        await prefs.setString("prayerTimeStamp", timeStamp); // Cache server date
+        await prefs.setStringList("prayerTimes", timesList); // Cache server data for today's times
+        await prefs.setStringList("prayerTimesNextDay", timesNextDayList); // Cache server data for tomorrow's times
       }
     } catch(e) {
       return;

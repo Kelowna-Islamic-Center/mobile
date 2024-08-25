@@ -139,6 +139,6 @@ class PrayerNotificationService {
         parsedList.add(jsonDecode(rawJSON[i]));
       }
 
-      return PrayerItem.listFromFetchedJson(parsedList)!;
+      return await PrayerItem.listFromFetchedJson(parsedList);
   }
 }
