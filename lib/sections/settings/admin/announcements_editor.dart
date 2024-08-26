@@ -110,10 +110,10 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
                                             fontSize: 26,
                                             letterSpacing: -1,
                                             fontWeight: FontWeight.w600)),
-                                    const SizedBox(height: 12),
+                                    const SizedBox(height: 10),
                                     Row(children: [
                                       const Icon(Icons.calendar_month),
-                                      const SizedBox(width: 5),
+                                      const SizedBox(width: 10),
                                       Text(data[index].timeString,
                                           style: const TextStyle(fontSize: 15)),
                                     ]),
@@ -140,28 +140,33 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
                                       linkStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),  
                                     ),
 
-                                    const SizedBox(height: 25.0),
+                                    const SizedBox(height: 20.0),
 
                                     Row(
                                       children: [
                                         for (String platform in data[index].platforms)
-                                          Chip(
-                                            avatar: Icon(
-                                              (platform == "mobile") 
-                                                ? Icons.smartphone_rounded 
-                                                : Icons.desktop_windows_outlined
-                                            ),
-                                            label: Text(
-                                              (platform == "mobile")
-                                                ? AppLocalizations.of(context)!.mobilePlatform
-                                                : (platform == "web") 
-                                                  ? AppLocalizations.of(context)!.webPlatform
-                                                  : platform
-                                            ))
+                                          Row(
+                                            children: [
+                                              Chip(
+                                              avatar: Icon(
+                                                (platform == "mobile") 
+                                                  ? Icons.smartphone_rounded 
+                                                  : Icons.desktop_windows_outlined
+                                              ),
+                                              label: Text(
+                                                (platform == "mobile")
+                                                  ? AppLocalizations.of(context)!.mobilePlatform
+                                                  : (platform == "web") 
+                                                    ? AppLocalizations.of(context)!.webPlatform
+                                                    : platform
+                                              )),
+                                            const SizedBox(width: 10)
+                                            ],
+                                          )
                                       ],
                                     ),
 
-                                    const SizedBox(height: 25.0),
+                                    const SizedBox(height: 10.0),
                                     
                                     Row(children: [
                                       ElevatedButton(

@@ -123,17 +123,11 @@ class AnnouncementsView extends StatelessWidget {
                                                         letterSpacing: -1,
                                                         fontWeight:
                                                             FontWeight.w600)),
-                                                const SizedBox(height: 12),
-                                                Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.center,
-                                                    children: [
-                                                      const Icon(Icons.event),
-                                                      const SizedBox(width: 10),
-                                                      Text(data[index].timeString,
-                                                          style: const TextStyle(
-                                                              fontSize: 16)),
-                                                    ]),
+                                                const SizedBox(height: 5),
+                                                Chip(
+                                                  avatar: const Icon(Icons.event),
+                                                  label: Text(data[index].timeString),
+                                                ),
                                             ])),
                                         subtitle: Container(
                                             padding: const EdgeInsets.fromLTRB(

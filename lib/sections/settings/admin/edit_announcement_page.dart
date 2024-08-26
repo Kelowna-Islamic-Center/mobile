@@ -5,6 +5,7 @@ import 'package:kelowna_islamic_center/config.dart';
 import 'package:kelowna_islamic_center/structs/announcement.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 class EditAnnouncementsPage extends StatefulWidget {
   final String announcementID;
@@ -20,6 +21,7 @@ class EditAnnouncementsPageState extends State<EditAnnouncementsPage> {
 
   String title = "";
   String description = "";
+  List<String> platforms = [];
   bool loading = false;
 
   final _formKey = GlobalKey<FormState>();
@@ -39,7 +41,8 @@ class EditAnnouncementsPageState extends State<EditAnnouncementsPage> {
       
       await collection.doc(widget.announcementID).update({
         "title": title,
-        "description": description
+        "description": description,
+        "platforms": platforms
       });
 
       return {
@@ -77,7 +80,10 @@ class EditAnnouncementsPageState extends State<EditAnnouncementsPage> {
                     /* Email Address Field */
                     TextFormField(
                       initialValue: widget.announcement.title,
-                      decoration: InputDecoration(labelText: AppLocalizations.of(context)!.enterTitle),
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context)!.enterTitle,
+                        border: const OutlineInputBorder()
+                      ),
                       keyboardType: TextInputType.text,
                       onSaved: (String? value) => title = value!,
                       validator: (value) {
@@ -86,11 +92,18 @@ class EditAnnouncementsPageState extends State<EditAnnouncementsPage> {
                       },
                     ),
 
+                    const SizedBox(height: 15),
+
                     /* Password Field */
                     TextFormField(
                       initialValue: widget.announcement.description,
-                      decoration: InputDecoration(labelText: AppLocalizations.of(context)!.enterDescription),
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context)!.enterDescription,
+                        border: const OutlineInputBorder(),
+                        alignLabelWithHint: true
+                      ),
                       keyboardType: TextInputType.multiline,
+                      minLines: 5,
                       maxLines: null,
                       onSaved: (String? value) => description = value!,
                       validator: (value) {
@@ -98,12 +111,49 @@ class EditAnnouncementsPageState extends State<EditAnnouncementsPage> {
                         return null;
                       },
                     ),
+
+
+                    const SizedBox(height: 15),
+
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.all(Radius.circular(5)),
+                        border: Border.all(
+                            color: Theme.of(context).dividerColor)
+                      ),
+                      child: MultiSelectBottomSheetField(
+                        initialValue: widget.announcement.platforms,
+                        itemsTextStyle: Theme.of(context).textTheme.bodyMedium,
+                        selectedItemsTextStyle: Theme.of(context).textTheme.bodyMedium,
+                        selectedColor: Theme.of(context).colorScheme.primary,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return AppLocalizations.of(context)!.thisFieldIsRequired;
+                          return null;
+                        },
+                        buttonText: Text(AppLocalizations.of(context)!.showOnPlatforms),
+                        cancelText: Text(AppLocalizations.of(context)!.cancel),
+                        confirmText: Text(AppLocalizations.of(context)!.confirm),
+                        decoration: const BoxDecoration(),
+                        buttonIcon: const Icon(Icons.arrow_drop_down_rounded),
+                        items: [
+                          MultiSelectItem("web", AppLocalizations.of(context)!.webPlatform),
+                          MultiSelectItem("mobile", AppLocalizations.of(context)!.mobilePlatform)
+                        ],
+                        chipDisplay: MultiSelectChipDisplay(), 
+                        onConfirm: (List<dynamic> selection) {
+                          platforms = List<String>.from(selection);
+                        }, 
+                      )
+                    ),
+
+
                     Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Row(
                           children: [
                             /* Submit Button */
-                            ElevatedButton(
+                            FilledButton(
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
                                   loading = true;
