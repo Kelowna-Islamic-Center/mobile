@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:kelowna_islamic_center/locales/locale_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -125,7 +126,7 @@ class _SettingsWidgetState extends State<SettingsView> {
                     value: Provider.of<ThemeModeProvider>(context).themeModeStringValue,
                     items: [
                       DropdownMenuItem<String>(
-                          value: "Default",
+                          value: null,
                           child: Text(AppLocalizations.of(context)!.defaultTheme),
                         ),
                       DropdownMenuItem<String>(
@@ -139,6 +140,26 @@ class _SettingsWidgetState extends State<SettingsView> {
                     ],
                     onChanged: (value) {
                       Provider.of<ThemeModeProvider>(context, listen: false).setThemeMode(value);
+                    })),
+
+            ListTile(
+                leading: const Icon(Icons.language),
+                title: Text(AppLocalizations.of(context)!.appLanguage),
+                trailing: DropdownButton<String>(
+                    value: Provider.of<LocaleProvider>(context).localeStringValue,
+                    items: [
+                      DropdownMenuItem<String>(
+                        value: null,
+                        child: Text(AppLocalizations.of(context)!.defaultLanguage),
+                      ),
+                      for (Locale locale in context.findAncestorWidgetOfExactType<MaterialApp>()!.supportedLocales)
+                        DropdownMenuItem<String>(
+                            value: locale.languageCode,
+                            child: Text(lookupAppLocalizations(locale).localeFullName),
+                          ),
+                    ],
+                    onChanged: (value) {
+                      Provider.of<LocaleProvider>(context, listen: false).setLocale(value);
                     })),
 
 

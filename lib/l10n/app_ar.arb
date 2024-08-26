@@ -1,4 +1,10 @@
 {
+    "localeFullName": "العربية",
+    "@localeFullName": {
+        "description": "Name of current locale file to be used in language selector"
+    },
+    "defaultLanguage": "اللغة الافتراضية",
+    "appLanguage": "لغة التطبيق",
     "kelownaIslamicCenter": "مسجد السلام كيلونا",
     "yourConnectionWithMasjid": "التطبيق الذي يوصلك إلى المسجد",
     "setupComplete": "تم الانتهاء من إعداد التطبيق",

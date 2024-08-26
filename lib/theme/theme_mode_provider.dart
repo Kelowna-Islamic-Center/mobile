@@ -17,9 +17,11 @@ class ThemeModeProvider with ChangeNotifier {
   }
 
   setThemeMode(String? stringValue) {
-    prefs.setString("theme", stringValue!).then((value) => 
-      notifyListeners()
-    );
+    if (stringValue == null) {
+      prefs.remove("theme").then((value) => notifyListeners());
+    } else {
+      prefs.setString("theme", stringValue).then((value) => notifyListeners());
+    }
   }
   
   ThemeMode _stringToThemeMode(String? textValue) {

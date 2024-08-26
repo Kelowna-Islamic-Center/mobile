@@ -1,4 +1,10 @@
 {
+    "localeFullName": "English",
+    "@localeFullName": {
+        "description": "Name of current locale file to be used in language selector"
+    },
+    "defaultLanguage": "Default",
+    "appLanguage": "Language",
     "kelownaIslamicCenter": "Kelowna Islamic Center",
     "yourConnectionWithMasjid": "Your Connection with the Masjid",
     "setupComplete": "All done! Setup Complete",
