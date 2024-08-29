@@ -265,6 +265,13 @@ class _SettingsWidgetState extends State<SettingsView> {
             ),
 
             ListTile(
+              title: Text(AppLocalizations.of(context)!.sourceCode),
+              subtitle: Text(AppLocalizations.of(context)!.appIsOpenSource),
+              leading: const Icon(Icons.code),
+              onTap: () => {launchURL("https://github.com/Kelowna-Islamic-Center")}
+            ),
+
+            ListTile(
               title: Text(AppLocalizations.of(context)!.masjidWebsite),
               leading: const Icon(Icons.link),
               onTap: () => {launchURL("http://org.thebcma.com/kelowna")},
