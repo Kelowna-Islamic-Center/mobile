@@ -13,9 +13,9 @@ import 'package:alarm/alarm.dart';
 
 import 'package:kelowna_islamic_center/sections/home_screen_view.dart';
 import 'package:kelowna_islamic_center/theme/theme.dart';
-import 'package:kelowna_islamic_center/services/announcements/announcements_message_service.dart';
-import 'package:kelowna_islamic_center/services/prayer/prayer_notification_service.dart';
-import 'package:kelowna_islamic_center/services/api/api_fetch_service.dart';
+import 'package:kelowna_islamic_center/services/announcements_message_service.dart';
+import 'package:kelowna_islamic_center/services/prayer_notification_service.dart';
+import 'package:kelowna_islamic_center/services/api_fetch_service.dart';
 import 'package:kelowna_islamic_center/theme/theme_mode_provider.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

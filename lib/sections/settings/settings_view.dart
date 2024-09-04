@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 
 import 'package:kelowna_islamic_center/sections/settings/admin/admin_page.dart';
 import 'package:kelowna_islamic_center/sections/settings/admin/auth_guard.dart';
-import 'package:kelowna_islamic_center/services/announcements/announcements_message_service.dart';
+import 'package:kelowna_islamic_center/services/announcements_message_service.dart';
 import 'package:kelowna_islamic_center/theme/theme.dart';
 import 'package:kelowna_islamic_center/theme/theme_mode_provider.dart';
 
