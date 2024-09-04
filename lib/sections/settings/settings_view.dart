@@ -1,21 +1,21 @@
-import 'dart:io';
+import "dart:io";
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:kelowna_islamic_center/locales/locale_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher_string.dart';
-import 'package:provider/provider.dart';
+import "package:firebase_auth/firebase_auth.dart";
+import "package:flutter/material.dart";
+import "package:intl/intl.dart";
+import "package:kelowna_islamic_center/locales/locale_provider.dart";
+import "package:permission_handler/permission_handler.dart";
+import "package:shared_preferences/shared_preferences.dart";
+import "package:url_launcher/url_launcher_string.dart";
+import "package:provider/provider.dart";
 
-import 'package:kelowna_islamic_center/sections/settings/admin/admin_page.dart';
-import 'package:kelowna_islamic_center/sections/settings/admin/auth_guard.dart';
-import 'package:kelowna_islamic_center/services/announcements_message_service.dart';
-import 'package:kelowna_islamic_center/theme/theme.dart';
-import 'package:kelowna_islamic_center/theme/theme_mode_provider.dart';
+import "package:kelowna_islamic_center/sections/settings/admin/admin_page.dart";
+import "package:kelowna_islamic_center/sections/settings/admin/auth_guard.dart";
+import "package:kelowna_islamic_center/services/announcements_message_service.dart";
+import "package:kelowna_islamic_center/theme/theme.dart";
+import "package:kelowna_islamic_center/theme/theme_mode_provider.dart";
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import "package:flutter_gen/gen_l10n/app_localizations.dart";
 
 class SettingsView extends StatefulWidget {
   const SettingsView({Key? key}) : super(key: key);
@@ -56,13 +56,13 @@ class _SettingsWidgetState extends State<SettingsView> {
 
   // Set settings values to data stored in SharedPreferences
   void setToStoredValues() async {
-    final prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     Map<String, dynamic> data = {
-      "iqamahTimeAlert": prefs.getBool('iqamahTimeAlert'),
-      "iqamahTimeAlertTime": prefs.getInt('iqamahTimeAlertTime'),
+      "iqamahTimeAlert": prefs.getBool("iqamahTimeAlert"),
+      "iqamahTimeAlertTime": prefs.getInt("iqamahTimeAlertTime"),
       "athanTimeAlert": prefs.getBool("athanTimeAlert"),
-      "announcementAlert": prefs.getBool('announcementAlert')
+      "announcementAlert": prefs.getBool("announcementAlert")
     };
 
     data.forEach((key, value) async {
@@ -74,7 +74,7 @@ class _SettingsWidgetState extends State<SettingsView> {
           await prefs.setBool(key, settings[key]);
         }
       } else {
-        // Get the SharedPreferences settings set by user and set everything to match thier values
+        // Get the SharedPreferences settings set by user and set everything to match their values
         setState(() => settings[key] = value);
       }
     });
@@ -88,7 +88,7 @@ class _SettingsWidgetState extends State<SettingsView> {
     }
 
     // Set SharedPreferences and setState
-    final prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     if (value is int) {
       await prefs.setInt(key, value);
     } else if (value is bool) {
@@ -109,15 +109,15 @@ class _SettingsWidgetState extends State<SettingsView> {
             // Top "Announcements" Title Header
             Container(
                 width: double.infinity,
-                margin: const EdgeInsets.all(0.0),
-                padding: const EdgeInsets.fromLTRB(30.0, 60.0, 30.0, 20.0),
+                margin: const EdgeInsets.all(0),
+                padding: const EdgeInsets.fromLTRB(30, 60, 30, 20),
                 decoration: const BoxDecoration(
                     gradient: AppTheme.gradient,
                     image: DecorationImage(
-                        image: AssetImage('assets/images/pattern_bitmap.png'),
+                        image: AssetImage("assets/images/pattern_bitmap.png"),
                         repeat: ImageRepeat.repeat)),
                 child: Text(AppLocalizations.of(context)!.settings,
-                    style: const TextStyle(fontSize: 30.0, color: Colors.white))),
+                    style: const TextStyle(fontSize: 30, color: Colors.white))),
 
             ListTile(
                 leading: const Icon(Icons.dark_mode_rounded),
@@ -181,7 +181,7 @@ class _SettingsWidgetState extends State<SettingsView> {
                           padding: const EdgeInsets.fromLTRB(15, 17, 15, 17),
                           child: Row(children: [
                             const Icon(Icons.notifications_off_rounded),
-                            const SizedBox(width: 10.0),
+                            const SizedBox(width: 10),
                             Flexible(
                                 child: Text(
                                     AppLocalizations.of(context)!.notificationsDisabledWarning,
@@ -218,8 +218,8 @@ class _SettingsWidgetState extends State<SettingsView> {
                       value: settings["iqamahTimeAlertTime"],
                       items:
                         iqamahTimeValues.map<DropdownMenuItem<int>>((int value) {
-                          final String locale = AppLocalizations.of(context)!.localeName;
-                          final String localeWithCountry = (locale == "ar") ? "${locale}_EG" : locale;
+                          String locale = AppLocalizations.of(context)!.localeName;
+                          String localeWithCountry = (locale == "ar") ? "${locale}_EG" : locale;
                           return DropdownMenuItem<int>(
                             value: value,
                             child: Text(
@@ -291,7 +291,7 @@ class _SettingsWidgetState extends State<SettingsView> {
                     child: Container(
                         padding: const EdgeInsets.fromLTRB(15, 17, 15, 17),
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.0),
+                            borderRadius: BorderRadius.circular(10),
                             gradient: AppTheme.gradient,
                             boxShadow: [
                               BoxShadow(
@@ -302,11 +302,11 @@ class _SettingsWidgetState extends State<SettingsView> {
                             ],
                             image: const DecorationImage(
                                 image: AssetImage(
-                                    'assets/images/pattern_bitmap.png'),
+                                    "assets/images/pattern_bitmap.png"),
                                 repeat: ImageRepeat.repeat)),
                         child: Row(children: [
                           const Icon(Icons.recommend, color: Colors.white, size: 35),
-                          const SizedBox(width: 10.0),
+                          const SizedBox(width: 10),
                           Flexible(
                               child: Text(
                                   AppLocalizations.of(context)!.supportTheApp,

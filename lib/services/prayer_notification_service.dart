@@ -1,16 +1,16 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:alarm/alarm.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:intl/intl.dart';
+import "dart:convert";
+import "dart:io";
+import "package:alarm/alarm.dart";
+import "package:flutter_local_notifications/flutter_local_notifications.dart";
+import "package:intl/intl.dart";
 
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_preferences_android/shared_preferences_android.dart';
-import 'package:shared_preferences_ios/shared_preferences_ios.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
-import 'package:workmanager/workmanager.dart';
-import 'package:kelowna_islamic_center/structs/prayer_item.dart';
+import "package:shared_preferences/shared_preferences.dart";
+import "package:shared_preferences_android/shared_preferences_android.dart";
+import "package:shared_preferences_ios/shared_preferences_ios.dart";
+import "package:timezone/data/latest.dart" as tz;
+import "package:timezone/timezone.dart" as tz;
+import "package:workmanager/workmanager.dart";
+import "package:kelowna_islamic_center/structs/prayer_item.dart";
 
 class PrayerNotificationService {
   
@@ -46,7 +46,7 @@ class PrayerNotificationService {
   // This method is called when Workmanager runs the periodic task
   // This method schedules the notifications for athan and iqamah.
   static Future<void> scheduleNextNotifications() async {
-    final List<PrayerItem> prayerItems = await getLocallyStoredPrayerTimes();
+    List<PrayerItem> prayerItems = await getLocallyStoredPrayerTimes();
 
     await scheduleNextIqamahNotification(prayerItems);
     await scheduleNextAthanAlarm(prayerItems);
@@ -60,11 +60,11 @@ class PrayerNotificationService {
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
     // If user disabled iqamah alerts, then return
-    bool? isEnabled = prefs.getBool('iqamahTimeAlert');
+    bool? isEnabled = prefs.getBool("iqamahTimeAlert");
     if (isEnabled != null && !isEnabled) return;
 
     // Get minutes before iqamah to send alert
-    int? minutesBefore = prefs.getInt('iqamahTimeAlertTime');
+    int? minutesBefore = prefs.getInt("iqamahTimeAlertTime");
     minutesBefore ??= 15; // If is null then set to 15 mins (default)
 
     for (int i = 0; i < prayerItems.length; i++) {
@@ -77,8 +77,8 @@ class PrayerNotificationService {
       tz.initializeTimeZones();
       tz.setLocalLocation(tz.getLocation("America/Vancouver"));
 
-      final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-      final tz.TZDateTime iqamahDateTime =
+      tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+      tz.TZDateTime iqamahDateTime =
           stringTimeToDateTime(iqamahTimeString, minutesBefore);
 
       // Schedule a notification only if prayer time is in the future
@@ -87,7 +87,7 @@ class PrayerNotificationService {
         PrayerItem prayer = prayerItems[i];
 
         // Prevent Duplicate notifications
-        final List<PendingNotificationRequest> pendingNotificationRequests = await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+        List<PendingNotificationRequest> pendingNotificationRequests = await flutterLocalNotificationsPlugin.pendingNotificationRequests();
         for (var map in pendingNotificationRequests) {
           if (map.id == iqamahNotificationId) return;
         }
@@ -95,8 +95,8 @@ class PrayerNotificationService {
         // If no duplicates, schedule next notification
         await flutterLocalNotificationsPlugin.zonedSchedule(
             iqamahNotificationId, // Iqamah Alert notifications id
-            '$minutesBefore minutes left before ${prayer.name} Iqamah at the Masjid',
-            '${prayer.name} Iqamah is at ${prayer.iqamahTime} today. Only $minutesBefore minutes remaining.',
+            "$minutesBefore minutes left before ${prayer.name} Iqamah at the Masjid",
+            "${prayer.name} Iqamah is at ${prayer.iqamahTime} today. Only $minutesBefore minutes remaining.",
             iqamahDateTime,
             iqamahPlatformChannelSpecifics,
             androidScheduleMode: AndroidScheduleMode.exact,
@@ -116,7 +116,7 @@ class PrayerNotificationService {
     await Alarm.init();
 
     // If user disabled athan alerts, then return
-    bool? isEnabled = prefs.getBool('athanTimeAlert');
+    bool? isEnabled = prefs.getBool("athanTimeAlert");
     if (isEnabled != null && !isEnabled) return;
 
     for (int i = 0; i < prayerItems.length; i++) {
@@ -129,8 +129,8 @@ class PrayerNotificationService {
       tz.initializeTimeZones();
       tz.setLocalLocation(tz.getLocation("America/Vancouver"));
 
-      final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-      final tz.TZDateTime athanDateTime =
+      tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+      tz.TZDateTime athanDateTime =
           stringTimeToDateTime(athanTimeString, 0);
 
       // Schedule a notification only if prayer time is in the future
@@ -141,8 +141,8 @@ class PrayerNotificationService {
           assetAudioPath: athanPath,
           loopAudio: false,
           vibrate: false,
-          notificationTitle: 'It is time for ${prayerItems[i].name} in Kelowna.',
-          notificationBody: 'Do not dismiss! To stop athan audio, you must tap this notification.',
+          notificationTitle: "It is time for ${prayerItems[i].name} in Kelowna.",
+          notificationBody: "Do not dismiss! To stop athan audio, you must tap this notification.",
           enableNotificationOnKill: false,
           notificationActionSettings: const NotificationActionSettings(hasStopButton: true, stopButtonText: "Stop Athan")
         ));
@@ -155,7 +155,7 @@ class PrayerNotificationService {
   // Checks if a prayer time has already passed
   static tz.TZDateTime stringTimeToDateTime(String prayerTimeString, int subtractMinutes) {
 
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime now = tz.TZDateTime.now(tz.local);
 
     // Set Timezone for time calculation
     tz.initializeTimeZones();
@@ -176,10 +176,10 @@ class PrayerNotificationService {
       // Init SharedPreferences
       if (Platform.isAndroid) SharedPreferencesAndroid.registerWith();
       if (Platform.isIOS) SharedPreferencesIOS.registerWith();
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
 
       // Get Prayer times to schedule notifications on
-      List<dynamic>? rawJSON = prefs.getStringList('prayerTimes');
+      List<dynamic>? rawJSON = prefs.getStringList("prayerTimes");
       rawJSON ??= [];
       List<dynamic> parsedList = [];
 

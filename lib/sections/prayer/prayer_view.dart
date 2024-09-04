@@ -1,11 +1,11 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import "dart:async";
+import "package:flutter/material.dart";
+import "package:intl/intl.dart";
 
-import 'package:kelowna_islamic_center/sections/prayer/prayer_list.dart';
-import 'package:kelowna_islamic_center/theme/theme.dart';
+import "package:kelowna_islamic_center/sections/prayer/prayer_list.dart";
+import "package:kelowna_islamic_center/theme/theme.dart";
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import "package:flutter_gen/gen_l10n/app_localizations.dart";
 
 class PrayerView extends StatefulWidget {
   const PrayerView({Key? key}) : super(key: key);
@@ -36,8 +36,8 @@ class _PrayerWidgetState extends State<PrayerView> {
   // Clock and highlight checker update
   void updateTimeDisplay() async {
     String myLocale = Localizations.localeOf(context).languageCode;
-    final String dateTime = DateFormat.jm(myLocale)
-        .addPattern(' - EEE. d MMMM')
+    String dateTime = DateFormat.jm(myLocale)
+        .addPattern(" - EEE. d MMMM")
         .format(DateTime.now());
     setState(() {
       timeString = dateTime;
@@ -57,17 +57,17 @@ class _PrayerWidgetState extends State<PrayerView> {
         // Top Time Area
         Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(35.0),
+            padding: const EdgeInsets.all(35),
             decoration: BoxDecoration(
                 gradient: (Theme.of(context).brightness == Brightness.light) ? AppTheme.gradient : null,
                 image: const DecorationImage(
-                    image: AssetImage('assets/images/pattern_bitmap.png'),
+                    image: AssetImage("assets/images/pattern_bitmap.png"),
                     repeat: ImageRepeat.repeat)),
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               Text(timeString,
                   style: TextStyle(
-                    fontSize: 24.0,
+                    fontSize: 24,
                     color: (Theme.of(context).brightness == Brightness.light) ? Colors.white : null,
                   )),
             ])),
@@ -77,20 +77,20 @@ class _PrayerWidgetState extends State<PrayerView> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).scaffoldBackgroundColor,
                   borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(15.0),
-                      topRight: Radius.circular(15.0)),
+                      topLeft: Radius.circular(15),
+                      topRight: Radius.circular(15)),
                 ),
-                transform: Matrix4.translationValues(0.0, -15.0, 0.0),
+                transform: Matrix4.translationValues(0, -15, 0),
                 child: Column(children: [
                   Padding(
-                      padding: const EdgeInsets.fromLTRB(8.0, 12.0, 8.0, 12.0),
+                      padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
                       child: ListTile(
                           leading: const Icon(Icons.calendar_month_rounded),
                           title: Text(
                               AppLocalizations.of(context)!.prayerTimesFor,
                               style: const TextStyle(
                                   fontWeight: FontWeight.normal,
-                                  fontSize: 18.0)),
+                                  fontSize: 18)),
                           trailing: DropdownButton<String>(
                             value: selectedDay,
                             onChanged: (String? value) {

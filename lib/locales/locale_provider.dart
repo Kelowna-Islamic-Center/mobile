@@ -1,5 +1,6 @@
+// ignore: prefer_double_quotes
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import "package:shared_preferences/shared_preferences.dart";
 
 class LocaleProvider with ChangeNotifier {
 

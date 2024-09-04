@@ -1,8 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:kelowna_islamic_center/sections/settings/admin/admin_page.dart';
+import "package:firebase_auth/firebase_auth.dart";
+import "package:flutter/material.dart";
+import "package:kelowna_islamic_center/sections/settings/admin/admin_page.dart";
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import "package:flutter_gen/gen_l10n/app_localizations.dart";
 
 class AdminAuthPage extends StatefulWidget {
   const AdminAuthPage({Key? key}) : super(key: key);
@@ -39,13 +39,13 @@ class AdminAuthPageState extends State<AdminAuthPage> {
         };
       }
       
-      if (e.code == 'user-not-found' ||
-          e.code == 'wrong-password' ||
-          e.code == 'invalid-email') {
+      if (e.code == "user-not-found" ||
+          e.code == "wrong-password" ||
+          e.code == "invalid-email") {
         message = AppLocalizations.of(context)!.incorrectPassword;
-      } else if (e.code == 'user-disabled') {
+      } else if (e.code == "user-disabled") {
         message = AppLocalizations.of(context)!.disabledAccount;
-      } else if (e.code == 'network-request-failed') {
+      } else if (e.code == "network-request-failed") {
         message = AppLocalizations.of(context)!.offlineLogin;
       } else {
         message = AppLocalizations.of(context)!.errorLogin;
@@ -74,28 +74,28 @@ class AdminAuthPageState extends State<AdminAuthPage> {
       body: Center(
           child: SingleChildScrollView(
               child: Card(
-                  margin: const EdgeInsets.all(15.0),
+                  margin: const EdgeInsets.all(15),
                   elevation: 3,
                   child: Padding(
-                      padding: const EdgeInsets.all(15.0),
+                      padding: const EdgeInsets.all(15),
                       child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(AppLocalizations.of(context)!.adminLoginTitle,
                                 style: const TextStyle(
-                                    fontSize: 30.0,
+                                    fontSize: 30,
                                     fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 10.0),
+                            const SizedBox(height: 10),
                             Row(children: [
                               const Icon(Icons.admin_panel_settings, size: 30),
-                              const SizedBox(width: 10.0),
+                              const SizedBox(width: 10),
                               Flexible(
                                   child: Text(
                                       AppLocalizations.of(context)!.adminDescription,
                                       style: const TextStyle(fontSize: 14)))
                             ]),
-                            const SizedBox(height: 20.0),
+                            const SizedBox(height: 20),
                             Form(
                               key: _formKey,
                               child: Column(
@@ -135,7 +135,7 @@ class AdminAuthPageState extends State<AdminAuthPage> {
                                   ),
                                   Padding(
                                       padding: const EdgeInsets.symmetric(
-                                          vertical: 16.0),
+                                          vertical: 16),
                                       child: Row(
                                         children: [
                                           /* Submit Button */

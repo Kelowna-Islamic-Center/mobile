@@ -1,14 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:kelowna_islamic_center/config.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:flutter/material.dart";
+import "package:flutter_linkify/flutter_linkify.dart";
+import "package:kelowna_islamic_center/config.dart";
+import "package:url_launcher/url_launcher_string.dart";
 
-import 'package:kelowna_islamic_center/sections/settings/admin/edit_announcement_page.dart';
-import 'package:kelowna_islamic_center/sections/settings/admin/new_announcement_page.dart';
-import 'package:kelowna_islamic_center/structs/announcement.dart';
+import "package:kelowna_islamic_center/sections/settings/admin/edit_announcement_page.dart";
+import "package:kelowna_islamic_center/sections/settings/admin/new_announcement_page.dart";
+import "package:kelowna_islamic_center/structs/announcement.dart";
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import "package:flutter_gen/gen_l10n/app_localizations.dart";
 
 class AnnouncementsEditor extends StatefulWidget {
   const AnnouncementsEditor({Key? key}) : super(key: key);
@@ -84,7 +84,7 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
               trailing: const Icon(Icons.add)
             ),
             StreamBuilder(
-                stream: FirebaseFirestore.instance.collection(Config.announcementCollection).orderBy('timeStamp').snapshots(),
+                stream: FirebaseFirestore.instance.collection(Config.announcementCollection).orderBy("timeStamp").snapshots(),
                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   
                   if (snapshot.hasError) return Text(AppLocalizations.of(context)!.somethingWentWrong);
@@ -140,7 +140,7 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
                                       linkStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),  
                                     ),
 
-                                    const SizedBox(height: 20.0),
+                                    const SizedBox(height: 20),
 
                                     Row(
                                       children: [
@@ -166,7 +166,7 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
                                       ],
                                     ),
 
-                                    const SizedBox(height: 10.0),
+                                    const SizedBox(height: 10),
                                     
                                     Row(children: [
                                       ElevatedButton(
@@ -184,7 +184,7 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
                                           ],
                                         )),
 
-                                      const SizedBox(width: 15.0),
+                                      const SizedBox(width: 15),
 
                                       ElevatedButton(
                                         onPressed: () {

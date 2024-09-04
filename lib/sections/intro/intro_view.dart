@@ -1,14 +1,14 @@
 
-import 'package:flutter/material.dart';
-import 'package:introduction_screen/introduction_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import "package:flutter/material.dart";
+import "package:introduction_screen/introduction_screen.dart";
+import "package:shared_preferences/shared_preferences.dart";
 
-import 'package:kelowna_islamic_center/sections/home_screen_view.dart';
-import 'package:kelowna_islamic_center/sections/intro/completion_screen_page.dart';
-import 'package:kelowna_islamic_center/sections/intro/pref_dialog_screen_page.dart';
-import 'package:kelowna_islamic_center/sections/intro/welcome_screen_page.dart';
+import "package:kelowna_islamic_center/sections/home_screen_view.dart";
+import "package:kelowna_islamic_center/sections/intro/completion_screen_page.dart";
+import "package:kelowna_islamic_center/sections/intro/pref_dialog_screen_page.dart";
+import "package:kelowna_islamic_center/sections/intro/welcome_screen_page.dart";
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import "package:flutter_gen/gen_l10n/app_localizations.dart";
 
 class IntroView extends StatefulWidget {
   const IntroView({Key? key}) : super(key: key);
@@ -53,10 +53,10 @@ class _IntroViewState extends State<IntroView> {
       dotsFlex: 0,
       nextFlex: 1,
       onDone: () async {
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setBool("isIntroDone", true);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool("isIntroDone", true);
         
-        Navigator.pushReplacement(
+        await Navigator.pushReplacement(
           context, 
           MaterialPageRoute(builder: (context) => const HomeScreenView())
         );

@@ -1,13 +1,13 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+import "dart:async";
+import "package:flutter/material.dart";
+import "package:intl/intl.dart";
+import "package:skeletonizer/skeletonizer.dart";
 
-import 'package:kelowna_islamic_center/sections/prayer/prayer_controller.dart';
-import 'package:kelowna_islamic_center/structs/prayer_item.dart';
-import 'package:kelowna_islamic_center/theme/theme.dart';
+import "package:kelowna_islamic_center/sections/prayer/prayer_controller.dart";
+import "package:kelowna_islamic_center/structs/prayer_item.dart";
+import "package:kelowna_islamic_center/theme/theme.dart";
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import "package:flutter_gen/gen_l10n/app_localizations.dart";
 
 class PrayerList extends StatefulWidget {
   final bool isAthanTimesActive;
@@ -99,7 +99,7 @@ class _PrayerListState extends State<PrayerList> {
                                 15, 17, 15, 17),
                             decoration: BoxDecoration(
                                 borderRadius:
-                                    BorderRadius.circular(10.0),
+                                    BorderRadius.circular(10),
                                 color: Colors.yellow[800],
                                 boxShadow: [
                                   BoxShadow(
@@ -112,7 +112,7 @@ class _PrayerListState extends State<PrayerList> {
                             child: Row(children: [
                               const Icon(Icons.wifi_off_rounded,
                                   color: Colors.white, size: 35),
-                              const SizedBox(width: 10.0),
+                              const SizedBox(width: 10),
                               Flexible(
                                   child: Text(
                                       AppLocalizations.of(context)!.timesOutdatedWarning(
@@ -165,7 +165,7 @@ class _PrayerListState extends State<PrayerList> {
                                   image: isItemActive(index)
                                       ? const DecorationImage(
                                           image: AssetImage(
-                                              'assets/images/pattern_bitmap.png'),
+                                              "assets/images/pattern_bitmap.png"),
                                           repeat: ImageRepeat.repeat)
                                       : null,
                                   borderRadius:

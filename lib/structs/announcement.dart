@@ -1,5 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:intl/intl.dart";
 
 class Announcement {
   final String title;
@@ -14,7 +14,7 @@ class Announcement {
     List<Announcement> parsedList = [];
 
     for (int i = 0; i < json.length; i++) {
-      final item = (json[i] is QueryDocumentSnapshot)? json[i].data() : json[i];
+      var item = (json[i] is QueryDocumentSnapshot)? json[i].data() : json[i];
       
       if (!(
         item.containsKey("timeStamp") || 
@@ -30,10 +30,10 @@ class Announcement {
       }
 
       String parsedTitle = item["title"].replaceAll("\\n", "\n");
-      String parsedDescription = item['description'].replaceAll("\\n", "\n");
+      String parsedDescription = item["description"].replaceAll("\\n", "\n");
       int timeStamp = (item["timeStamp"] is String) ? (int.tryParse(item["timeStamp"]!) ?? 0) : item["timeStamp"]!.seconds * 1000;
-      String parsedTimeString = DateFormat.yMMMMd('en_US').format(DateTime.fromMillisecondsSinceEpoch(timeStamp));
-      List<String> parsedPlatforms = List<String>.from(item['platforms'] as List);
+      String parsedTimeString = DateFormat.yMMMMd("en_US").format(DateTime.fromMillisecondsSinceEpoch(timeStamp));
+      List<String> parsedPlatforms = List<String>.from(item["platforms"] as List);
 
       parsedList.add(Announcement(
           timeStamp: timeStamp, // Set to timeStamp in milliseconds

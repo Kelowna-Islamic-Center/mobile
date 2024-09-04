@@ -1,11 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:kelowna_islamic_center/config.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:flutter/material.dart";
+import "package:kelowna_islamic_center/config.dart";
 
-import 'package:kelowna_islamic_center/structs/announcement.dart';
+import "package:kelowna_islamic_center/structs/announcement.dart";
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:multi_select_flutter/multi_select_flutter.dart';
+import "package:flutter_gen/gen_l10n/app_localizations.dart";
+import "package:multi_select_flutter/multi_select_flutter.dart";
 
 class EditAnnouncementsPage extends StatefulWidget {
   final String announcementID;
@@ -66,9 +66,9 @@ class EditAnnouncementsPageState extends State<EditAnnouncementsPage> {
 
     body: SingleChildScrollView(child: 
       Card(
-        margin: const EdgeInsets.all(15.0),
+        margin: const EdgeInsets.all(15),
         elevation: 3,
-        child: Padding(padding: const EdgeInsets.all(15.0),
+        child: Padding(padding: const EdgeInsets.all(15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -149,7 +149,7 @@ class EditAnnouncementsPageState extends State<EditAnnouncementsPage> {
 
 
                     Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         child: Row(
                           children: [
                             /* Submit Button */

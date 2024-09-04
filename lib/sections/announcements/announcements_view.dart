@@ -1,13 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import "package:flutter/material.dart";
+import "package:flutter_linkify/flutter_linkify.dart";
+import "package:skeletonizer/skeletonizer.dart";
+import "package:url_launcher/url_launcher_string.dart";
 
-import 'package:kelowna_islamic_center/theme/theme.dart';
-import 'package:kelowna_islamic_center/structs/announcement.dart';
-import 'package:kelowna_islamic_center/sections/announcements/announcements_controller.dart';
+import "package:kelowna_islamic_center/theme/theme.dart";
+import "package:kelowna_islamic_center/structs/announcement.dart";
+import "package:kelowna_islamic_center/sections/announcements/announcements_controller.dart";
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import "package:flutter_gen/gen_l10n/app_localizations.dart";
 
 class AnnouncementsView extends StatelessWidget {
   const AnnouncementsView({Key? key}) : super(key: key);
@@ -26,26 +26,26 @@ class AnnouncementsView extends StatelessWidget {
           // Top "Announcements" Title Header
           Container(
               width: double.infinity,
-              margin: const EdgeInsets.all(0.0),
-              padding: const EdgeInsets.fromLTRB(30.0, 50.0, 30.0, 30.0),
+              margin: const EdgeInsets.all(0),
+              padding: const EdgeInsets.fromLTRB(30, 50, 30, 30),
               decoration: const BoxDecoration(
                   gradient: AppTheme.gradient,
                   image: DecorationImage(
-                      image: AssetImage('assets/images/pattern_bitmap.png'),
+                      image: AssetImage("assets/images/pattern_bitmap.png"),
                       repeat: ImageRepeat.repeat)),
               child:
                 Text(AppLocalizations.of(context)!.announcementsTitle,
                     style: const TextStyle(
-                      fontSize: 30.0,
+                      fontSize: 30,
                       color: Colors.white)
                     )
               ),
 
           Container(
-              transform: Matrix4.translationValues(0.0, -10.0, 0.0),
+              transform: Matrix4.translationValues(0, -10, 0),
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
-                borderRadius: const BorderRadius.all(Radius.circular(10.0))
+                borderRadius: const BorderRadius.all(Radius.circular(10))
               ),
               // Prayer Items List
               child: FutureBuilder<Map<String, dynamic>>(
@@ -68,7 +68,7 @@ class AnnouncementsView extends StatelessWidget {
                                 child: Container(
                                     padding: const EdgeInsets.fromLTRB(15, 17, 15, 17),
                                     decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10.0),
+                                        borderRadius: BorderRadius.circular(10),
                                         color: Colors.yellow[800],
                                         boxShadow: [
                                           BoxShadow(
@@ -79,7 +79,7 @@ class AnnouncementsView extends StatelessWidget {
                                         ]),
                                     child: Row(children: [
                                       const Icon(Icons.wifi_off_rounded, color: Colors.white, size: 35),
-                                      const SizedBox(width: 10.0),
+                                      const SizedBox(width: 10),
                                       Flexible(
                                         child: Text(
                                           AppLocalizations.of(context)!.outdatedAnnouncementsWarning,

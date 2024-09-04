@@ -1,18 +1,18 @@
-import 'dart:async';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import "dart:async";
+import "dart:convert";
+import "package:http/http.dart" as http;
+import "package:intl/intl.dart";
+import "package:shared_preferences/shared_preferences.dart";
 
-import 'package:kelowna_islamic_center/config.dart';
-import 'package:kelowna_islamic_center/structs/prayer_item.dart';
+import "package:kelowna_islamic_center/config.dart";
+import "package:kelowna_islamic_center/structs/prayer_item.dart";
 
 class PrayerController {
 
   // Get Updated prayer times from server and firestore
   static Future<Map<String, dynamic>> fetchPrayerTimes() async {
 
-    final prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     http.Response apiResponse;
     http.Response apiResponseForNextDay;
 
@@ -24,9 +24,9 @@ class PrayerController {
 
     Future<Map<String, dynamic>> loadLocalData() async {
 
-      String? timeStamp = prefs.getString('prayerTimeStamp');
-      List<dynamic>? rawJSON = prefs.getStringList('prayerTimes');
-      List<dynamic>? rawJSONForNextDay = prefs.getStringList('prayerTimesNextDay');
+      String? timeStamp = prefs.getString("prayerTimeStamp");
+      List<dynamic>? rawJSON = prefs.getStringList("prayerTimes");
+      List<dynamic>? rawJSONForNextDay = prefs.getStringList("prayerTimesNextDay");
 
       // If server has never been contacted, just set timeStamp to today
       timeStamp ??= DateFormat("yyyy-MM-dd").format(DateTime.now());
@@ -90,7 +90,7 @@ class PrayerController {
       }
     }
 
-    final localData = await loadLocalData();
+    var localData = await loadLocalData();
 
     // Server request
     try {
@@ -131,8 +131,8 @@ class PrayerController {
 
 // Calculate nearest prayer time (highlighted prayer time)
   static Map<String, int> getActivePrayer(List<PrayerItem> timeList) {
-    final DateTime now = DateTime.now();
-    final int nowTotalMinutes =
+    DateTime now = DateTime.now();
+    int nowTotalMinutes =
         now.hour * 60 + now.minute; // Current time in minutes
 
     int getClosestTime(bool isAthanTimes) {
@@ -154,11 +154,11 @@ class PrayerController {
 
         // Parse string into different time parts
         List<String> stringSplit = isAthanTimes
-            ? timeList[i].startTime.split(':')
-            : timeList[i].iqamahTime.split(':');
+            ? timeList[i].startTime.split(":")
+            : timeList[i].iqamahTime.split(":");
         int hour = int.parse(stringSplit[0]);
-        int minute = int.parse(stringSplit[1].split(' ')[0]);
-        String amPM = stringSplit[1].split(' ')[1];
+        int minute = int.parse(stringSplit[1].split(" ")[0]);
+        String amPM = stringSplit[1].split(" ")[1];
 
         hour = (hour == 12 && amPM.toLowerCase() == "am" ||
                 amPM.toLowerCase() == "a.m.")

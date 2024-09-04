@@ -1,24 +1,24 @@
-import 'dart:io';
+import "dart:io";
 
-import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:kelowna_islamic_center/firebase_options.dart';
-import 'package:kelowna_islamic_center/locales/locale_provider.dart';
-import 'package:kelowna_islamic_center/sections/intro/intro_view.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:workmanager/workmanager.dart'; 
-import 'package:alarm/alarm.dart';
+import "package:flutter/material.dart";
+import "package:firebase_core/firebase_core.dart";
+import "package:flutter_local_notifications/flutter_local_notifications.dart";
+import "package:kelowna_islamic_center/firebase_options.dart";
+import "package:kelowna_islamic_center/locales/locale_provider.dart";
+import "package:kelowna_islamic_center/sections/intro/intro_view.dart";
+import "package:provider/provider.dart";
+import "package:shared_preferences/shared_preferences.dart";
+import "package:workmanager/workmanager.dart"; 
+import "package:alarm/alarm.dart";
 
-import 'package:kelowna_islamic_center/sections/home_screen_view.dart';
-import 'package:kelowna_islamic_center/theme/theme.dart';
-import 'package:kelowna_islamic_center/services/announcements_message_service.dart';
-import 'package:kelowna_islamic_center/services/prayer_notification_service.dart';
-import 'package:kelowna_islamic_center/services/api_fetch_service.dart';
-import 'package:kelowna_islamic_center/theme/theme_mode_provider.dart';
+import "package:kelowna_islamic_center/sections/home_screen_view.dart";
+import "package:kelowna_islamic_center/theme/theme.dart";
+import "package:kelowna_islamic_center/services/announcements_message_service.dart";
+import "package:kelowna_islamic_center/services/prayer_notification_service.dart";
+import "package:kelowna_islamic_center/services/api_fetch_service.dart";
+import "package:kelowna_islamic_center/theme/theme_mode_provider.dart";
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import "package:flutter_gen/gen_l10n/app_localizations.dart";
 
 
 // WorkManager callbackDispatcher for handling background services
@@ -41,7 +41,7 @@ void callbackDispatcher() {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
 
   // Firebase services
   await AnnouncementsMessageService.init();
@@ -102,7 +102,7 @@ class App extends StatelessWidget {
       darkTheme: AppTheme.dark,
       themeMode: Provider.of<ThemeModeProvider>(context).themeMode,
 
-      home: (isIntroDone) ? const HomeScreenView() : const IntroView(),
+      home: isIntroDone ? const HomeScreenView() : const IntroView(),
     );
   }
 }

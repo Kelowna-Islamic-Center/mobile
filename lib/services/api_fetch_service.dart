@@ -1,14 +1,14 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences_android/shared_preferences_android.dart';
-import 'package:shared_preferences_ios/shared_preferences_ios.dart';
-import 'package:workmanager/workmanager.dart';
+import "dart:convert";
+import "dart:io";
+import "package:intl/intl.dart";
+import "package:shared_preferences/shared_preferences.dart";
+import "package:http/http.dart" as http;
+import "package:shared_preferences_android/shared_preferences_android.dart";
+import "package:shared_preferences_ios/shared_preferences_ios.dart";
+import "package:workmanager/workmanager.dart";
 
-import '../config.dart';
-import '../structs/prayer_item.dart';
+import "../config.dart";
+import "../structs/prayer_item.dart";
 
 
 class ApiFetchService {
@@ -32,7 +32,7 @@ class ApiFetchService {
     // Init SharedPreferences
     if (Platform.isAndroid) SharedPreferencesAndroid.registerWith();
     if (Platform.isIOS) SharedPreferencesIOS.registerWith();
-    final prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     http.Response apiResponse;
     http.Response apiResponseForNextDay;

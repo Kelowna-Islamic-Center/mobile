@@ -1,15 +1,15 @@
-import 'package:auto_start_flutter/auto_start_flutter.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:kelowna_islamic_center/config.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/material.dart';
+import "package:auto_start_flutter/auto_start_flutter.dart";
+import "package:firebase_messaging/firebase_messaging.dart";
+import "package:intl/date_symbol_data_local.dart";
+import "package:kelowna_islamic_center/config.dart";
+import "package:permission_handler/permission_handler.dart";
+import "package:flutter/material.dart";
 
-import 'package:kelowna_islamic_center/sections/announcements/announcements_view.dart';
-import 'package:kelowna_islamic_center/sections/prayer/prayer_view.dart';
-import 'package:kelowna_islamic_center/sections/settings/settings_view.dart';
+import "package:kelowna_islamic_center/sections/announcements/announcements_view.dart";
+import "package:kelowna_islamic_center/sections/prayer/prayer_view.dart";
+import "package:kelowna_islamic_center/sections/settings/settings_view.dart";
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import "package:flutter_gen/gen_l10n/app_localizations.dart";
 
 class HomeScreenView extends StatefulWidget {
   const HomeScreenView({Key? key}) : super(key: key);

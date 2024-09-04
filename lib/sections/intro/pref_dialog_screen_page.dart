@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import "package:flutter/material.dart";
+import "package:shared_preferences/shared_preferences.dart";
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import "package:flutter_gen/gen_l10n/app_localizations.dart";
 
 class PrefDialogScreenPage extends StatelessWidget {
   final VoidCallback incrementKey;
@@ -13,8 +13,8 @@ class PrefDialogScreenPage extends StatelessWidget {
       : super(key: key);
 
   Future<void> updateValue(bool value) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(prefKey, value);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(prefKey, value);
     incrementKey();
   }
 
@@ -27,7 +27,7 @@ class PrefDialogScreenPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Container(
-                  padding: EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,7 +35,7 @@ class PrefDialogScreenPage extends StatelessWidget {
                       Row(children: [
                         const Image(
                           image: AssetImage("assets/images/ic_launcher.png"),
-                          width: 50.0,
+                          width: 50,
                         ),
                         const SizedBox(width: 10),
                         Text(
@@ -47,7 +47,7 @@ class PrefDialogScreenPage extends StatelessWidget {
                       Text(
                         text,
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 30.0),
+                            fontWeight: FontWeight.bold, fontSize: 30),
                       ),
                       const SizedBox(height: 25),
                       Row(

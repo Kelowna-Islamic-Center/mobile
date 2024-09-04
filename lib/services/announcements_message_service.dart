@@ -1,14 +1,14 @@
-import 'dart:io';
+import "dart:io";
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:kelowna_islamic_center/config.dart';
-import 'package:kelowna_islamic_center/structs/announcement.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_preferences_android/shared_preferences_android.dart';
-import 'package:shared_preferences_ios/shared_preferences_ios.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:firebase_core/firebase_core.dart";
+import "package:firebase_messaging/firebase_messaging.dart";
+import "package:flutter_local_notifications/flutter_local_notifications.dart";
+import "package:kelowna_islamic_center/config.dart";
+import "package:kelowna_islamic_center/structs/announcement.dart";
+import "package:shared_preferences/shared_preferences.dart";
+import "package:shared_preferences_android/shared_preferences_android.dart";
+import "package:shared_preferences_ios/shared_preferences_ios.dart";
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 AndroidNotificationChannel? channel;
@@ -22,9 +22,9 @@ class AnnouncementsMessageService {
     // Init SharedPreferences
     if (Platform.isAndroid) SharedPreferencesAndroid.registerWith();
     if (Platform.isIOS) SharedPreferencesIOS.registerWith();
-    final prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     
-    final fsSnapshot = await FirebaseFirestore.instance.collection(Config.announcementCollection).get();
+    QuerySnapshot<Map<String, dynamic>> fsSnapshot = await FirebaseFirestore.instance.collection(Config.announcementCollection).get();
     // Update cached announcements data to data from Firestore
     await prefs.setStringList(Config.announcementCollection, Announcement.toJsonStringFromList(Announcement.listFromJSON(fsSnapshot.docs)));
   }
@@ -36,7 +36,7 @@ class AnnouncementsMessageService {
       AndroidNotification? android = message.notification?.android;
       
       if (notification != null && android != null) {
-        flutterLocalNotificationsPlugin.show(
+        await flutterLocalNotificationsPlugin.show(
             notification.hashCode,
             notification.title,
             notification.body,
@@ -58,13 +58,13 @@ class AnnouncementsMessageService {
     // Create a high priority channel for Android
     if (Platform.isAndroid) {
       channel = const AndroidNotificationChannel(
-        'announcements_channel', // id
-        'New Announcement Notifications', // title
-        description: 'Receive a notification whenever there is a new Masjid announcement.',
+        "announcements_channel", // id
+        "New Announcement Notifications", // title
+        description: "Receive a notification whenever there is a new Masjid announcement.",
         importance: Importance.high,
       );
       
-      const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+      const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings("@mipmap/ic_launcher");
       await flutterLocalNotificationsPlugin.initialize(const InitializationSettings(android: initializationSettingsAndroid));
       await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel!);
     }
@@ -81,8 +81,8 @@ class AnnouncementsMessageService {
     }
 
     // Subscribe to announcements if the user has never set any settings (first time launch)
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool("announcementAlert") == null) FirebaseMessaging.instance.subscribeToTopic(Config.announcementTopic);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool("announcementAlert") == null) await FirebaseMessaging.instance.subscribeToTopic(Config.announcementTopic);
   }
 
   static void toggleSubscription(bool enable) {

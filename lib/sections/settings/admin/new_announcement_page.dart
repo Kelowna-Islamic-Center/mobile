@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:flutter/material.dart";
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:kelowna_islamic_center/config.dart';
-import 'package:multi_select_flutter/multi_select_flutter.dart';
+import "package:flutter_gen/gen_l10n/app_localizations.dart";
+import "package:kelowna_islamic_center/config.dart";
+import "package:multi_select_flutter/multi_select_flutter.dart";
 
 class NewAnnouncementsPage extends StatefulWidget {
   const NewAnnouncementsPage({Key? key}) : super(key: key);
@@ -60,9 +60,9 @@ class NewAnnouncementsPageState extends State<NewAnnouncementsPage> {
 
     body: SingleChildScrollView(child: 
       Card(
-        margin: const EdgeInsets.all(15.0),
+        margin: const EdgeInsets.all(15),
         elevation: 3,
-        child: Padding(padding: const EdgeInsets.all(15.0),
+        child: Padding(padding: const EdgeInsets.all(15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -139,7 +139,7 @@ class NewAnnouncementsPageState extends State<NewAnnouncementsPage> {
                     ),
 
                     Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         child: Row(
                           children: [
                             /* Submit Button */
