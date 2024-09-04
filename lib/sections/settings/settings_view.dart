@@ -170,7 +170,7 @@ class _SettingsWidgetState extends State<SettingsView> {
                         const TextStyle(fontWeight: FontWeight.bold, fontSize: 15))),
 
             // Disabled Notifications Card
-            if (isNotificationsDisabled) ...{
+            if (isNotificationsDisabled && Platform.isAndroid) ...{
               Container(
                   margin: const EdgeInsets.fromLTRB(15, 0, 15, 0),
                   child: SizedBox(
@@ -190,49 +190,47 @@ class _SettingsWidgetState extends State<SettingsView> {
                   )),
             },
 
-            /* Iqamah Alert Settings (ANDROID ONLY) */
-            if (Platform.isAndroid) ...[
-              SwitchListTile(
-                  value: settings["athanTimeAlert"],
-                  onChanged: (bool newValue) {
-                    updateValue("athanTimeAlert", newValue);
-                  },
-                  secondary: const Icon(Icons.timer_rounded),
-                  title: Text(AppLocalizations.of(context)!.athanReminder),
-                  subtitle: Text(AppLocalizations.of(context)!.athanReminderDescription)),
+            /* Iqamah Alert Settings */
+            SwitchListTile(
+                value: settings["athanTimeAlert"],
+                onChanged: (bool newValue) {
+                  updateValue("athanTimeAlert", newValue);
+                },
+                secondary: const Icon(Icons.timer_rounded),
+                title: Text(AppLocalizations.of(context)!.athanReminder),
+                subtitle: Text(AppLocalizations.of(context)!.athanReminderDescription)),
 
-              SwitchListTile(
-                  value: settings["iqamahTimeAlert"],
-                  onChanged: (bool newValue) {
-                    updateValue("iqamahTimeAlert", newValue);
-                  },
-                  secondary: const Icon(Icons.record_voice_over_rounded),
-                  title: Text(AppLocalizations.of(context)!.iqamaahReminder),
-                  subtitle: Text(AppLocalizations.of(context)!.iqamaahReminderDescription)),
+            SwitchListTile(
+                value: settings["iqamahTimeAlert"],
+                onChanged: (bool newValue) {
+                  updateValue("iqamahTimeAlert", newValue);
+                },
+                secondary: const Icon(Icons.record_voice_over_rounded),
+                title: Text(AppLocalizations.of(context)!.iqamaahReminder),
+                subtitle: Text(AppLocalizations.of(context)!.iqamaahReminderDescription)),
 
-              ListTile(
-                  enabled: settings["iqamahTimeAlert"],
-                  leading: const SizedBox(),
-                  subtitle: Text(AppLocalizations.of(context)!.howManyMinutesBefore),
-                  trailing: DropdownButton<int>(
-                      value: settings["iqamahTimeAlertTime"],
-                      items:
-                        iqamahTimeValues.map<DropdownMenuItem<int>>((int value) {
-                          String locale = AppLocalizations.of(context)!.localeName;
-                          String localeWithCountry = (locale == "ar") ? "${locale}_EG" : locale;
-                          return DropdownMenuItem<int>(
-                            value: value,
-                            child: Text(
-                              AppLocalizations.of(context)!.minutes(
-                                NumberFormat("###", localeWithCountry).format(value))),
-                          );
-                        }).toList(),
-                      onChanged: (settings["iqamahTimeAlert"])
-                          ? (value) {
-                              updateValue("iqamahTimeAlertTime", value);
-                            }
-                          : null)),
-            ],
+            ListTile(
+                enabled: settings["iqamahTimeAlert"],
+                leading: const SizedBox(),
+                subtitle: Text(AppLocalizations.of(context)!.howManyMinutesBefore),
+                trailing: DropdownButton<int>(
+                    value: settings["iqamahTimeAlertTime"],
+                    items:
+                      iqamahTimeValues.map<DropdownMenuItem<int>>((int value) {
+                        String locale = AppLocalizations.of(context)!.localeName;
+                        String localeWithCountry = (locale == "ar") ? "${locale}_EG" : locale;
+                        return DropdownMenuItem<int>(
+                          value: value,
+                          child: Text(
+                            AppLocalizations.of(context)!.minutes(
+                              NumberFormat("###", localeWithCountry).format(value))),
+                        );
+                      }).toList(),
+                    onChanged: (settings["iqamahTimeAlert"])
+                        ? (value) {
+                            updateValue("iqamahTimeAlertTime", value);
+                          }
+                        : null)),
 
             SwitchListTile(
                 value: settings["announcementAlert"],

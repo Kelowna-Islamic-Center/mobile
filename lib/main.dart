@@ -56,13 +56,10 @@ Future<void> main() async {
   }
 
   // Initialize app services
-  // Workmanager tasks are android only for the time being
-  if (Platform.isAndroid) {
-    await Alarm.init();
-    await Workmanager().initialize(callbackDispatcher);
-    await ApiFetchService.initBackgroundService();
-    await PrayerNotificationService.initBackgroundService();
-  }
+  await Alarm.init();
+  await Workmanager().initialize(callbackDispatcher);
+  await ApiFetchService.initBackgroundService();
+  await PrayerNotificationService.initBackgroundService();
 
   // Check if user has skipped the intro
   bool? isIntroDone = prefs.getBool("isIntroDone");
