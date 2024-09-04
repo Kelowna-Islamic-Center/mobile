@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kelowna_islamic_center/firebase_options.dart';
 import 'package:kelowna_islamic_center/locales/locale_provider.dart';
 import 'package:kelowna_islamic_center/sections/intro/intro_view.dart';
@@ -47,13 +48,18 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
+
+  if (Platform.isAndroid) {
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
+    await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestExactAlarmsPermission();
+  }
 
   // Initialize app services
   // Workmanager tasks are android only for the time being
   if (Platform.isAndroid) {
     await Alarm.init();
-    await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+    await Workmanager().initialize(callbackDispatcher);
     await ApiFetchService.initBackgroundService();
     await PrayerNotificationService.initBackgroundService();
   }

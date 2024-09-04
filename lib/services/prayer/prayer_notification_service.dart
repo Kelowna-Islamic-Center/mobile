@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:alarm/alarm.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 
-import 'package:kelowna_islamic_center/services/prayer/athan_alarm_scheduler.dart';
-import 'package:kelowna_islamic_center/services/prayer/iqamah_notification_scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_android/shared_preferences_android.dart';
 import 'package:shared_preferences_ios/shared_preferences_ios.dart';
@@ -13,7 +13,23 @@ import 'package:workmanager/workmanager.dart';
 import 'package:kelowna_islamic_center/structs/prayer_item.dart';
 
 class PrayerNotificationService {
+  
   static const String taskUniqueName = "prayerNotificationsServiceTask";
+  static const String athanPath = "assets/audio/athan.mp3";
+  
+  static const int iqamahNotificationId = 50;
+  static const int athanNotificationId = 30;
+
+  static const NotificationDetails iqamahPlatformChannelSpecifics = NotificationDetails(
+    android: AndroidNotificationDetails(
+        "iqamah_alert_service", 
+        "Iqamah Reminders",
+        channelDescription:
+            "Receive a reminder a set amount of minutes before Iqamah to go to the Masjid.",
+        importance: Importance.max,
+        priority: Priority.max),
+  );
+
 
   // Initialize the background service used for scheduling prayer notifications and alarms
   static Future<void> initBackgroundService() async {
@@ -31,6 +47,7 @@ class PrayerNotificationService {
   // This method schedules the notifications for athan and iqamah.
   static Future<void> scheduleNextNotifications() async {
     final List<PrayerItem> prayerItems = await getLocallyStoredPrayerTimes();
+
     await scheduleNextIqamahNotification(prayerItems);
     await scheduleNextAthanAlarm(prayerItems);
   }
@@ -40,6 +57,7 @@ class PrayerNotificationService {
       List<PrayerItem> prayerItems) async {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
     // If user disabled iqamah alerts, then return
     bool? isEnabled = prefs.getBool('iqamahTimeAlert');
@@ -53,7 +71,7 @@ class PrayerNotificationService {
       String iqamahTimeString = prayerItems[i].iqamahTime;
 
       // Skip Shurooq or if value of iqamahTimeString is "No Internet"
-      if (i == 1 || iqamahTimeString == "No Internet") continue;
+      if (prayerItems[i].id.toLowerCase() == "shurooq" || iqamahTimeString == "No Internet") continue;
 
       // Set Timezone for time calculation
       tz.initializeTimeZones();
@@ -65,9 +83,27 @@ class PrayerNotificationService {
 
       // Schedule a notification only if prayer time is in the future
       if (iqamahDateTime.isAfter(now)) {
-        IqamahNotificationScheduler.scheduleNotification(
-            iqamahDateTime, prayerItems[i], minutesBefore);
-        break;
+
+        PrayerItem prayer = prayerItems[i];
+
+        // Prevent Duplicate notifications
+        final List<PendingNotificationRequest> pendingNotificationRequests = await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+        for (var map in pendingNotificationRequests) {
+          if (map.id == iqamahNotificationId) return;
+        }
+
+        // If no duplicates, schedule next notification
+        await flutterLocalNotificationsPlugin.zonedSchedule(
+            iqamahNotificationId, // Iqamah Alert notifications id
+            '$minutesBefore minutes left before ${prayer.name} Iqamah at the Masjid',
+            '${prayer.name} Iqamah is at ${prayer.iqamahTime} today. Only $minutesBefore minutes remaining.',
+            iqamahDateTime,
+            iqamahPlatformChannelSpecifics,
+            androidScheduleMode: AndroidScheduleMode.exact,
+            uiLocalNotificationDateInterpretation:
+                UILocalNotificationDateInterpretation.absoluteTime);
+
+        return;
       }
     }
   }
@@ -75,8 +111,9 @@ class PrayerNotificationService {
   // Schedule Athan Alarm for the next prayer
   static Future<void> scheduleNextAthanAlarm(
       List<PrayerItem> prayerItems) async {
-    
+      
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    await Alarm.init();
 
     // If user disabled athan alerts, then return
     bool? isEnabled = prefs.getBool('athanTimeAlert');
@@ -86,7 +123,7 @@ class PrayerNotificationService {
       String athanTimeString = prayerItems[i].startTime;
 
       // Skip Shurooq or if value of iqamahTimeString is "No Internet"
-      if (i == 1 || athanTimeString == "No Internet") continue;
+      if (prayerItems[i].id.toLowerCase() == "shurooq" || athanTimeString == "No Internet") continue;
 
       // Set Timezone for time calculation
       tz.initializeTimeZones();
@@ -98,7 +135,18 @@ class PrayerNotificationService {
 
       // Schedule a notification only if prayer time is in the future
       if (athanDateTime.isAfter(now)) {
-        AthanAlarmScheduler.scheduleAlarm(athanDateTime, prayerItems[i]);
+        await Alarm.set(alarmSettings: AlarmSettings(
+          id: athanNotificationId,
+          dateTime: athanDateTime,
+          assetAudioPath: athanPath,
+          loopAudio: false,
+          vibrate: false,
+          notificationTitle: 'It is time for ${prayerItems[i].name} in Kelowna.',
+          notificationBody: 'Do not dismiss! To stop athan audio, you must tap this notification.',
+          enableNotificationOnKill: false,
+          notificationActionSettings: const NotificationActionSettings(hasStopButton: true, stopButtonText: "Stop Athan")
+        ));
+
         break;
       }
     }
