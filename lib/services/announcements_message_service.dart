@@ -82,7 +82,9 @@ class AnnouncementsMessageService {
 
     // Subscribe to announcements if the user has never set any settings (first time launch)
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool("announcementAlert") == null) await FirebaseMessaging.instance.subscribeToTopic(Config.announcementTopic);
+    try {
+      if (prefs.getBool("announcementAlert") == null) await FirebaseMessaging.instance.subscribeToTopic(Config.announcementTopic);
+    } catch (_) {}
   }
 
   static void toggleSubscription(bool enable) {

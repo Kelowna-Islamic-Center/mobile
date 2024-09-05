@@ -175,7 +175,7 @@ class _PrayerListState extends State<PrayerList> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(data[index].name,
+                                    Text(data[index].name ?? data[index].id,
                                         style: TextStyle(
                                             fontSize: 20,
                                             color: isItemActive(index)
