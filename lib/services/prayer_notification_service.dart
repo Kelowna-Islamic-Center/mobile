@@ -15,6 +15,7 @@ import "package:kelowna_islamic_center/structs/prayer_item.dart";
 class PrayerNotificationService {
   
   static const String taskUniqueName = "prayerNotificationsServiceTask";
+  static const String iOSBackgroundAppRefreshName = "org.kelownaislamiccenter.workmanager.iOSBackgroundAppRefresh";
   static const String athanPath = "assets/audio/athan.mp3";
   
   static const int iqamahNotificationId = 50;
@@ -34,12 +35,23 @@ class PrayerNotificationService {
   // Initialize the background service used for scheduling prayer notifications and alarms
   static Future<void> initBackgroundService() async {
     // Periodic Task that keeps checking for next Prayer to schedule a notification for
-    await Workmanager().registerPeriodicTask("1", taskUniqueName,
-        frequency: const Duration(hours: 1),
+    if (Platform.isIOS) {
+      await Workmanager().registerPeriodicTask(
+        iOSBackgroundAppRefreshName,
+        iOSBackgroundAppRefreshName,
+        initialDelay: const Duration(seconds: 30),
+        frequency: const Duration(hours: 1), // Ignored on iOS, rather set in AppDelegate.swift
+      );
+
+      return;
+    }
+    
+    await Workmanager().registerPeriodicTask(
+        taskUniqueName, 
+        taskUniqueName,
         existingWorkPolicy: ExistingWorkPolicy.keep,
-        initialDelay: const Duration(
-            seconds:
-                30) // Required otherwise fails on first time setup due to empty sharedPreferences
+        frequency: const Duration(hours: 1),
+        initialDelay: const Duration(seconds: 30) // Required otherwise fails on first time setup due to empty sharedPreferences
         );
   }
 

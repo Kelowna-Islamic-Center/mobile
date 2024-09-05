@@ -28,6 +28,9 @@ void callbackDispatcher() {
       case PrayerNotificationService.taskUniqueName:
         await PrayerNotificationService.scheduleNextNotifications();
         break;
+      case PrayerNotificationService.iOSBackgroundAppRefreshName:
+        await PrayerNotificationService.scheduleNextNotifications();
+        break;
       case ApiFetchService.taskUniqueName:
         await ApiFetchService.updateSharedPreferencesTimes();
         break;
