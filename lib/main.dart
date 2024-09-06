@@ -68,6 +68,10 @@ Future<void> main() async {
   bool? isIntroDone = prefs.getBool("isIntroDone");
   isIntroDone ??= false;
 
+  if (!isIntroDone) {
+    await prefs.clear();
+  }
+
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
