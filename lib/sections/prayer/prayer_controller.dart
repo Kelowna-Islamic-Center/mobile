@@ -92,10 +92,14 @@ class PrayerController {
 
     var localData = await loadLocalData();
 
+    // Athan calculation method that was used in cached local data (used to ensure that new times are calculated on method change)
+    String? methodStamp = prefs.getString("prayerCalculationMethodStamp");
+    String? currentCalculationMethod = prefs.getString("calculationMethod");
+
     // Server request
     try {
-      // Update local data only if times are outdated
-      if (localData["timeStampDiff"] > 0 || localData["timeStampDiff"] == -1) {
+      // Update local data only if times are outdated or the athan calculation method has been changed
+      if ((localData["timeStampDiff"] > 0 || localData["timeStampDiff"] == -1) || methodStamp != currentCalculationMethod) {
         apiResponse = await http
             .get(Uri.parse(Config.apiLink))
             .timeout(const Duration(seconds: 20)); // API Request for today
@@ -115,6 +119,9 @@ class PrayerController {
 
         // Set local data to server data
         if (apiResponse.statusCode == 200) {
+          if (currentCalculationMethod != null) {
+            await prefs.setString("prayerCalculationMethodStamp", currentCalculationMethod); // Cache calculation method for stamp
+          }
           await prefs.setString("prayerTimeStamp", timeStamp); // Cache server date
           await prefs.setStringList("prayerTimes", timesList); // Cache server data
           await prefs.setStringList("prayerTimesNextDay", timesNextDayList); // Cache server data
@@ -129,7 +136,7 @@ class PrayerController {
     }
   }
 
-// Calculate nearest prayer time (highlighted prayer time)
+  // Calculate closest prayer time (responsible for highlighting the next prayer time)
   static Map<String, int> getActivePrayer(List<PrayerItem> timeList) {
     DateTime now = DateTime.now();
     int nowTotalMinutes =
