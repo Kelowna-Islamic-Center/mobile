@@ -1,4 +1,3 @@
-import "package:auto_start_flutter/auto_start_flutter.dart";
 import "package:firebase_messaging/firebase_messaging.dart";
 import "package:intl/date_symbol_data_local.dart";
 import "package:kelowna_islamic_center/config.dart";
@@ -42,9 +41,6 @@ class _HomeScreenState extends State<HomeScreenView> {
         Permission.scheduleExactAlarm.request();
       }
     });
-
-    // Permission to allow Athan Alarms to wake android phones
-    await getAutoStartPermission();
   }
 
   // Notification click handler
