@@ -28,6 +28,7 @@ class _SettingsWidgetState extends State<SettingsView> {
 
   final Map<String, dynamic> settings = {
     // Default Values
+    "calculationMethod": "hanafi",
     "iqamahTimeAlert": true,
     "iqamahTimeAlertTime": 15,
     "athanTimeAlert": true,
@@ -59,6 +60,7 @@ class _SettingsWidgetState extends State<SettingsView> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     Map<String, dynamic> data = {
+      "calculationMethod": prefs.getString("calculationMethod"),
       "iqamahTimeAlert": prefs.getBool("iqamahTimeAlert"),
       "iqamahTimeAlertTime": prefs.getInt("iqamahTimeAlertTime"),
       "athanTimeAlert": prefs.getBool("athanTimeAlert"),
@@ -93,6 +95,8 @@ class _SettingsWidgetState extends State<SettingsView> {
       await prefs.setInt(key, value);
     } else if (value is bool) {
       await prefs.setBool(key, value);
+    } else if (value is String) {
+      await prefs.setString(key, value);
     } else {
       return; // Prevent errors by writing as an incorrect type
     }
@@ -161,6 +165,26 @@ class _SettingsWidgetState extends State<SettingsView> {
                     onChanged: (value) {
                       Provider.of<LocaleProvider>(context, listen: false).setLocale(value);
                     })),
+
+            // Calculation Method
+            ListTile(
+              leading: const Icon(Icons.mosque),
+              title: Text(AppLocalizations.of(context)!.calculationMethod),
+              trailing: DropdownButton<String>(
+                value: settings["calculationMethod"],
+                items: [
+                  DropdownMenuItem<String>(
+                    value: "hanafi",
+                    child: Text(AppLocalizations.of(context)!.hanafi),
+                  ),
+                  DropdownMenuItem<String>(
+                    value: "hanbali",
+                    child: Text(AppLocalizations.of(context)!.hanbaliShafiMaliki),
+                  )
+                ],
+                onChanged: (value) {
+                  updateValue("calculationMethod", value);
+                })),
 
 
             // Notifications Section
