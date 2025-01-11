@@ -33,14 +33,20 @@ class ApiFetchService {
     if (Platform.isAndroid) SharedPreferencesAndroid.registerWith();
     if (Platform.isIOS) SharedPreferencesIOS.registerWith();
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    
+    String? currentCalculationMethod = prefs.getString("calculationMethod");
 
     http.Response apiResponse;
     http.Response apiResponseForNextDay;
 
     // Server request
     try {
-      apiResponse = await http.get(Uri.parse(Config.apiLink)).timeout(const Duration(seconds: 30)); // BCMA API Request
-      apiResponseForNextDay = await http.get(Uri.parse(Config.apiLinkForNextDay)).timeout(const Duration(seconds: 30));
+      apiResponse = await http.get(
+        Uri.parse((currentCalculationMethod == "hanbali") ? "${Config.apiLink}?method=hanbali" : Config.apiLink)
+      ).timeout(const Duration(seconds: 30)); // BCMA API Request
+      apiResponseForNextDay = await http.get(
+        Uri.parse((currentCalculationMethod == "hanbali") ? "${Config.apiLinkForNextDay}&method=hanbali" : Config.apiLinkForNextDay)
+      ).timeout(const Duration(seconds: 30));
 
       String timeStamp = DateFormat("yyyy-MM-dd").format(DateTime.now());
 

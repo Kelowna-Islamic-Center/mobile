@@ -101,10 +101,10 @@ class PrayerController {
       // Update local data only if times are outdated or the athan calculation method has been changed
       if ((localData["timeStampDiff"] > 0 || localData["timeStampDiff"] == -1) || methodStamp != currentCalculationMethod) {
         apiResponse = await http
-            .get(Uri.parse(Config.apiLink))
+            .get(Uri.parse((currentCalculationMethod == "hanbali") ? "${Config.apiLink}?method=hanbali" : Config.apiLink))
             .timeout(const Duration(seconds: 20)); // API Request for today
         apiResponseForNextDay = await http
-            .get(Uri.parse(Config.apiLinkForNextDay))
+            .get(Uri.parse((currentCalculationMethod == "hanbali") ? "${Config.apiLinkForNextDay}&method=hanbali" : Config.apiLinkForNextDay))
             .timeout(const Duration(seconds: 20)); // API Request for tomorrow
 
         String timeStamp = DateFormat("yyyy-MM-dd").format(DateTime.now());
