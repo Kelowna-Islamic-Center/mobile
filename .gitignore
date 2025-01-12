@@ -46,6 +46,7 @@ app.*.map.json
 
 # FlutterFire
 /android/app/google-services.json
+/ios/*/GoogleService-Info.plist
 /lib/firebase_options.dart
 firebase.json
 
