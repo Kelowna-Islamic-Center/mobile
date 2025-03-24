@@ -35,6 +35,7 @@
     "hanbaliShafiMaliki": "الحنبلي، الشافعي، المالكي",
     "notifications": "إشعارات",
     "notificationsDisabledWarning": "تم تعطيل الإشعارات. قم بتفعيل الإشعارات في الإعدادات لتلقي الإشعارات.",
+    "timesToShowOnAppLaunch": "أوقات الصلاة المفضلة التي تظهر عند فتح التطبيق",
     "athanReminder": "تذكير بالاذان",
     "athanReminderDescription": "إظهار الإشعار وتشغيل الأذان عندما يحين وقت الأذان.",
     "minutes": "دقائق {minutes}",

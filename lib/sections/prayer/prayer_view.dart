@@ -6,6 +6,7 @@ import "package:kelowna_islamic_center/sections/prayer/prayer_list.dart";
 import "package:kelowna_islamic_center/theme/theme.dart";
 
 import "package:flutter_gen/gen_l10n/app_localizations.dart";
+import "package:shared_preferences/shared_preferences.dart";
 
 class PrayerView extends StatefulWidget {
   const PrayerView({Key? key}) : super(key: key);
@@ -15,7 +16,6 @@ class PrayerView extends StatefulWidget {
 }
 
 class _PrayerWidgetState extends State<PrayerView> {
-
   String selectedDay = "today";
   Timer? timer;
   String timeString = "";
@@ -44,89 +44,119 @@ class _PrayerWidgetState extends State<PrayerView> {
     });
   }
 
+  // Get user preferred launch prayer times screen
+  Future<int> getPreferredLaunchScreen() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int launchDefaultIndex = prefs.getInt("launchDefaultIndex") ?? 0;
+    return launchDefaultIndex;
+  }
+
   @override
   Widget build(BuildContext context) {
-
     updateTimeDisplay();
 
-    return DefaultTabController(
-      initialIndex: 0,
-      length: 2,
-      child: Scaffold(
-          body: Column(children: [
-        // Top Time Area
-        Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(35),
-            decoration: BoxDecoration(
-                gradient: (Theme.of(context).brightness == Brightness.light) ? AppTheme.gradient : null,
-                image: const DecorationImage(
-                    image: AssetImage("assets/images/pattern_bitmap.png"),
-                    repeat: ImageRepeat.repeat)),
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text(timeString,
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: (Theme.of(context).brightness == Brightness.light) ? Colors.white : null,
-                  )),
-            ])),
+    return Scaffold(
+        body: Column(children: [
+      // Top Time Area
+      Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(35),
+          decoration: BoxDecoration(
+              gradient: (Theme.of(context).brightness == Brightness.light)
+                  ? AppTheme.gradient
+                  : null,
+              image: const DecorationImage(
+                  image: AssetImage("assets/images/pattern_bitmap.png"),
+                  repeat: ImageRepeat.repeat)),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Text(timeString,
+                style: TextStyle(
+                  fontSize: 24,
+                  color: (Theme.of(context).brightness == Brightness.light)
+                      ? Colors.white
+                      : null,
+                )),
+          ])),
 
-        Expanded(
-            child: Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(15),
-                      topRight: Radius.circular(15)),
-                ),
-                transform: Matrix4.translationValues(0, -15, 0),
-                child: Column(children: [
-                  Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
-                      child: ListTile(
-                          leading: const Icon(Icons.calendar_month_rounded),
-                          title: Text(
-                              AppLocalizations.of(context)!.prayerTimesFor,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 18)),
-                          trailing: DropdownButton<String>(
-                            value: selectedDay,
-                            onChanged: (String? value) {
-                              setState(() {
-                                selectedDay = value!;
-                              });
-                            },
-                            items: [
-                              DropdownMenuItem(
-                                value: "today", 
-                                child: Text(AppLocalizations.of(context)!.today),
-                              ),
-                              DropdownMenuItem(
-                                value: "tomorrow", 
-                                child: Text(AppLocalizations.of(context)!.tomorrow),
-                              )
-                            ],
-                          ))),
-                  TabBar(
-                    tabs: <Widget>[
-                      Tab(
-                        icon: const Icon(Icons.record_voice_over_rounded),
-                        text: AppLocalizations.of(context)!.iqamahTimes
-                      ),
-                      Tab(
-                        icon: const Icon(Icons.mosque_rounded),
-                        text: AppLocalizations.of(context)!.athanTimes,
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                      child: TabBarView(children: [
-                        PrayerList(isAthanTimesActive: false, isTodayActive: selectedDay == "today"),
-                        PrayerList(isAthanTimesActive: true, isTodayActive: selectedDay == "today")
-                  ]))
-                ]))),
-      ])));
+      Expanded(
+          child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(15),
+                    topRight: Radius.circular(15)),
+              ),
+              transform: Matrix4.translationValues(0, -15, 0),
+              child: FutureBuilder<int>(
+                  future: getPreferredLaunchScreen(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return DefaultTabController(
+                          initialIndex: snapshot.data!,
+                          length: 2,
+                          child: Column(children: [
+                            Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(8, 12, 8, 12),
+                                child: ListTile(
+                                    leading: const Icon(
+                                        Icons.calendar_month_rounded),
+                                    title: Text(
+                                        AppLocalizations.of(context)!
+                                            .prayerTimesFor,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.normal,
+                                            fontSize: 18)),
+                                    trailing: DropdownButton<String>(
+                                      value: selectedDay,
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          selectedDay = value!;
+                                        });
+                                      },
+                                      items: [
+                                        DropdownMenuItem(
+                                          value: "today",
+                                          child: Text(
+                                              AppLocalizations.of(context)!
+                                                  .today),
+                                        ),
+                                        DropdownMenuItem(
+                                          value: "tomorrow",
+                                          child: Text(
+                                              AppLocalizations.of(context)!
+                                                  .tomorrow),
+                                        )
+                                      ],
+                                    ))),
+                            TabBar(
+                              tabs: <Widget>[
+                                Tab(
+                                    icon: const Icon(
+                                        Icons.record_voice_over_rounded),
+                                    text: AppLocalizations.of(context)!
+                                        .iqamahTimes),
+                                Tab(
+                                  icon: const Icon(Icons.mosque_rounded),
+                                  text:
+                                      AppLocalizations.of(context)!.athanTimes,
+                                ),
+                              ],
+                            ),
+                            Expanded(
+                                child: TabBarView(children: [
+                              PrayerList(
+                                  isAthanTimesActive: false,
+                                  isTodayActive: selectedDay == "today"),
+                              PrayerList(
+                                  isAthanTimesActive: true,
+                                  isTodayActive: selectedDay == "today")
+                            ]))
+                          ]));
+                    } else {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                  }))),
+    ]));
   }
 }

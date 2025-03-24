@@ -29,6 +29,7 @@ class _SettingsWidgetState extends State<SettingsView> {
   final Map<String, dynamic> settings = {
     // Default Values
     "calculationMethod": "hanafi",
+    "launchDefaultIndex": 0,
     "iqamahTimeAlert": true,
     "iqamahTimeAlertTime": 15,
     "athanTimeAlert": true,
@@ -61,6 +62,7 @@ class _SettingsWidgetState extends State<SettingsView> {
 
     Map<String, dynamic> data = {
       "calculationMethod": prefs.getString("calculationMethod"),
+      "launchDefaultIndex": prefs.getInt("launchDefaultIndex"),
       "iqamahTimeAlert": prefs.getBool("iqamahTimeAlert"),
       "iqamahTimeAlertTime": prefs.getInt("iqamahTimeAlertTime"),
       "athanTimeAlert": prefs.getBool("athanTimeAlert"),
@@ -184,6 +186,25 @@ class _SettingsWidgetState extends State<SettingsView> {
                 ],
                 onChanged: (value) {
                   updateValue("calculationMethod", value);
+                })),
+
+            ListTile(
+              leading: const Icon(Icons.launch_rounded),
+              title: Text(AppLocalizations.of(context)!.timesToShowOnAppLaunch),
+              trailing: DropdownButton<int>(
+                value: settings["launchDefaultIndex"],
+                items: [
+                  DropdownMenuItem<int>(
+                    value: 0,
+                    child: Text(AppLocalizations.of(context)!.iqamahTimes),
+                  ),
+                  DropdownMenuItem<int>(
+                    value: 1,
+                    child: Text(AppLocalizations.of(context)!.athanTimes),
+                  )
+                ],
+                onChanged: (value) {
+                  updateValue("launchDefaultIndex", value);
                 })),
 
 

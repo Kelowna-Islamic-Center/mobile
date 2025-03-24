@@ -33,6 +33,7 @@
     "calculationMethod": "Athan Calculation Method",
     "hanafi": "Hanafi (Default)",
     "hanbaliShafiMaliki": "Hanbali / Shafi / Maliki",
+    "timesToShowOnAppLaunch": "Preferred prayer times to show when app launches",
     "notifications": "Notifications",
     "notificationsDisabledWarning": "Notifications are disabled. Enable them in settings to receive notifications.",
     "athanReminder": "Athan Reminder Alarm",
