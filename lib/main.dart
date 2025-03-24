@@ -60,7 +60,7 @@ Future<void> main() async {
 
   // Initialize app services
   await Alarm.init();
-  await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+  await Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
   await ApiFetchService.initBackgroundService();
   await PrayerNotificationService.initBackgroundService();
 
