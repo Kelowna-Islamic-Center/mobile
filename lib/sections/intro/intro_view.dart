@@ -55,6 +55,8 @@ class _IntroViewState extends State<IntroView> {
       onDone: () async {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setBool("isIntroDone", true);
+
+        if (!context.mounted) return;
         
         await Navigator.pushReplacement(
           context, 

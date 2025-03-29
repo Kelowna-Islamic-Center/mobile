@@ -153,10 +153,11 @@ class PrayerNotificationService {
           assetAudioPath: athanPath,
           loopAudio: false,
           vibrate: false,
-          notificationTitle: "It is time for ${prayerItems[i].name} in Kelowna.",
-          notificationBody: "Do not dismiss! To stop athan audio, you must tap this notification.",
-          enableNotificationOnKill: false,
-          notificationActionSettings: const NotificationActionSettings(hasStopButton: true, stopButtonText: "Stop Athan")
+          notificationSettings: NotificationSettings(
+            title: "It is time for ${prayerItems[i].name} in Kelowna.",
+            body: "Do not dismiss! To stop athan audio, you must tap the stop button.",
+            stopButton: "Stop Athan",
+          )
         ));
 
         break;
