@@ -1,8 +1,10 @@
+import "dart:async";
 import "dart:io";
 
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
+import "package:kelowna_islamic_center/config.dart";
 import "package:kelowna_islamic_center/locales/locale_provider.dart";
 import "package:permission_handler/permission_handler.dart";
 import "package:shared_preferences/shared_preferences.dart";
@@ -11,7 +13,7 @@ import "package:provider/provider.dart";
 
 import "package:kelowna_islamic_center/sections/settings/admin/admin_page.dart";
 import "package:kelowna_islamic_center/sections/settings/admin/auth_guard.dart";
-import "package:kelowna_islamic_center/services/announcements_message_service.dart";
+import "package:kelowna_islamic_center/services/cloud_messaging_service.dart";
 import "package:kelowna_islamic_center/theme/theme.dart";
 import "package:kelowna_islamic_center/theme/theme_mode_provider.dart";
 
@@ -88,7 +90,11 @@ class _SettingsWidgetState extends State<SettingsView> {
   void updateValue(key, value) async {
     // Functions to run on value change
     if (key == "announcementAlert" && value is bool) {
-      AnnouncementsMessageService.toggleSubscription(value);
+      if (value) {
+        unawaited(CloudMessagingService.subscribeToTopic(Config.announcementTopic));
+      } else {
+        unawaited(CloudMessagingService.unsubscribeFromTopic(Config.announcementTopic));
+      }
     }
 
     // Set SharedPreferences and setState

@@ -13,7 +13,7 @@ import "package:alarm/alarm.dart";
 
 import "package:kelowna_islamic_center/sections/home_screen_view.dart";
 import "package:kelowna_islamic_center/theme/theme.dart";
-import "package:kelowna_islamic_center/services/announcements_message_service.dart";
+import "package:kelowna_islamic_center/services/cloud_messaging_service.dart";
 import "package:kelowna_islamic_center/services/prayer_notification_service.dart";
 import "package:kelowna_islamic_center/services/api_fetch_service.dart";
 import "package:kelowna_islamic_center/theme/theme_mode_provider.dart";
@@ -47,7 +47,7 @@ Future<void> main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   // Firebase services
-  await AnnouncementsMessageService.init();
+  await CloudMessagingService.init();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
