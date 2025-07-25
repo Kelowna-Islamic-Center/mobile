@@ -11,6 +11,7 @@ class LocaleProvider with ChangeNotifier {
   
   LocaleProvider({required this.prefs}) {
     _lastLocale = prefs.getString("locale");
+    setLocale(_lastLocale); // Set locale on initial app launch
   }
 
   Locale? get locale {
@@ -31,22 +32,18 @@ class LocaleProvider with ChangeNotifier {
 
         if (_lastLocale != null) {
           await CloudMessagingService.unsubscribeFromTopic("${Config.localeTopicPrefix}$_lastLocale");
-          print("unsubbed from ${Config.localeTopicPrefix}$_lastLocale");
         }
 
         await CloudMessagingService.subscribeToTopic("${Config.localeTopicPrefix}${deviceLocale.languageCode}");
-        print("device locale is ${deviceLocale.languageCode}");
         await prefs.remove("locale");
 
         _lastLocale = deviceLocale.languageCode;
       } else {
         await CloudMessagingService.subscribeToTopic("${Config.localeTopicPrefix}$stringValue");
         await prefs.setString("locale", stringValue);
-        print("Subbed to ${Config.localeTopicPrefix}$stringValue");
 
         if (_lastLocale != null && _lastLocale != stringValue) {
           await CloudMessagingService.unsubscribeFromTopic("${Config.localeTopicPrefix}$_lastLocale");
-          print("unsubbed from ${Config.localeTopicPrefix}$_lastLocale");
         }
 
         _lastLocale = stringValue;
@@ -54,7 +51,6 @@ class LocaleProvider with ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      print("failed $e");
       // This should be handled in the future by showing an error message.
     }
   }
