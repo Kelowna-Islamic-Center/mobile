@@ -15,12 +15,6 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterL
 
 class CloudMessagingService {
 
-  // Android notification Channels
-  static AndroidNotificationChannel? announcementsChannel;
-  static AndroidNotificationChannel? iqamahAlertChannel;
-  static AndroidNotificationChannel? athanAlertChannel;
-
-
   static Future<void> init() async {
 
     await Firebase.initializeApp();
@@ -33,31 +27,9 @@ class CloudMessagingService {
       const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings("@mipmap/ic_launcher");
       await flutterLocalNotificationsPlugin.initialize(const InitializationSettings(android: initializationSettingsAndroid));
 
-      announcementsChannel = const AndroidNotificationChannel(
-        "announcements_channel",
-        "New Announcement Notifications",
-        description: "Receive a notification whenever there is a new Masjid announcement.",
-        importance: Importance.high,
-      );
-      
-      iqamahAlertChannel = const AndroidNotificationChannel(
-        "iqamah_alert_channel",
-        "Iqamah Alerts",
-        description: "Receive notification reminders a set amount of minutes before Iqamah happens at the Masjid.",
-        importance: Importance.high,
-      );
-
-      athanAlertChannel = const AndroidNotificationChannel(
-        "athan_alert_channel",
-        "Athan Alerts",
-        description: "Receive an alert when it is prayer time in Kelowna. Sound can be configured in settings.",
-        importance: Importance.high,
-        playSound: true
-      );
-
-      await _createAndroidNotificationChannel(announcementsChannel!);
-      await _createAndroidNotificationChannel(iqamahAlertChannel!);
-      await _createAndroidNotificationChannel(athanAlertChannel!);
+      await _createAndroidNotificationChannel(Config.announcementsChannel);
+      await _createAndroidNotificationChannel(Config.iqamahAlertChannel);
+      await _createAndroidNotificationChannel(Config.athanAlertChannel);
     }
 
     // Request iOS Permissions
@@ -89,41 +61,37 @@ class CloudMessagingService {
   }
 
   static void foregroundMessageHandler(RemoteMessage message) async {
-    if (Platform.isAndroid) {
-      RemoteNotification? notification = message.notification;
-      AndroidNotification? android = message.notification?.android;
-      
-      if (notification != null && android != null) {
+    if (!Platform.isAndroid) return;
 
-        String? notificationType = message.data["notificationType"];
-        AndroidNotificationChannel channel;
+    RemoteNotification? notification = message.notification;
+    AndroidNotification? android = message.notification?.android;
 
-        switch (notificationType) {
-          case "announcements":
-            channel = announcementsChannel!;
-            break;
-          case "athan":
-            channel = athanAlertChannel!;
-            break;
-          case "iqamah":
-            channel = iqamahAlertChannel!;
-            break;
-          default: 
-            return;
-        }
+    if (notification == null || android == null) return;
 
-        await flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(channel.id, channel.name,
-                  channelDescription: channel.description,
-                  icon: android.smallIcon,
-                  importance: Importance.high),
-            ));
-      }
-    }
+    Map<String, AndroidNotificationChannel> channels = {
+      Config.iqamahAlertChannel.id: Config.iqamahAlertChannel,
+      Config.athanAlertChannel.id: Config.athanAlertChannel,
+      Config.announcementsChannel.id: Config.announcementsChannel,
+    };
+
+    AndroidNotificationChannel? channel = channels[android.channelId];
+
+    if (channel == null) return;
+
+    await flutterLocalNotificationsPlugin.show(
+      notification.hashCode,
+      notification.title,
+      notification.body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          channel.id,
+          channel.name,
+          channelDescription: channel.description,
+          icon: android.smallIcon,
+          importance: Importance.high,
+        ),
+      ),
+    );
 
     await backgroundMessageHandler(message);
   }
