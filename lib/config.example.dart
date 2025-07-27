@@ -7,8 +7,27 @@ class Config {
 
   // Cloud messaging topics and firestore collections for announcements
   static String announcementTopic = "announcements";
-  static String announcementCollection = "announcements";
+  static String athanAlertTopic = "athanAlert";
+  static String iqamahAlertTopic = "iqamahAlert";
   static String localeTopicPrefix = "lang-";
+  static String getIqamahAlertTopic(int minutes) {
+    return "iqamah${minutes}MinuteAlert";
+  }
+  static String announcementCollection = "announcements";
+
+
+  /* Below this are pre-configured settings, don't change these from thier defaults unless absolutely required */
+
+  // Default settings values
+  static final Map<String, dynamic> defaultSettings = {
+    // Default Values
+    "calculationMethod": "hanafi",
+    "launchDefaultIndex": 0,
+    "iqamahTimeAlert": true,
+    "iqamahTimeAlertTime": 15,
+    "athanTimeAlert": true,
+    "announcementAlert": true,
+  };
 
   // Android notification channels (don't change unless you know what you are doing)
   static const AndroidNotificationChannel announcementsChannel = AndroidNotificationChannel(

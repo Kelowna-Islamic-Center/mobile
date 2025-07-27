@@ -28,25 +28,10 @@ class SettingsView extends StatefulWidget {
 
 class _SettingsWidgetState extends State<SettingsView> {
 
-  final Map<String, dynamic> settings = {
-    // Default Values
-    "calculationMethod": "hanafi",
-    "launchDefaultIndex": 0,
-    "iqamahTimeAlert": true,
-    "iqamahTimeAlertTime": 15,
-    "athanTimeAlert": true,
-    "announcementAlert": true,
-  };
+  final Map<String, dynamic> settings = {};
 
   final List<int> iqamahTimeValues = [5, 10, 15, 20, 30, 45];
   bool isNotificationsDisabled = false;
-
-  @override
-  void initState() {
-    setToStoredValues();
-    verifyNotificationPermissionStatus();
-    super.initState();
-  }
 
   void launchURL(String url) async {
     if (await canLaunchUrlString(url)) {
@@ -54,48 +39,47 @@ class _SettingsWidgetState extends State<SettingsView> {
     }
   }
 
-  Future<void> verifyNotificationPermissionStatus() async {
+  @override
+  void initState() {
+    _setToStoredValues();
+    _verifyNotificationPermissionStatus();
+    super.initState();
+  }
+
+  Future<void> _verifyNotificationPermissionStatus() async {
     isNotificationsDisabled = !(await Permission.notification.isGranted);
   }
 
   // Set settings values to data stored in SharedPreferences
-  void setToStoredValues() async {
+  Future<void> _setToStoredValues() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    Map<String, dynamic> data = {
-      "calculationMethod": prefs.getString("calculationMethod"),
-      "launchDefaultIndex": prefs.getInt("launchDefaultIndex"),
-      "iqamahTimeAlert": prefs.getBool("iqamahTimeAlert"),
-      "iqamahTimeAlertTime": prefs.getInt("iqamahTimeAlertTime"),
-      "athanTimeAlert": prefs.getBool("athanTimeAlert"),
-      "announcementAlert": prefs.getBool("announcementAlert")
-    };
+    for (MapEntry<String,dynamic> entry in Config.defaultSettings.entries) {
+      String key = entry.key;
+      dynamic defaultValue = entry.value;
+      dynamic value;
 
-    data.forEach((key, value) async {
+      if (defaultValue is int) {
+        value = prefs.getInt(key);
+      } else if (defaultValue is String) {
+        value = prefs.getString(key);
+      } else if (defaultValue is bool) {
+        value = prefs.getBool(key);
+      }
+
       if (value == null) {
-        // Set SharedPreferences settings to defaults if never set by user
-        if (settings[key] is int) {
-          await prefs.setInt(key, settings[key]);
-        } else if (settings[key] is bool) {
-          await prefs.setBool(key, settings[key]);
-        }
+        // Value not set by user, save the default
+        await updateValue(key, defaultValue);
       } else {
-        // Get the SharedPreferences settings set by user and set everything to match their values
+        // Value exists, use it
         setState(() => settings[key] = value);
       }
-    });
+    }
   }
 
   // Update SharedPreferences values on any value change
-  void updateValue(key, value) async {
-    // Functions to run on value change
-    if (key == "announcementAlert" && value is bool) {
-      if (value) {
-        unawaited(CloudMessagingService.subscribeToTopic(Config.announcementTopic));
-      } else {
-        unawaited(CloudMessagingService.unsubscribeFromTopic(Config.announcementTopic));
-      }
-    }
+  Future<void> updateValue(key, value) async {
+    await customHandler(key, value);
 
     // Set SharedPreferences and setState
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -110,6 +94,42 @@ class _SettingsWidgetState extends State<SettingsView> {
     }
     setState(() => settings[key] = value);
   }
+
+  
+  // Individual handlers for each settings change
+  Future<void> customHandler(key, value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Cloud messaging subscriptions for announcements
+    if (key == "announcementAlert" && value is bool) {
+      if (value) {
+        unawaited(CloudMessagingService.subscribeToTopic(Config.announcementTopic));
+      } else {
+        unawaited(CloudMessagingService.unsubscribeFromTopic(Config.announcementTopic));
+      }
+    }
+
+    // Cloud subscriptions for athan alerts
+    if (key == "athanTimeAlert" && value is bool) {
+      if (value) {
+        unawaited(CloudMessagingService.subscribeToTopic(Config.athanAlertTopic));
+      } else {
+        unawaited(CloudMessagingService.unsubscribeFromTopic(Config.athanAlertTopic));
+      }
+    }
+
+    // Cloud subscriptions for iqamah alerts
+    if (key == "iqamahTimeAlert" && value is bool) {
+      if (value) {
+        unawaited(CloudMessagingService.subscribeToTopic(Config.iqamahAlertTopic));
+      } else {
+        unawaited(CloudMessagingService.unsubscribeFromTopic(Config.iqamahAlertTopic));
+      }
+    }
+
+    
+  }
+
 
   @override
   Widget build(BuildContext context) => Scaffold(
