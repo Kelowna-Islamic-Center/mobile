@@ -4,18 +4,16 @@ import "dart:io";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
-import "package:kelowna_islamic_center/config.dart";
-import "package:kelowna_islamic_center/locales/locale_provider.dart";
 import "package:permission_handler/permission_handler.dart";
-import "package:shared_preferences/shared_preferences.dart";
 import "package:url_launcher/url_launcher_string.dart";
 import "package:provider/provider.dart";
 
 import "package:kelowna_islamic_center/sections/settings/admin/admin_page.dart";
 import "package:kelowna_islamic_center/sections/settings/admin/auth_guard.dart";
-import "package:kelowna_islamic_center/services/cloud_messaging_service.dart";
 import "package:kelowna_islamic_center/theme/theme.dart";
 import "package:kelowna_islamic_center/theme/theme_mode_provider.dart";
+import "package:kelowna_islamic_center/locales/locale_provider.dart";
+import "package:kelowna_islamic_center/sections/settings/settings_controller.dart";
 
 import "package:flutter_gen/gen_l10n/app_localizations.dart";
 
@@ -27,11 +25,23 @@ class SettingsView extends StatefulWidget {
 }
 
 class _SettingsWidgetState extends State<SettingsView> {
+  
+  late SettingsController controller;
 
-  final Map<String, dynamic> settings = {};
-
+  Map<String, dynamic> settings = {};
   final List<int> iqamahTimeValues = [5, 10, 15, 20, 30, 45];
   bool isNotificationsDisabled = false;
+
+  @override
+  void initState() {
+    controller = SettingsController(onSettingsChanged: (newSettings) {
+      setState(() => settings = Map.from(newSettings));
+    });
+
+    controller.init();
+    _verifyNotificationPermissionStatus();
+    super.initState();
+  }
 
   void launchURL(String url) async {
     if (await canLaunchUrlString(url)) {
@@ -39,95 +49,11 @@ class _SettingsWidgetState extends State<SettingsView> {
     }
   }
 
-  @override
-  void initState() {
-    _setToStoredValues();
-    _verifyNotificationPermissionStatus();
-    super.initState();
-  }
-
   Future<void> _verifyNotificationPermissionStatus() async {
-    isNotificationsDisabled = !(await Permission.notification.isGranted);
-  }
-
-  // Set settings values to data stored in SharedPreferences
-  Future<void> _setToStoredValues() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    for (MapEntry<String,dynamic> entry in Config.defaultSettings.entries) {
-      String key = entry.key;
-      dynamic defaultValue = entry.value;
-      dynamic value;
-
-      if (defaultValue is int) {
-        value = prefs.getInt(key);
-      } else if (defaultValue is String) {
-        value = prefs.getString(key);
-      } else if (defaultValue is bool) {
-        value = prefs.getBool(key);
-      }
-
-      if (value == null) {
-        // Value not set by user, save the default
-        await updateValue(key, defaultValue);
-      } else {
-        // Value exists, use it
-        setState(() => settings[key] = value);
-      }
-    }
-  }
-
-  // Update SharedPreferences values on any value change
-  Future<void> updateValue(key, value) async {
-    await customHandler(key, value);
-
-    // Set SharedPreferences and setState
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (value is int) {
-      await prefs.setInt(key, value);
-    } else if (value is bool) {
-      await prefs.setBool(key, value);
-    } else if (value is String) {
-      await prefs.setString(key, value);
-    } else {
-      return; // Prevent errors by writing as an incorrect type
-    }
-    setState(() => settings[key] = value);
-  }
-
-  
-  // Individual handlers for each settings change
-  Future<void> customHandler(key, value) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // Cloud messaging subscriptions for announcements
-    if (key == "announcementAlert" && value is bool) {
-      if (value) {
-        unawaited(CloudMessagingService.subscribeToTopic(Config.announcementTopic));
-      } else {
-        unawaited(CloudMessagingService.unsubscribeFromTopic(Config.announcementTopic));
-      }
-    }
-
-    // Cloud subscriptions for athan alerts
-    if (key == "athanTimeAlert" && value is bool) {
-      if (value) {
-        unawaited(CloudMessagingService.subscribeToTopic(Config.athanAlertTopic));
-      } else {
-        unawaited(CloudMessagingService.unsubscribeFromTopic(Config.athanAlertTopic));
-      }
-    }
-
-    // Cloud subscriptions for iqamah alerts
-    if (key == "iqamahTimeAlert" && value is bool) {
-      if (value) {
-        unawaited(CloudMessagingService.subscribeToTopic(Config.iqamahAlertTopic));
-      } else {
-        unawaited(CloudMessagingService.unsubscribeFromTopic(Config.iqamahAlertTopic));
-      }
-    }
-
-    
+    PermissionStatus status = await Permission.notification.status;
+    setState(() {
+      isNotificationsDisabled = !status.isGranted;
+    });
   }
 
 
@@ -211,7 +137,7 @@ class _SettingsWidgetState extends State<SettingsView> {
                   )
                 ],
                 onChanged: (value) {
-                  updateValue("calculationMethod", value);
+                  controller.updateValue("calculationMethod", value);
                 })),
 
             ListTile(
@@ -230,7 +156,7 @@ class _SettingsWidgetState extends State<SettingsView> {
                   )
                 ],
                 onChanged: (value) {
-                  updateValue("launchDefaultIndex", value);
+                  controller.updateValue("launchDefaultIndex", value);
                 })),
 
 
@@ -265,7 +191,7 @@ class _SettingsWidgetState extends State<SettingsView> {
             SwitchListTile(
                 value: settings["athanTimeAlert"],
                 onChanged: (bool newValue) {
-                  updateValue("athanTimeAlert", newValue);
+                  controller.updateValue("athanTimeAlert", newValue);
                 },
                 secondary: const Icon(Icons.timer_rounded),
                 title: Text(AppLocalizations.of(context)!.athanReminder),
@@ -274,7 +200,7 @@ class _SettingsWidgetState extends State<SettingsView> {
             SwitchListTile(
                 value: settings["iqamahTimeAlert"],
                 onChanged: (bool newValue) {
-                  updateValue("iqamahTimeAlert", newValue);
+                  controller.updateValue("iqamahTimeAlert", newValue);
                 },
                 secondary: const Icon(Icons.record_voice_over_rounded),
                 title: Text(AppLocalizations.of(context)!.iqamaahReminder),
@@ -299,14 +225,14 @@ class _SettingsWidgetState extends State<SettingsView> {
                       }).toList(),
                     onChanged: (settings["iqamahTimeAlert"])
                         ? (value) {
-                            updateValue("iqamahTimeAlertTime", value);
+                            controller.updateValue("iqamahTimeAlertTime", value);
                           }
                         : null)),
 
             SwitchListTile(
                 value: settings["announcementAlert"],
                 onChanged: (bool newValue) {
-                  updateValue("announcementAlert", newValue);
+                  controller.updateValue("announcementAlert", newValue);
                 },
                 secondary: const Icon(Icons.notification_important_rounded),
                 title: Text(AppLocalizations.of(context)!.newAnnouncements),
