@@ -7,15 +7,17 @@ import "package:shared_preferences/shared_preferences.dart";
 class SettingsController {
   final Map<String, dynamic> settings = {};
   final Function(Map<String, dynamic>) onSettingsChanged;
+  late SharedPreferences prefs;
 
   SettingsController({required this.onSettingsChanged});
 
   Future<void> init() async {
+    prefs = await SharedPreferences.getInstance();
     await _setToStoredValues();
   }
 
+  // Set settings values to data stored in SharedPreferences
   Future<void> _setToStoredValues() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     for (MapEntry<String, dynamic> entry in Config.defaultSettings.entries) {
       String key = entry.key;
@@ -31,8 +33,10 @@ class SettingsController {
       }
 
       if (value == null) {
+        // Value not set by user, save the default
         await updateValue(key, defaultValue);
       } else {
+        // Value exists, use it
         settings[key] = value;
       }
     }
@@ -43,7 +47,6 @@ class SettingsController {
   Future<void> updateValue(String key, dynamic value) async {
     await _customHandler(key, value);
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     if (value is int) {
       await prefs.setInt(key, value);
     } else if (value is bool) {
@@ -52,11 +55,14 @@ class SettingsController {
       await prefs.setString(key, value);
     }
 
+    // Update internal map and notify the widget
     settings[key] = value;
     onSettingsChanged(settings);
   }
 
+  // Individual handlers for each settings change
   Future<void> _customHandler(String key, dynamic value) async {
+
     if (key == "announcementAlert" && value is bool) {
       if (value) {
         unawaited(CloudMessagingService.subscribeToTopic(Config.announcementTopic));
@@ -79,6 +85,19 @@ class SettingsController {
       } else {
         unawaited(CloudMessagingService.unsubscribeFromTopic(Config.iqamahAlertTopic));
       }
+    }
+
+    if (key == "iqamahTimeAlertTime" && value is int) {
+      // Remove previous value and unsubscribe from previous topic
+      int? previousValue = prefs.getInt(key);
+      if (previousValue != null) {
+        String oldTopic = Config.getIqamahAlertTopic(previousValue);
+        unawaited(CloudMessagingService.unsubscribeFromTopic(oldTopic));
+      }
+
+      // Set new value and subscribe to new topic
+      String newTopic = Config.getIqamahAlertTopic(value);
+      unawaited(CloudMessagingService.subscribeToTopic(newTopic));
     }
   }
 }
