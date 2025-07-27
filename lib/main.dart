@@ -8,13 +8,11 @@ import "package:kelowna_islamic_center/locales/locale_provider.dart";
 import "package:kelowna_islamic_center/sections/intro/intro_view.dart";
 import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
-import "package:workmanager/workmanager.dart"; 
-import "package:alarm/alarm.dart";
+import "package:workmanager/workmanager.dart";
 
 import "package:kelowna_islamic_center/sections/home_screen_view.dart";
 import "package:kelowna_islamic_center/theme/theme.dart";
 import "package:kelowna_islamic_center/services/cloud_messaging_service.dart";
-import "package:kelowna_islamic_center/services/prayer_notification_service.dart";
 import "package:kelowna_islamic_center/services/api_fetch_service.dart";
 import "package:kelowna_islamic_center/theme/theme_mode_provider.dart";
 
@@ -25,12 +23,6 @@ import "package:flutter_gen/gen_l10n/app_localizations.dart";
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     switch (task) {
-      case PrayerNotificationService.taskUniqueName:
-        await PrayerNotificationService.scheduleNextNotifications();
-        break;
-      case PrayerNotificationService.iOSBackgroundAppRefreshName:
-        await PrayerNotificationService.scheduleNextNotifications();
-        break;
       case ApiFetchService.taskUniqueName:
         await ApiFetchService.updateSharedPreferencesTimes();
         break;
@@ -59,10 +51,8 @@ Future<void> main() async {
   }
 
   // Initialize app services
-  await Alarm.init();
   await Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
   await ApiFetchService.initBackgroundService();
-  await PrayerNotificationService.initBackgroundService();
 
   // Check if user has skipped the intro
   bool? isIntroDone = prefs.getBool("isIntroDone");
