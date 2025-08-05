@@ -25,7 +25,8 @@ class CloudMessagingService {
     // Set Android Notification Settings
     if (Platform.isAndroid) {
       const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings("@mipmap/ic_launcher");
-      await flutterLocalNotificationsPlugin.initialize(const InitializationSettings(android: initializationSettingsAndroid));
+      const DarwinInitializationSettings initializationSettingsIOS = DarwinInitializationSettings();
+      await flutterLocalNotificationsPlugin.initialize(const InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS));
 
       await _createAndroidNotificationChannel(Config.announcementsChannel);
       await _createAndroidNotificationChannel(Config.iqamahAlertChannel);
@@ -78,6 +79,8 @@ class CloudMessagingService {
 
     if (channel == null) return;
 
+    bool isAthanChannel = channel.id == Config.athanAlertChannel.id;
+
     await flutterLocalNotificationsPlugin.show(
       notification.hashCode,
       notification.title,
@@ -89,7 +92,10 @@ class CloudMessagingService {
           channelDescription: channel.description,
           icon: android.smallIcon,
           importance: Importance.high,
+          playSound: isAthanChannel,
+          sound: isAthanChannel ? const RawResourceAndroidNotificationSound("athan_full") : null,
         ),
+        iOS: isAthanChannel ? const DarwinNotificationDetails(sound: "athan_short.caf") : null
       ),
     );
 

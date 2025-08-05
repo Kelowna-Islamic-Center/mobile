@@ -49,6 +49,5 @@ class Config {
     "Athan Alerts",
     description: "Receive an alert when it is prayer time in Kelowna. Sound can be configured in settings.",
     importance: Importance.high,
-    playSound: true
   );
 }
