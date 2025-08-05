@@ -14,6 +14,7 @@ import "package:kelowna_islamic_center/theme/theme.dart";
 import "package:kelowna_islamic_center/theme/theme_mode_provider.dart";
 import "package:kelowna_islamic_center/locales/locale_provider.dart";
 import "package:kelowna_islamic_center/sections/settings/settings_controller.dart";
+import "package:kelowna_islamic_center/config.dart";
 
 import "package:flutter_gen/gen_l10n/app_localizations.dart";
 
@@ -28,7 +29,7 @@ class _SettingsWidgetState extends State<SettingsView> {
   
   late SettingsController controller;
 
-  Map<String, dynamic> settings = {};
+  Map<String, dynamic> settings = Config.defaultSettings;
   final List<int> iqamahTimeValues = [5, 10, 15, 20, 30, 45];
   bool isNotificationsDisabled = false;
 
