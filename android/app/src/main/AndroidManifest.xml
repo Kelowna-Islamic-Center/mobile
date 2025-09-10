@@ -20,6 +20,11 @@
         android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/ic_launcher">
 
+        <service
+            android:name=".AthanService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -3,6 +3,7 @@ import "dart:io";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_core/firebase_core.dart";
 import "package:firebase_messaging/firebase_messaging.dart";
+import "package:flutter/services.dart";
 import "package:flutter_local_notifications/flutter_local_notifications.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "package:shared_preferences_android/shared_preferences_android.dart";
@@ -45,6 +46,7 @@ class CloudMessagingService {
 
   static Future<void> backgroundMessageHandler(RemoteMessage message) async {
     String? notificationType = message.data["notificationType"];
+    String? action = message.data["action"];
 
     // Update cached announcements data to data from Firestore when a new announcement is received
     if (notificationType == "announcements") {
@@ -58,6 +60,14 @@ class CloudMessagingService {
       QuerySnapshot<Map<String, dynamic>> fsSnapshot = await FirebaseFirestore.instance.collection(Config.announcementCollection).get();
       
       await prefs.setStringList(Config.announcementCollection, Announcement.toJsonStringFromList(Announcement.listFromJSON(fsSnapshot.docs)));
+    }
+
+    // For athan notifications, run Android specific implimentation of Athan Audio player
+    if (action == "play_athan" && Platform.isAndroid) {
+      String channelId = message.data["channelId"] ?? Config.athanAlertChannel.id;
+      String title = "Athan Alert";
+      String text = "Audio player is processing audio.";
+      await startAndroidAthanService(channelId: channelId, title: title, text: text);
     }
   }
 
@@ -112,6 +122,15 @@ class CloudMessagingService {
 
   static Future<void>? _createAndroidNotificationChannel(AndroidNotificationChannel channel) {
     return flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
+  }
+
+  static Future<void> startAndroidAthanService({ required String channelId, required String title, required String text }) async {
+    const platform = MethodChannel("com.kelownamasjid.athan");
+    await platform.invokeMethod("startAndroidAthanService", {
+      "channelId": channelId,
+      "title": title,
+      "text": text
+    });
   }
 
   // Subscribtions if the user has never set any settings (first time launch)
