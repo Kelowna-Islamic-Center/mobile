@@ -3,8 +3,7 @@ import "package:flutter/material.dart";
 import "package:kelowna_islamic_center/config.dart";
 
 import "package:kelowna_islamic_center/structs/announcement.dart";
-
-import "package:flutter_gen/gen_l10n/app_localizations.dart";
+import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 import "package:multi_select_flutter/multi_select_flutter.dart";
 
 class EditAnnouncementsPage extends StatefulWidget {

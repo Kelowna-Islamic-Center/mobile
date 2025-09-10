@@ -7,7 +7,7 @@ import "package:flutter/services.dart";
 import "package:flutter_local_notifications/flutter_local_notifications.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "package:shared_preferences_android/shared_preferences_android.dart";
-import "package:shared_preferences_ios/shared_preferences_ios.dart";
+import "package:shared_preferences_foundation/shared_preferences_foundation.dart";
 
 import "package:kelowna_islamic_center/config.dart";
 import "package:kelowna_islamic_center/structs/announcement.dart";
@@ -54,7 +54,7 @@ class CloudMessagingService {
       
       // Init SharedPreferences
       if (Platform.isAndroid) SharedPreferencesAndroid.registerWith();
-      if (Platform.isIOS) SharedPreferencesIOS.registerWith();
+      if (Platform.isIOS) SharedPreferencesFoundation.registerWith();
       SharedPreferences prefs = await SharedPreferences.getInstance();
       
       QuerySnapshot<Map<String, dynamic>> fsSnapshot = await FirebaseFirestore.instance.collection(Config.announcementCollection).get();

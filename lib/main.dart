@@ -17,7 +17,7 @@ import "package:kelowna_islamic_center/services/cloud_messaging_service.dart";
 import "package:kelowna_islamic_center/services/api_fetch_service.dart";
 import "package:kelowna_islamic_center/theme/theme_mode_provider.dart";
 
-import "package:flutter_gen/gen_l10n/app_localizations.dart";
+import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
 
 // WorkManager callbackDispatcher for handling background services

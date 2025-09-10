@@ -7,10 +7,10 @@ import "package:kelowna_islamic_center/theme/theme.dart";
 import "package:kelowna_islamic_center/structs/announcement.dart";
 import "package:kelowna_islamic_center/sections/announcements/announcements_controller.dart";
 
-import "package:flutter_gen/gen_l10n/app_localizations.dart";
+import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
 class AnnouncementsView extends StatelessWidget {
-  const AnnouncementsView({Key? key}) : super(key: key);
+  const AnnouncementsView({super.key});
   
   // Data to use for skeleton loader
   final List<Announcement> skeletonData = const [

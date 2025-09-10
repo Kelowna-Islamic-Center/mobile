@@ -7,8 +7,7 @@ import "package:url_launcher/url_launcher_string.dart";
 import "package:kelowna_islamic_center/sections/settings/admin/edit_announcement_page.dart";
 import "package:kelowna_islamic_center/sections/settings/admin/new_announcement_page.dart";
 import "package:kelowna_islamic_center/structs/announcement.dart";
-
-import "package:flutter_gen/gen_l10n/app_localizations.dart";
+import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
 class AnnouncementsEditor extends StatefulWidget {
   const AnnouncementsEditor({Key? key}) : super(key: key);

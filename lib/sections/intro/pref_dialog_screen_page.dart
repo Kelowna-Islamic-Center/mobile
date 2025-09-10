@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 import "package:shared_preferences/shared_preferences.dart";
-
-import "package:flutter_gen/gen_l10n/app_localizations.dart";
+import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
 class PrefDialogScreenPage extends StatelessWidget {
   final VoidCallback incrementKey;
@@ -9,8 +8,7 @@ class PrefDialogScreenPage extends StatelessWidget {
   final String prefKey;
 
   const PrefDialogScreenPage(
-      {Key? key, required this.text, required this.prefKey, required this.incrementKey})
-      : super(key: key);
+      {super.key, required this.text, required this.prefKey, required this.incrementKey});
 
   Future<void> updateValue(bool value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

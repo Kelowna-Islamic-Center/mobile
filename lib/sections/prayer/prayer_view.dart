@@ -4,12 +4,11 @@ import "package:intl/intl.dart";
 
 import "package:kelowna_islamic_center/sections/prayer/prayer_list.dart";
 import "package:kelowna_islamic_center/theme/theme.dart";
-
-import "package:flutter_gen/gen_l10n/app_localizations.dart";
+import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
 class PrayerView extends StatefulWidget {
-  const PrayerView({Key? key}) : super(key: key);
+  const PrayerView({super.key});
 
   @override
   State<PrayerView> createState() => _PrayerWidgetState();

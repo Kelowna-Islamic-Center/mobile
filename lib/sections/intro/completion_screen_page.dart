@@ -1,10 +1,9 @@
 import "package:flutter/material.dart";
-
-import "package:flutter_gen/gen_l10n/app_localizations.dart";
+import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
 class CompletionScreenPage extends StatelessWidget {
 
-  const CompletionScreenPage({Key? key}) : super(key: key);
+  const CompletionScreenPage({super.key});
 
   @override
   Widget build(BuildContext context) {

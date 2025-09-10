@@ -7,11 +7,10 @@ import "package:kelowna_islamic_center/sections/home_screen_view.dart";
 import "package:kelowna_islamic_center/sections/intro/completion_screen_page.dart";
 import "package:kelowna_islamic_center/sections/intro/pref_dialog_screen_page.dart";
 import "package:kelowna_islamic_center/sections/intro/welcome_screen_page.dart";
-
-import "package:flutter_gen/gen_l10n/app_localizations.dart";
+import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
 class IntroView extends StatefulWidget {
-  const IntroView({Key? key}) : super(key: key);
+  const IntroView({super.key});
 
   @override
   State<IntroView> createState() => _IntroViewState();
