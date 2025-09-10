@@ -25,29 +25,29 @@ if (flutterVersionName == null) {
 }
 
 def keystoreProperties = new Properties()
-def keystorePropertiesFile = rootProject.file('key.properties')
+def keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
 dependencies {
-    implementation 'com.android.support:multidex:2.0.1'
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.2'
-    implementation 'androidx.window:window:1.0.0'
-    implementation 'androidx.window:window-java:1.0.0'
-    // implementation 'androidx.work:work-runtime-ktx:2.7.0'
+    implementation "androidx.multidex:multidex:2.0.1"
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.1.2"
+    implementation "androidx.window:window:1.0.0"
+    implementation "androidx.window:window-java:1.0.0"
+    implementation "androidx.work:work-runtime-ktx:2.7.0"
 }
 
 android {
+    namespace "com.kelownamasjid.android.app"
     compileSdkVersion flutter.compileSdkVersion
 
     compileOptions {
-        // Flag to enable support for the new language APIs
         coreLibraryDesugaringEnabled true
-        // Sets Java compatibility to Java 8
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
+    ndkVersion "28.0.12433566" // ✅ Ensure NDK 28+ for 16 KB page support
 
     defaultConfig {
         applicationId "com.kelownamasjid.android.app"
@@ -59,24 +59,23 @@ android {
     }
 
     signingConfigs {
-       release {
-           keyAlias keystoreProperties['keyAlias']
-           keyPassword keystoreProperties['keyPassword']
-           storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-           storePassword keystoreProperties['storePassword']
-       }
-   }
-   buildTypes {
+        release {
+            keyAlias keystoreProperties["keyAlias"]
+            keyPassword keystoreProperties["keyPassword"]
+            storeFile keystoreProperties["storeFile"] ? file(keystoreProperties["storeFile"]) : null
+            storePassword keystoreProperties["storePassword"]
+        }
+    }
+
+    buildTypes {
         debug {
-            // fix Failed to transform firebase-auth-22.3.1.aar
-            minifyEnabled true
+            minifyEnabled true // fix for Firebase Auth transform issues
             signingConfig signingConfigs.debug
         }
-       release {
-           signingConfig signingConfigs.release
-       }
-   }
-
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
 }
 
 flutter {
