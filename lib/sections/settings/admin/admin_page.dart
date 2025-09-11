@@ -4,7 +4,7 @@ import "package:kelowna_islamic_center/sections/settings/admin/announcements_edi
 import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
 class AdminPage extends StatelessWidget {
-  const AdminPage({Key? key}) : super(key: key);
+  const AdminPage({super.key});
 
   @override
   Widget build(BuildContext context) => DefaultTabController(
@@ -14,10 +14,10 @@ class AdminPage extends StatelessWidget {
           title: Text(AppLocalizations.of(context)!.adminTools),
           actions: [
             PopupMenuButton(
-              onSelected: (_) => {
-                FirebaseAuth.instance.signOut().then((onValue) => {
-                  Navigator.pop(context)
-                })
+              onSelected: (_) async {
+                NavigatorState navigator = Navigator.of(context);
+                await FirebaseAuth.instance.signOut();
+                navigator.pop();
               },
               itemBuilder: (BuildContext context) {
                 return [

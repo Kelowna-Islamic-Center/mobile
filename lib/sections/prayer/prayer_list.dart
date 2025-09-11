@@ -103,7 +103,7 @@ class _PrayerListState extends State<PrayerList> {
                                 boxShadow: [
                                   BoxShadow(
                                       color: Colors.black
-                                          .withOpacity(0.2),
+                                          .withAlpha((0.2 * 255).round()),
                                       spreadRadius: 1,
                                       blurRadius: 4,
                                       offset: const Offset(0, 2))
@@ -154,7 +154,7 @@ class _PrayerListState extends State<PrayerList> {
                                       ? [
                                           BoxShadow(
                                               color: Colors.black45
-                                                  .withOpacity(0.4),
+                                                  .withAlpha((0.4 * 255).round()),
                                               spreadRadius: 0,
                                               blurRadius: 3,
                                               offset:

@@ -16,7 +16,7 @@ class ThemeModeProvider with ChangeNotifier {
     return userValue;
   }
 
-  setThemeMode(String? stringValue) {
+  void setThemeMode(String? stringValue) {
     if (stringValue == null) {
       prefs.remove("theme").then((value) => notifyListeners());
     } else {

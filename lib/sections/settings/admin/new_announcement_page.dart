@@ -2,10 +2,11 @@ import "package:cloud_firestore/cloud_firestore.dart";
 import "package:flutter/material.dart";
 import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 import "package:kelowna_islamic_center/config.dart";
+import "package:kelowna_islamic_center/locales/global_localization_service.dart";
 import "package:multi_select_flutter/multi_select_flutter.dart";
 
 class NewAnnouncementsPage extends StatefulWidget {
-  const NewAnnouncementsPage({Key? key}) : super(key: key);
+  const NewAnnouncementsPage({super.key});
 
   @override
   NewAnnouncementsPageState createState() => NewAnnouncementsPageState();
@@ -36,16 +37,18 @@ class NewAnnouncementsPageState extends State<NewAnnouncementsPage> {
       };
     }
 
+    AppLocalizations localizedStrings = await GlobalLocalizationService().strings;
+
     try {
       await FirebaseFirestore.instance.collection(Config.announcementCollection).add(data);
       return {
         "success": true,
-        "message": AppLocalizations.of(context)!.successfullyAddedAnnouncement,
+        "message": localizedStrings.successfullyAddedAnnouncement,
       };
     } catch (error) {
       return {
         "success": false,
-        "message": AppLocalizations.of(context)!.somethingWentWrong,
+        "message": localizedStrings.somethingWentWrong,
       };
     }
   }

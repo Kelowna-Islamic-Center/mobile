@@ -11,7 +11,7 @@ import "package:kelowna_islamic_center/sections/settings/settings_view.dart";
 import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
 class HomeScreenView extends StatefulWidget {
-  const HomeScreenView({Key? key}) : super(key: key);
+  const HomeScreenView({super.key});
 
   @override
   State<HomeScreenView> createState() => _HomeScreenState();

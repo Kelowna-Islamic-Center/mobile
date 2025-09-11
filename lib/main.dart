@@ -26,7 +26,6 @@ void callbackDispatcher() {
     switch (task) {
       case ApiFetchService.taskUniqueName:
         await ApiFetchService.updateSharedPreferencesTimes();
-        break;
     }
 
     return Future.value(true);
@@ -67,7 +66,7 @@ Future<void> main() async {
   }
 
   // Initialize app services
-  await Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
+  await Workmanager().initialize(callbackDispatcher);
   await ApiFetchService.initBackgroundService();
 
   // Check if user has skipped the intro
@@ -96,7 +95,7 @@ class App extends StatelessWidget {
 
   final bool isIntroDone; 
   
-  const App({Key? key, required this.isIntroDone}) : super(key: key);
+  const App({super.key, required this.isIntroDone});
 
   // This widget is the root of your application.
   @override

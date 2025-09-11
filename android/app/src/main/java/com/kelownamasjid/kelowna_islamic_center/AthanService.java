@@ -35,7 +35,7 @@ public class AthanService extends Service {
         startForeground(1, notification);
 
         // Play Athan audio from res/raw
-        player = MediaPlayer.create(this, R.raw.athan); // MP3 or WAV
+        player = MediaPlayer.create(this, R.raw.athan_full); // MP3 or WAV
         player.setOnCompletionListener(mp -> stopSelf());
         player.start();
 

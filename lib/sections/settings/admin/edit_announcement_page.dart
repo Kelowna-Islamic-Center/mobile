@@ -1,6 +1,7 @@
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:flutter/material.dart";
 import "package:kelowna_islamic_center/config.dart";
+import "package:kelowna_islamic_center/locales/global_localization_service.dart";
 
 import "package:kelowna_islamic_center/structs/announcement.dart";
 import "package:kelowna_islamic_center/l10n/app_localizations.dart";
@@ -9,7 +10,7 @@ import "package:multi_select_flutter/multi_select_flutter.dart";
 class EditAnnouncementsPage extends StatefulWidget {
   final String announcementID;
   final Announcement announcement;
-  const EditAnnouncementsPage({ Key? key, required this.announcementID, required this.announcement }) : super(key: key);
+  const EditAnnouncementsPage({ super.key, required this.announcementID, required this.announcement });
 
   @override
   EditAnnouncementsPageState createState() => EditAnnouncementsPageState();
@@ -35,6 +36,8 @@ class EditAnnouncementsPageState extends State<EditAnnouncementsPage> {
       };
     }
 
+    AppLocalizations localizedStrings = await GlobalLocalizationService().strings;
+
     try {
       CollectionReference collection = FirebaseFirestore.instance.collection(Config.announcementCollection);
       
@@ -46,12 +49,12 @@ class EditAnnouncementsPageState extends State<EditAnnouncementsPage> {
 
       return {
         "success": true,
-        "message": AppLocalizations.of(context)!.successfullyUpdatedAnnouncement,
+        "message": localizedStrings.successfullyUpdatedAnnouncement,
       };
     } catch (error) {
       return {
         "success": false,
-        "message": AppLocalizations.of(context)!.somethingWentWrong,
+        "message": localizedStrings.somethingWentWrong,
       };
     }
   }

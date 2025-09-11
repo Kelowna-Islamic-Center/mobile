@@ -291,7 +291,7 @@ class _SettingsWidgetState extends State<SettingsView> {
                             gradient: AppTheme.gradient,
                             boxShadow: [
                               BoxShadow(
-                                  color: Colors.black.withOpacity(0.4),
+                                  color: Colors.black.withAlpha((0.4 * 255).round()),
                                   spreadRadius: 1,
                                   blurRadius: 4,
                                   offset: const Offset(0, 2))

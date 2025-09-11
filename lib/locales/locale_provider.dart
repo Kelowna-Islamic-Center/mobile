@@ -1,6 +1,7 @@
 import "dart:ui";
 import "package:flutter/material.dart";
 import "package:kelowna_islamic_center/config.dart";
+import "package:kelowna_islamic_center/locales/global_localization_service.dart";
 import "package:kelowna_islamic_center/services/cloud_messaging_service.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
@@ -11,6 +12,11 @@ class LocaleProvider with ChangeNotifier {
   
   LocaleProvider({required this.prefs}) {
     _lastLocale = prefs.getString("locale");
+
+    // Initialize the GlobalLocalizationService for context-free localization access in UI-less elements
+    GlobalLocalizationService localizationService = GlobalLocalizationService();
+    localizationService.initialize(this);
+    
     setLocale(_lastLocale); // Set locale on initial app launch
   }
 

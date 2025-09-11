@@ -72,7 +72,7 @@ class AnnouncementsView extends StatelessWidget {
                                         color: Colors.yellow[800],
                                         boxShadow: [
                                           BoxShadow(
-                                              color: Colors.black.withOpacity(0.2),
+                                              color: Colors.black.withAlpha((0.2 * 255).round()),
                                               spreadRadius: 1,
                                               blurRadius: 4,
                                               offset: const Offset(0, 2))

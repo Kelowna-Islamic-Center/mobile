@@ -22,7 +22,7 @@ class ApiFetchService {
         taskUniqueName,
         constraints: Constraints(networkType: NetworkType.connected), // Requires network connection
         frequency: const Duration(hours: 8), // Slow api requests, every 8 hours should be enough
-        existingWorkPolicy: ExistingWorkPolicy.keep
+        existingWorkPolicy: ExistingPeriodicWorkPolicy.keep
     );
   }
 

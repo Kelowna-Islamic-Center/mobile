@@ -147,8 +147,9 @@ class PrayerController {
       int initDiff = 999999;
 
       for (int i = 0; i < timeList.length; i++) {
-        if (timeList[i].startTime == "No Internet" ||
-            timeList[i].iqamahTime == "No Internet") continue;
+        if (timeList[i].startTime == "No Internet" || timeList[i].iqamahTime == "No Internet") {
+          continue;
+        }
 
         int today = DateTime.now().weekday; // Today's day of the week
         if (i == 2 && today == DateTime.friday) {

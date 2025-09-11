@@ -10,7 +10,7 @@ import "package:kelowna_islamic_center/structs/announcement.dart";
 import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
 class AnnouncementsEditor extends StatefulWidget {
-  const AnnouncementsEditor({Key? key}) : super(key: key);
+  const AnnouncementsEditor({super.key});
 
   @override
   AnnouncementsEditorState createState() => AnnouncementsEditorState();
