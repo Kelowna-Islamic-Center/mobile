@@ -17,7 +17,7 @@ public class MainActivity extends FlutterActivity {
         new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL)
             .setMethodCallHandler(
                 (call, result) -> {
-                    if (call.method.equals("startAthanService")) {
+                    if (call.method.equals("startAndroidAthanService")) {
                         String channelId = call.argument("channelId");
                         String title = call.argument("title");
                         String text = call.argument("text");

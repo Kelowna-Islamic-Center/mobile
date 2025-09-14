@@ -1,6 +1,7 @@
 package com.kelownamasjid.kelowna_islamic_center;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -15,29 +16,49 @@ public class AthanService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String channelId = intent.getStringExtra("channelId");
-        String title = intent.getStringExtra("title");
-        String text = intent.getStringExtra("text");
+        if (intent != null && "STOP_ATHAN".equals(intent.getAction())) {
+            stopAthan();
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+
+        String channelId = intent != null ? intent.getStringExtra("channelId") : null;
+        String title = intent != null ? intent.getStringExtra("title") : null;
+        String text = intent != null ? intent.getStringExtra("text") : null;
 
         if (channelId == null) channelId = "athan_channel";
         if (title == null) title = "Prayer Time";
         if (text == null) text = "Playing Athan";
 
-        // Use existing notification channel; do not create a new one
+        // Intent that fires when the notification is dismissed
+        Intent stopIntent = new Intent(this, AthanService.class);
+        stopIntent.setAction("STOP_ATHAN");
+
+        PendingIntent deletePendingIntent = PendingIntent.getService(
+                this,
+                0,
+                stopIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        // Notification with deleteIntent
         Notification notification = new NotificationCompat.Builder(this, channelId)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setPriority(NotificationCompat.PRIORITY_MIN)
                 .setOngoing(true)
+                .setDeleteIntent(deletePendingIntent) // 👈 stop when dismissed
                 .build();
 
         startForeground(1, notification);
 
         // Play Athan audio from res/raw
-        player = MediaPlayer.create(this, R.raw.athan_full); // MP3 or WAV
-        player.setOnCompletionListener(mp -> stopSelf());
-        player.start();
+        player = MediaPlayer.create(this, R.raw.athan_full);
+        if (player != null) {
+            player.setOnCompletionListener(mp -> stopSelf());
+            player.start();
+        }
 
         return START_NOT_STICKY;
     }
@@ -45,15 +66,22 @@ public class AthanService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (player != null) {
-            player.release();
-            player = null;
-        }
+        stopAthan();
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    private void stopAthan() {
+        if (player != null) {
+            if (player.isPlaying()) {
+                player.stop();
+            }
+            player.release();
+            player = null;
+        }
     }
 }
