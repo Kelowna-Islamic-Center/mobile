@@ -65,49 +65,47 @@ class CloudMessagingService {
     // For athan notifications, run Android specific implimentation of Athan Audio player
     if (action == "play_athan" && Platform.isAndroid) {
       String channelId = message.data["channelId"] ?? Config.athanAlertChannel.id;
-      String title = "Athan Alert";
-      String text = "Audio player is processing audio.";
+      String title = message.data["title"] ?? "Time for athan";
+      String text = message.data["body"] ?? "Playing Audio";
       await startAndroidAthanService(channelId: channelId, title: title, text: text);
     }
   }
 
   static void foregroundMessageHandler(RemoteMessage message) async {
-    if (!Platform.isAndroid) return;
+    
+    if (Platform.isAndroid) {
 
-    RemoteNotification? notification = message.notification;
-    AndroidNotification? android = message.notification?.android;
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
 
-    if (notification == null || android == null) return;
+      if (notification != null && android != null) {
 
-    Map<String, AndroidNotificationChannel> channels = {
-      Config.iqamahAlertChannel.id: Config.iqamahAlertChannel,
-      Config.athanAlertChannel.id: Config.athanAlertChannel,
-      Config.announcementsChannel.id: Config.announcementsChannel,
-    };
+        Map<String, AndroidNotificationChannel> channels = {
+          Config.iqamahAlertChannel.id: Config.iqamahAlertChannel,
+          Config.athanAlertChannel.id: Config.athanAlertChannel,
+          Config.announcementsChannel.id: Config.announcementsChannel,
+        };
 
-    AndroidNotificationChannel? channel = channels[android.channelId];
+        AndroidNotificationChannel? channel = channels[android.channelId];
 
-    if (channel == null) return;
-
-    bool isAthanChannel = channel.id == Config.athanAlertChannel.id;
-
-    await flutterLocalNotificationsPlugin.show(
-      notification.hashCode,
-      notification.title,
-      notification.body,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          channel.id,
-          channel.name,
-          channelDescription: channel.description,
-          icon: android.smallIcon,
-          importance: Importance.high,
-          playSound: isAthanChannel,
-          sound: isAthanChannel ? const RawResourceAndroidNotificationSound("athan_full") : null,
-        ),
-        iOS: isAthanChannel ? const DarwinNotificationDetails(sound: "athan_short.caf") : null
-      ),
-    );
+        if (channel != null) {
+          await flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(
+                channel.id,
+                channel.name,
+                channelDescription: channel.description,
+                icon: android.smallIcon,
+                importance: Importance.high,
+              ),
+            ),
+          );
+        }
+      }
+    }
 
     await backgroundMessageHandler(message);
   }

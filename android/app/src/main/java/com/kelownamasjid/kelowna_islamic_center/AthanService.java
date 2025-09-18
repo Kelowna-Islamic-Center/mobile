@@ -30,25 +30,37 @@ public class AthanService extends Service {
         if (title == null) title = "Prayer Time";
         if (text == null) text = "Playing Athan";
 
+        // Intent to launch Flutter MainActivity when notification is pressed
+        Intent launchIntent = new Intent(this, MainActivity.class);
+        launchIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        PendingIntent contentPendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                launchIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
         // Intent that fires when the notification is dismissed
         Intent stopIntent = new Intent(this, AthanService.class);
         stopIntent.setAction("STOP_ATHAN");
 
         PendingIntent deletePendingIntent = PendingIntent.getService(
                 this,
-                0,
+                1,
                 stopIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
-        // Notification with deleteIntent
+        // Notification with press + dismiss actions
         Notification notification = new NotificationCompat.Builder(this, channelId)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setPriority(NotificationCompat.PRIORITY_MIN)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setOngoing(true)
-                .setDeleteIntent(deletePendingIntent) // 👈 stop when dismissed
+                .setContentIntent(contentPendingIntent) // opens app when pressed
+                .setDeleteIntent(deletePendingIntent)   // stops Athan when dismissed
                 .build();
 
         startForeground(1, notification);
