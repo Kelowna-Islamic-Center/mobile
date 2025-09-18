@@ -62,13 +62,7 @@ class CloudMessagingService {
       await prefs.setStringList(Config.announcementCollection, Announcement.toJsonStringFromList(Announcement.listFromJSON(fsSnapshot.docs)));
     }
 
-    // For athan notifications, run Android specific implimentation of Athan Audio player
-    if (action == "play_athan" && Platform.isAndroid) {
-      String channelId = message.data["channelId"] ?? Config.athanAlertChannel.id;
-      String title = message.data["title"] ?? "Time for athan";
-      String text = message.data["body"] ?? "Playing Audio";
-      await startAndroidAthanService(channelId: channelId, title: title, text: text);
-    }
+    // For athan notifications, Android has its own native specific implimentation of Athan Audio player found in FirebaseAthanMessagingService.java
   }
 
   static void foregroundMessageHandler(RemoteMessage message) async {

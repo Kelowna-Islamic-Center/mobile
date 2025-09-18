@@ -24,6 +24,14 @@
             android:exported="false"
             android:foregroundServiceType="mediaPlayback"/>
 
+        <service
+            android:name=".FirebaseAthanMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
