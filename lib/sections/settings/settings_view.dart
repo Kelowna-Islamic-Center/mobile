@@ -190,7 +190,7 @@ class _SettingsWidgetState extends State<SettingsView> {
 
             /* Iqamah Alert Settings */
             SwitchListTile(
-                value: settings["athanTimeAlert"],
+                value: settings["athanTimeAlert"] ?? false,
                 onChanged: (bool newValue) {
                   controller.updateValue("athanTimeAlert", newValue);
                 },
@@ -199,7 +199,7 @@ class _SettingsWidgetState extends State<SettingsView> {
                 subtitle: Text(AppLocalizations.of(context)!.athanReminderDescription)),
 
             SwitchListTile(
-                value: settings["iqamahTimeAlert"],
+                value: settings["iqamahTimeAlert"] ?? false,
                 onChanged: (bool newValue) {
                   controller.updateValue("iqamahTimeAlert", newValue);
                 },
@@ -208,7 +208,7 @@ class _SettingsWidgetState extends State<SettingsView> {
                 subtitle: Text(AppLocalizations.of(context)!.iqamaahReminderDescription)),
 
             ListTile(
-                enabled: settings["iqamahTimeAlert"],
+                enabled: settings["iqamahTimeAlert"] ?? false,
                 leading: const SizedBox(),
                 subtitle: Text(AppLocalizations.of(context)!.howManyMinutesBefore),
                 trailing: DropdownButton<int>(
@@ -231,7 +231,7 @@ class _SettingsWidgetState extends State<SettingsView> {
                         : null)),
 
             SwitchListTile(
-                value: settings["announcementAlert"],
+                value: settings["announcementAlert"] ?? false,
                 onChanged: (bool newValue) {
                   controller.updateValue("announcementAlert", newValue);
                 },
