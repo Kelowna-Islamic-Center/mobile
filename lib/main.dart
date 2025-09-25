@@ -70,10 +70,10 @@ Future<void> main() async {
   await ApiFetchService.initBackgroundService();
 
   // Check if user has skipped the intro
-  bool? isIntroDone = prefs.getBool("isIntroDone");
-  isIntroDone ??= false;
+  bool? isIntroComplete = prefs.getBool("isIntroComplete");
+  isIntroComplete ??= false;
 
-  if (!isIntroDone) {
+  if (!isIntroComplete) {
     await prefs.clear();
   }
 
@@ -86,16 +86,16 @@ Future<void> main() async {
         create: (context) => LocaleProvider(prefs: prefs),
       ),
     ],
-    child: App(isIntroDone: isIntroDone),
+    child: App(isIntroComplete: isIntroComplete),
   ));
 }
 
 
 class App extends StatelessWidget {
 
-  final bool isIntroDone; 
+  final bool isIntroComplete; 
   
-  const App({super.key, required this.isIntroDone});
+  const App({super.key, required this.isIntroComplete});
 
   // This widget is the root of your application.
   @override
@@ -111,7 +111,7 @@ class App extends StatelessWidget {
       darkTheme: AppTheme.dark,
       themeMode: Provider.of<ThemeModeProvider>(context).themeMode,
 
-      home: isIntroDone ? const HomeScreenView() : const IntroView(),
+      home: isIntroComplete ? const HomeScreenView() : const IntroView(),
     );
   }
 }

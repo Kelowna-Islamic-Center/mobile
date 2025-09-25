@@ -45,7 +45,7 @@ class SettingsController {
   }
 
   Future<void> updateValue(String key, dynamic value) async {
-    await _customHandler(key, value);
+    await subscriptionHandler(key, value);
 
     if (value is int) {
       await prefs.setInt(key, value);
@@ -61,7 +61,7 @@ class SettingsController {
   }
 
   // Individual handlers for each settings change
-  Future<void> _customHandler(String key, dynamic value) async {
+  static Future<void> subscriptionHandler(String key, dynamic value) async {
 
     if (key == "announcementAlert" && value is bool) {
       if (value) {
@@ -89,7 +89,8 @@ class SettingsController {
 
     if (key == "iqamahTimeAlertTime" && value is int) {
       // Remove previous value and unsubscribe from previous topic
-      int? previousValue = prefs.getInt(key);
+      SharedPreferences staticPrefs = await SharedPreferences.getInstance();
+      int? previousValue = staticPrefs.getInt(key);
       if (previousValue != null) {
         String oldTopic = Config.getIqamahAlertTopic(previousValue);
         unawaited(CloudMessagingService.unsubscribeFromTopic(oldTopic));

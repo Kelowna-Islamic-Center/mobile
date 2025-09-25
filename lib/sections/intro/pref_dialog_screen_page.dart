@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:kelowna_islamic_center/sections/settings/settings_controller.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
@@ -13,6 +14,7 @@ class PrefDialogScreenPage extends StatelessWidget {
   Future<void> updateValue(bool value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool(prefKey, value);
+    await SettingsController.subscriptionHandler(prefKey, value);
     incrementKey();
   }
 
