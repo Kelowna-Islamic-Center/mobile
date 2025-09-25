@@ -6,7 +6,7 @@
     "defaultLanguage": "Default",
     "appLanguage": "Language",
     "kelownaIslamicCenter": "Kelowna Islamic Center",
-    "yourConnectionWithMasjid": "Your Connection with the Masjid",
+    "beginSetup": "Welcome! Please complete this setup to get started.",
     "setupComplete": "All done! Setup Complete",
     "introReceiveAthan": "Would you like to receive athan alarms?",
     "introReceiveIqamaah": "Would you like to receive a notification a few minutes before Iqamaah at the Masjid?",

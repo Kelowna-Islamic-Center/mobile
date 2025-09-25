@@ -47,7 +47,7 @@ class WelcomeScreenPage extends StatelessWidget {
                   ]),
                   const SizedBox(height: 25),
                   Text(
-                    AppLocalizations.of(context)!.yourConnectionWithMasjid,
+                    AppLocalizations.of(context)!.beginSetup,
                     style:
                         const TextStyle(fontWeight: FontWeight.bold, fontSize: 45),
                   ),
