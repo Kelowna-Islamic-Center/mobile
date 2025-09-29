@@ -67,6 +67,7 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D6199DD22E41E8330061CAE8 /* athan_short.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = athan_short.caf; sourceTree = "<group>"; };
+		D61C3DE62E8A38470054D626 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		D69BF5E12D3463F200657D21 /* RunnerRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerRelease.entitlements; sourceTree = "<group>"; };
 		F1CB689824A4188A6825B7EA /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6AAF31C51A831F0D9F3AC04 /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -148,6 +149,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				D61C3DE62E8A38470054D626 /* Runner.entitlements */,
 				D6199DD22E41E8330061CAE8 /* athan_short.caf */,
 				D69BF5E12D3463F200657D21 /* RunnerRelease.entitlements */,
 				3CF712D9E589C019B08A8A1F /* GoogleService-Info.plist */,
@@ -497,6 +499,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = HQ8K8JW49X;
 				ENABLE_BITCODE = NO;
@@ -681,6 +684,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = HQ8K8JW49X;
 				ENABLE_BITCODE = NO;
