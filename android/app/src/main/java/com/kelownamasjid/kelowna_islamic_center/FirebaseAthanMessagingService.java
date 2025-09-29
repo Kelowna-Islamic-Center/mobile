@@ -29,13 +29,13 @@ public class FirebaseAthanMessagingService extends FirebaseMessagingService {
         if ("play_athan".equals(action)) {
             String channelId = data.get("channelId");
             String title = data.get("title");
-            String text = data.get("text");
+            String body = data.get("body");
 
             Intent svcIntent = new Intent(getApplicationContext(), AthanService.class);
             svcIntent.setAction("START_ATHAN");
             if (channelId != null) svcIntent.putExtra("channelId", channelId);
             if (title != null) svcIntent.putExtra("title", title);
-            if (text != null) svcIntent.putExtra("text", text);
+            if (body != null) svcIntent.putExtra("body", body);
 
             ContextCompat.startForegroundService(getApplicationContext(), svcIntent);
         }

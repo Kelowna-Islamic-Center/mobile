@@ -20,12 +20,12 @@ public class MainActivity extends FlutterActivity {
                     if (call.method.equals("startAndroidAthanService")) {
                         String channelId = call.argument("channelId");
                         String title = call.argument("title");
-                        String text = call.argument("text");
+                        String body = call.argument("body");
 
                         Intent serviceIntent = new Intent(this, AthanService.class);
                         serviceIntent.putExtra("channelId", channelId);
                         serviceIntent.putExtra("title", title);
-                        serviceIntent.putExtra("text", text);
+                        serviceIntent.putExtra("body", body);
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                             startForegroundService(serviceIntent);

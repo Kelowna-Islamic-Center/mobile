@@ -24,11 +24,11 @@ public class AthanService extends Service {
 
         String channelId = intent != null ? intent.getStringExtra("channelId") : null;
         String title = intent != null ? intent.getStringExtra("title") : null;
-        String text = intent != null ? intent.getStringExtra("text") : null;
+        String body = intent != null ? intent.getStringExtra("body") : null;
 
         if (channelId == null) channelId = "athan_channel";
         if (title == null) title = "Prayer Time";
-        if (text == null) text = "Playing Athan";
+        if (body == null) body = "Playing Athan";
 
         // Intent to launch Flutter MainActivity when notification is pressed
         Intent launchIntent = new Intent(this, MainActivity.class);
@@ -55,7 +55,7 @@ public class AthanService extends Service {
         // Notification with press + dismiss actions
         Notification notification = new NotificationCompat.Builder(this, channelId)
                 .setContentTitle(title)
-                .setContentText(text)
+                .setContentText(body)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setOngoing(true)
