@@ -53,7 +53,7 @@ class _IntroViewState extends State<IntroView> {
       nextFlex: 1,
       onDone: () async {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setBool("isIntroDone", true);
+        await prefs.setBool("isIntroComplete", true);
 
         if (!context.mounted) return;
         
