@@ -8,7 +8,7 @@ class WelcomeScreenPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: const EdgeInsets.only(bottom: 80),
+        padding: const EdgeInsets.only(bottom: 120),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Expanded(
               child: ShaderMask(

@@ -25,45 +25,47 @@ class _IntroViewState extends State<IntroView> {
 
   @override
   Widget build(BuildContext context) {
-    return IntroductionScreen(
-      key: key,
-      rawPages: [
-        const WelcomeScreenPage(),
-        PrefDialogScreenPage(
-          text: AppLocalizations.of(context)!.introReceiveAthan,
-          prefKey: "athanTimeAlert", 
-          incrementKey: incrementIntroKey
+    return SafeArea(
+      child: IntroductionScreen(
+        key: key,
+        rawPages: [
+          const WelcomeScreenPage(),
+          PrefDialogScreenPage(
+            text: AppLocalizations.of(context)!.introReceiveAthan,
+            prefKey: "athanTimeAlert", 
+            incrementKey: incrementIntroKey
+          ),
+          PrefDialogScreenPage(
+            text: AppLocalizations.of(context)!.introReceiveIqamaah, 
+            prefKey: "iqamahTimeAlert", 
+            incrementKey: incrementIntroKey
+          ),
+          const CompletionScreenPage()
+        ],
+        showSkipButton: false,
+        showNextButton: true,
+        done: Text(AppLocalizations.of(context)!.finishSetup),
+        next: Text(AppLocalizations.of(context)!.continueSetup),
+        baseBtnStyle: const ButtonStyle(
+          alignment: Alignment.centerRight
         ),
-        PrefDialogScreenPage(
-          text: AppLocalizations.of(context)!.introReceiveIqamaah, 
-          prefKey: "iqamahTimeAlert", 
-          incrementKey: incrementIntroKey
-        ),
-        const CompletionScreenPage()
-      ],
-      showSkipButton: false,
-      showNextButton: true,
-      done: Text(AppLocalizations.of(context)!.finishSetup),
-      next: Text(AppLocalizations.of(context)!.continueSetup),
-      baseBtnStyle: const ButtonStyle(
-        alignment: Alignment.centerRight
-      ),
-      skipOrBackFlex: 0,
-      dotsFlex: 0,
-      nextFlex: 1,
-      onDone: () async {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setBool("isIntroComplete", true);
+        skipOrBackFlex: 0,
+        dotsFlex: 0,
+        nextFlex: 1,
+        onDone: () async {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setBool("isIntroComplete", true);
 
-        if (!context.mounted) return;
-        
-        await Navigator.pushReplacement(
-          context, 
-          MaterialPageRoute(builder: (context) => const HomeScreenView())
-        );
-      },
-      curve: Curves.easeInOutCubic,
-      animationDuration: 800,
+          if (!context.mounted) return;
+          
+          await Navigator.pushReplacement(
+            context, 
+            MaterialPageRoute(builder: (context) => const HomeScreenView())
+          );
+        },
+        curve: Curves.easeInOutCubic,
+        animationDuration: 800,
+      ),
     );
   }
 }
