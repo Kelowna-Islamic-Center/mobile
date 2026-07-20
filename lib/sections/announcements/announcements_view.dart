@@ -108,6 +108,20 @@ class AnnouncementsView extends StatelessWidget {
                                         endIndent: 15)
                                   ]),
                               itemBuilder: (context, index) {
+                                Announcement item = data[index];
+                                String locale = AppLocalizations.of(context)!.localeName;
+                                
+                                String title = item.l8n[locale]?["title"] ?? item.title;
+                                String description = item.l8n[locale]?["description"] ?? item.description;
+                                String displayTimeString = snapshot.hasData
+                                  ? item.localizedTimeString(locale)
+                                  : item.timeString;
+                                
+                                // Check for legacy announcements that might not be translated to the current locale
+                                bool isEnglishOnly = locale != "en"
+                                  && item.l8n[locale]?["title"] == null 
+                                  && item.l8n[locale]?["description"] == null;
+                                
                                 // Announcement Item
                                 return ListTile(
                                   title: Container(
@@ -116,16 +130,31 @@ class AnnouncementsView extends StatelessWidget {
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text(data[index].title,
+                                          Text(title,
                                               style: const TextStyle(
                                                   fontSize: 26,
                                                   letterSpacing: -1,
                                                   fontWeight:
                                                       FontWeight.w600)),
                                           const SizedBox(height: 5),
+
+                                          if (snapshot.hasData && isEnglishOnly)
+                                            Chip(
+                                              avatar: const Icon(Icons.warning, color: Colors.white),
+                                              label: Text(
+                                                AppLocalizations.of(context)!.thisAnnouncementIsNotAvaiableInThisLanguage,
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 13)
+                                                ),
+                                              backgroundColor: Colors.yellow[800],
+                                              side: const BorderSide(color: Colors.transparent)
+                                            ),
+                                          
                                           Chip(
                                             avatar: const Icon(Icons.event),
-                                            label: Text(data[index].timeString),
+                                            label: Text(displayTimeString),
                                           ),
                                       ])),
                                   subtitle: Container(
@@ -141,13 +170,13 @@ class AnnouncementsView extends StatelessWidget {
                                             if (!context.mounted) return;
                                             ScaffoldMessenger.of(context)
                                                 .showSnackBar(
-                                              const SnackBar(
+                                              SnackBar(
                                                   content: Text(
-                                                      "Couldn't open link, something went wrong.")),
+                                                      AppLocalizations.of(context)!.errorCouldntOpenLink)),
                                             );
                                           }
                                         },
-                                        text: data[index].description,
+                                        text: description,
                                         style:
                                             const TextStyle(fontSize: 16),
                                         linkStyle: const TextStyle(
