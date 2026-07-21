@@ -27,7 +27,12 @@ class CloudMessagingService {
     if (Platform.isAndroid) {
       const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings("@mipmap/ic_launcher");
       const DarwinInitializationSettings initializationSettingsIOS = DarwinInitializationSettings();
-      await flutterLocalNotificationsPlugin.initialize(const InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS));
+      await flutterLocalNotificationsPlugin.initialize(
+        settings: const InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsIOS,
+        ),
+      );
 
       await _createAndroidNotificationChannel(Config.announcementsChannel);
       await _createAndroidNotificationChannel(Config.iqamahAlertChannel);
@@ -46,8 +51,6 @@ class CloudMessagingService {
 
   static Future<void> backgroundMessageHandler(RemoteMessage message) async {
     String? notificationType = message.data["notificationType"];
-    String? action = message.data["action"];
-
     // Update cached announcements data to data from Firestore when a new announcement is received
     if (notificationType == "announcements") {
       await Firebase.initializeApp();
@@ -84,10 +87,10 @@ class CloudMessagingService {
 
         if (channel != null) {
           await flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
+            id: notification.hashCode,
+            title: notification.title,
+            body: notification.body,
+            notificationDetails: NotificationDetails(
               android: AndroidNotificationDetails(
                 channel.id,
                 channel.name,
