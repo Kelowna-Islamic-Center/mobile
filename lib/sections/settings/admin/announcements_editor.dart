@@ -154,22 +154,76 @@ class _AnnouncementEditorCard extends StatefulWidget {
 }
 
 class _AnnouncementEditorCardState extends State<_AnnouncementEditorCard>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
+  with TickerProviderStateMixin {
+  late TabController _tabController;
+  late List<String> _availableLocales;
+
+  // Returns a list of locales that have at least one non-empty title or description.
+  List<String> _localesForAnnouncement(Announcement announcement) {
+    Set<String> supported = {"en", "ar"};
+
+    Set<String> localizedContentLocales = announcement.l10n.entries
+        .where((entry) {
+          String title = (entry.value["title"] ?? "").trim();
+          String description = (entry.value["description"] ?? "").trim();
+          return title.isNotEmpty || description.isNotEmpty;
+        })
+        .map((entry) => entry.key)
+        .where(supported.contains)
+        .toSet();
+
+    List<String> ordered = [];
+    for (String locale in ["en", "ar"]) {
+      if (localizedContentLocales.contains(locale)) {
+        ordered.add(locale);
+      }
+    }
+
+    if (ordered.isEmpty) {
+      return ["en"];
+    }
+
+    return ordered;
+  }
+
+  void _recreateController() {
+    _tabController
+      ..removeListener(_onTabChanged)
+      ..dispose();
+
+    _tabController =
+        TabController(length: _availableLocales.length, vsync: this)
+          ..addListener(_onTabChanged);
+  }
+
+  void _onTabChanged() {
+    if (!_tabController.indexIsChanging) {
+      setState(() {});
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this)
-      ..addListener(() {
-        if (!_tabController.indexIsChanging) {
-          setState(() {});
-        }
-      });
+    _availableLocales = _localesForAnnouncement(widget.announcement);
+    _tabController =
+        TabController(length: _availableLocales.length, vsync: this)
+          ..addListener(_onTabChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant _AnnouncementEditorCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    List<String> newLocales = _localesForAnnouncement(widget.announcement);
+    if (newLocales.join("|") != _availableLocales.join("|")) {
+      _availableLocales = newLocales;
+      _recreateController();
+    }
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_onTabChanged);
     _tabController.dispose();
     super.dispose();
   }
@@ -178,13 +232,16 @@ class _AnnouncementEditorCardState extends State<_AnnouncementEditorCard>
     if (locale == "ar") {
       return AppLocalizations.of(context)!.arabicLanguage;
     }
-    return AppLocalizations.of(context)!.englishLanguage;
+    if (locale == "en") {
+      return AppLocalizations.of(context)!.englishLanguage;
+    }
+    return locale;
   }
 
   @override
   Widget build(BuildContext context) {
     Announcement announcement = widget.announcement;
-    String selectedLocale = _tabController.index == 1 ? "ar" : "en";
+    String selectedLocale = _availableLocales[_tabController.index];
 
     String title =
         announcement.l10n[selectedLocale]?["title"] ?? announcement.title;
@@ -203,8 +260,8 @@ class _AnnouncementEditorCardState extends State<_AnnouncementEditorCard>
               isScrollable: true,
               tabAlignment: TabAlignment.start,
               tabs: [
-                Tab(text: _localeLabel(context, "en")),
-                Tab(text: _localeLabel(context, "ar")),
+                for (final String locale in _availableLocales)
+                  Tab(text: _localeLabel(context, locale)),
               ],
             ),
             const SizedBox(height: 12),

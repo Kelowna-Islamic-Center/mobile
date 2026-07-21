@@ -80,6 +80,7 @@
     "successfullyAddedAnnouncement": "Successfully Added Announcement",
     "successfullyUpdatedAnnouncement": "Successfully Updated Announcement",
     "thisFieldIsRequired": "This field is required",
+    "atLeastOneAnnouncementLanguageRequired": "At least one announcement language must have a title or description.",
     "publishAnnouncement": "Publish Announcement",
     "showOnPlatforms": "Display on Platforms",
     "webPlatform": "Prayer Times Display",

@@ -80,6 +80,7 @@
     "successfullyAddedAnnouncement": "تمت إضافة الإعلان بنجاح",
     "successfullyUpdatedAnnouncement": "تم تحديث الإعلان بنجاح",
     "thisFieldIsRequired": "هذا النص مطلوب",
+    "atLeastOneAnnouncementLanguageRequired": "يجب أن تحتوي لغة إعلان واحدة على الأقل على عنوان أو وصف.",
     "publishAnnouncement": "نشر الإعلان",
     "showOnPlatforms": "عرض على المنصات",
     "webPlatform": "عرض أوقات الصلاة",

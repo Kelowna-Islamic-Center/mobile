@@ -12,7 +12,9 @@ class AnnouncementFormPage extends StatefulWidget {
     super.key,
     this.announcementID,
     this.announcement,
-  }) : assert((announcementID == null && announcement == null) || (announcementID != null && announcement != null), "announcementID and announcement must both be provided for edit mode." );
+  }) : assert(
+            (announcementID == null && announcement == null) || (announcementID != null && announcement != null),
+            "announcementID and announcement must both be provided for edit mode.");
 
   @override
   State<AnnouncementFormPage> createState() => _AnnouncementFormPageState();
@@ -61,7 +63,9 @@ class _AnnouncementFormPageState extends State<AnnouncementFormPage> {
         ),
     };
 
-    platforms = announcement == null ? <String>[] : List<String>.from(announcement.platforms);
+    platforms = announcement == null
+        ? <String>[]
+        : List<String>.from(announcement.platforms);
   }
 
   @override
@@ -83,6 +87,17 @@ class _AnnouncementFormPageState extends State<AnnouncementFormPage> {
           "description": _descriptionControllers[locale]!.text,
         },
     };
+  }
+
+  bool _hasAtLeastOneLocaleWithContent() {
+    for (String locale in _supportedLocales) {
+      String title = _titleControllers[locale]!.text.trim();
+      String description = _descriptionControllers[locale]!.text.trim();
+      if (title.isNotEmpty || description.isNotEmpty) {
+        return true;
+      }
+    }
+    return false;
   }
 
   String _localeLabel(BuildContext context, String locale) {
@@ -181,20 +196,14 @@ class _AnnouncementFormPageState extends State<AnnouncementFormPage> {
                                           border: const OutlineInputBorder(),
                                         ),
                                         keyboardType: TextInputType.text,
-                                        validator: (value) {
-                                          if (value == null ||
-                                              value.trim().isEmpty) {
-                                            return strings.thisFieldIsRequired;
-                                          }
-                                          return null;
-                                        },
                                       ),
                                       const SizedBox(height: 15),
                                       TextFormField(
                                         controller:
                                             _descriptionControllers[locale],
                                         decoration: InputDecoration(
-                                          labelText: strings.enterDescriptionForLanguage(
+                                          labelText: strings
+                                              .enterDescriptionForLanguage(
                                             _localeLabel(context, locale),
                                           ),
                                           alignLabelWithHint: true,
@@ -203,13 +212,6 @@ class _AnnouncementFormPageState extends State<AnnouncementFormPage> {
                                         keyboardType: TextInputType.multiline,
                                         minLines: 5,
                                         maxLines: null,
-                                        validator: (value) {
-                                          if (value == null ||
-                                              value.trim().isEmpty) {
-                                            return strings.thisFieldIsRequired;
-                                          }
-                                          return null;
-                                        },
                                       ),
                                     ],
                                   ),
@@ -229,9 +231,12 @@ class _AnnouncementFormPageState extends State<AnnouncementFormPage> {
                           child: MultiSelectDialogField<String>(
                             initialValue: platforms,
                             dialogHeight: 2 * 90,
-                            itemsTextStyle: Theme.of(context).textTheme.bodyMedium,
-                            selectedItemsTextStyle: Theme.of(context).textTheme.bodyMedium,
-                            selectedColor: Theme.of(context).colorScheme.primary,
+                            itemsTextStyle:
+                                Theme.of(context).textTheme.bodyMedium,
+                            selectedItemsTextStyle:
+                                Theme.of(context).textTheme.bodyMedium,
+                            selectedColor:
+                                Theme.of(context).colorScheme.primary,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return strings.thisFieldIsRequired;
@@ -263,6 +268,15 @@ class _AnnouncementFormPageState extends State<AnnouncementFormPage> {
                               FilledButton(
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
+                                    if (!_hasAtLeastOneLocaleWithContent()) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(strings.atLeastOneAnnouncementLanguageRequired),
+                                        ),
+                                      );
+                                      return;
+                                    }
+
                                     setState(() {
                                       loading = true;
                                     });
@@ -278,9 +292,11 @@ class _AnnouncementFormPageState extends State<AnnouncementFormPage> {
                                     if (result["success"] as bool) {
                                       Navigator.of(context).pop();
                                     } else {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
                                         SnackBar(
-                                          content: Text(result["message"] as String),
+                                          content:
+                                              Text(result["message"] as String),
                                         ),
                                       );
                                     }

@@ -7,7 +7,6 @@ import "package:shared_preferences/shared_preferences.dart";
 import "package:kelowna_islamic_center/structs/announcement.dart";
 
 class AnnouncementsController {
-  
   static String _firstNonEmpty(List<String?> candidates) {
     for (String? value in candidates) {
       if (value != null && value.trim().isNotEmpty) {
@@ -17,18 +16,31 @@ class AnnouncementsController {
     return "";
   }
 
-  static Map<String, Map<String, String>> _normalizeL10n(Map<String, Map<String, String>> rawL10n) {
-    return rawL10n.map<String, Map<String, String>>((locale, values) {
-      return MapEntry(locale, {
-        "title": (values["title"] ?? "").trim(),
-        "description": (values["description"] ?? "").trim(),
-      });
+  static Map<String, Map<String, String>> _normalizeL10n(
+      Map<String, Map<String, String>> rawL10n) {
+    Map<String, Map<String, String>> normalized = {};
+
+    rawL10n.forEach((locale, values) {
+      String title = (values["title"] ?? "").trim();
+      String description = (values["description"] ?? "").trim();
+
+      if (title.isEmpty && description.isEmpty) {
+        return;
+      }
+
+      normalized[locale] = {
+        "title": title,
+        "description": description,
+      };
     });
+
+    return normalized;
   }
 
   static Future<Map<String, dynamic>> fetchAnnouncements() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    QuerySnapshot<Map<String, dynamic>> fbSnapshot = await FirebaseFirestore.instance
+    QuerySnapshot<Map<String, dynamic>> fbSnapshot = await FirebaseFirestore
+        .instance
         .collection(Config.announcementCollection)
         .where("platforms", arrayContains: "mobile")
         .get();
@@ -58,8 +70,12 @@ class AnnouncementsController {
     required Map<String, Map<String, String>> l10n,
     required List<String> platforms,
   }) async {
-    
     Map<String, Map<String, String>> normalizedL10n = _normalizeL10n(l10n);
+
+    if (normalizedL10n.isEmpty) {
+      throw ArgumentError(
+          "At least one locale must contain title or description.");
+    }
 
     String fallbackTitle = _firstNonEmpty([
       normalizedL10n["en"]?["title"],
@@ -86,8 +102,12 @@ class AnnouncementsController {
     required Map<String, Map<String, String>> l10n,
     required List<String> platforms,
   }) async {
-    
     Map<String, Map<String, String>> normalizedL10n = _normalizeL10n(l10n);
+
+    if (normalizedL10n.isEmpty) {
+      throw ArgumentError(
+          "At least one locale must contain title or description.");
+    }
 
     String fallbackTitle = _firstNonEmpty([
       normalizedL10n["en"]?["title"],
