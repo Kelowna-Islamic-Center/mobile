@@ -10,7 +10,7 @@ void main() {
         "description": "Test description",
         "platforms": ["android"],
         "timeStamp": Timestamp.fromMillisecondsSinceEpoch(1700000000000),
-        "l8n": {
+        "l10n": {
           "en": {
             "title": "English title",
             "description": "English description",
@@ -21,7 +21,7 @@ void main() {
     ]);
 
     expect(announcements, hasLength(1));
-    expect(announcements.single.l8n["en"]?["title"], "English title");
-    expect(announcements.single.l8n["en"]?["extra"], "1");
+    expect(announcements.single.l10n["en"]?["title"], "English title");
+    expect(announcements.single.l10n["en"]?["extra"], "1");
   });
 }

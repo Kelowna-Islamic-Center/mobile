@@ -111,16 +111,16 @@ class AnnouncementsView extends StatelessWidget {
                                 Announcement item = data[index];
                                 String locale = AppLocalizations.of(context)!.localeName;
                                 
-                                String title = item.l8n[locale]?["title"] ?? item.title;
-                                String description = item.l8n[locale]?["description"] ?? item.description;
+                                String title = item.l10n[locale]?["title"] ?? item.title;
+                                String description = item.l10n[locale]?["description"] ?? item.description;
                                 String displayTimeString = snapshot.hasData
                                   ? item.localizedTimeString(locale)
                                   : item.timeString;
                                 
                                 // Check for legacy announcements that might not be translated to the current locale
                                 bool isEnglishOnly = locale != "en"
-                                  && item.l8n[locale]?["title"] == null 
-                                  && item.l8n[locale]?["description"] == null;
+                                  && item.l10n[locale]?["title"] == null 
+                                  && item.l10n[locale]?["description"] == null;
                                 
                                 // Announcement Item
                                 return ListTile(
