@@ -5,8 +5,7 @@ import "package:kelowna_islamic_center/config.dart";
 import "package:kelowna_islamic_center/sections/announcements/announcements_controller.dart";
 import "package:url_launcher/url_launcher_string.dart";
 
-import "package:kelowna_islamic_center/sections/settings/admin/edit_announcement_page.dart";
-import "package:kelowna_islamic_center/sections/settings/admin/new_announcement_page.dart";
+import "package:kelowna_islamic_center/sections/settings/admin/announcement_form_page.dart";
 import "package:kelowna_islamic_center/structs/announcement.dart";
 import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
@@ -18,18 +17,22 @@ class AnnouncementsEditor extends StatefulWidget {
 }
 
 class AnnouncementsEditorState extends State<AnnouncementsEditor> {
-
   void _navigateToAddAnnouncement() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const NewAnnouncementsPage()),
+      MaterialPageRoute(builder: (context) => const AnnouncementFormPage()),
     );
   }
 
   void _navigateToEditAnnouncement(String id, Announcement announcement) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => EditAnnouncementsPage(announcementID: id, announcement: announcement)),
+      MaterialPageRoute(
+        builder: (context) => AnnouncementFormPage(
+          announcementID: id,
+          announcement: announcement,
+        ),
+      ),
     );
   }
 
@@ -38,12 +41,14 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
       await AnnouncementsController.deleteAnnouncement(id);
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.announcementDeleted)),
+        SnackBar(
+            content: Text(AppLocalizations.of(context)!.announcementDeleted)),
       );
     } catch (error) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.somethingWentWrong)),
+        SnackBar(
+            content: Text(AppLocalizations.of(context)!.somethingWentWrong)),
       );
     }
   }
@@ -64,8 +69,10 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
             if (!context.mounted) return;
             Navigator.of(context).pop();
           },
-          style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
-          child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: Theme.of(context).colorScheme.onError)),
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error),
+          child: Text(AppLocalizations.of(context)!.delete,
+              style: TextStyle(color: Theme.of(context).colorScheme.onError)),
         ),
       ],
     );
@@ -73,56 +80,59 @@ class AnnouncementsEditorState extends State<AnnouncementsEditor> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            ListTile(
-                tileColor: Theme.of(context).hoverColor,
-                onTap: () => _navigateToAddAnnouncement(),
-                title: Text(AppLocalizations.of(context)!.addAnnouncement,
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
-                trailing: const Icon(Icons.add)),
-            StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection(Config.announcementCollection)
-                    .orderBy("timeStamp", descending: true)
-                    .snapshots(),
-                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  
-                  if (snapshot.hasError) {
-                    return Text(AppLocalizations.of(context)!.somethingWentWrong);
-                  }
-                  
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  }
+          body: SingleChildScrollView(
+              child: Column(
+        children: [
+          ListTile(
+              tileColor: Theme.of(context).hoverColor,
+              onTap: () => _navigateToAddAnnouncement(),
+              title: Text(AppLocalizations.of(context)!.addAnnouncement,
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              trailing: const Icon(Icons.add)),
+          StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection(Config.announcementCollection)
+                  .orderBy("timeStamp", descending: true)
+                  .snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return Text(AppLocalizations.of(context)!.somethingWentWrong);
+                }
 
-                  List<Announcement> data = Announcement.listFromJSON(snapshot.data!.docs);
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                }
 
-                  return ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: data.length,
-                      itemBuilder: (context, index) {
-                        return _AnnouncementEditorCard(
-                          announcement: data[index],
-                          announcementID: snapshot.data!.docs[index].id,
-                          onEdit: (String announcementID, Announcement announcement) {
-                            _navigateToEditAnnouncement(announcementID, announcement);
-                          },
-                          onDelete: (String announcementID) {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) =>
-                                  _deletionPopupDialog(context, announcementID),
-                            );
-                          },
-                        );
-                      });
-                })
-          ],
-        )));
+                List<Announcement> data =
+                    Announcement.listFromJSON(snapshot.data!.docs);
+
+                return ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      return _AnnouncementEditorCard(
+                        announcement: data[index],
+                        announcementID: snapshot.data!.docs[index].id,
+                        onEdit:
+                            (String announcementID, Announcement announcement) {
+                          _navigateToEditAnnouncement(
+                              announcementID, announcement);
+                        },
+                        onDelete: (String announcementID) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) =>
+                                _deletionPopupDialog(context, announcementID),
+                          );
+                        },
+                      );
+                    });
+              })
+        ],
+      )));
 }
 
 class _AnnouncementEditorCard extends StatefulWidget {
@@ -143,7 +153,8 @@ class _AnnouncementEditorCard extends StatefulWidget {
       _AnnouncementEditorCardState();
 }
 
-class _AnnouncementEditorCardState extends State<_AnnouncementEditorCard> with SingleTickerProviderStateMixin {
+class _AnnouncementEditorCardState extends State<_AnnouncementEditorCard>
+    with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
   @override
@@ -175,8 +186,10 @@ class _AnnouncementEditorCardState extends State<_AnnouncementEditorCard> with S
     Announcement announcement = widget.announcement;
     String selectedLocale = _tabController.index == 1 ? "ar" : "en";
 
-    String title = announcement.l10n[selectedLocale]?["title"] ?? announcement.title;
-    String description = announcement.l10n[selectedLocale]?["description"] ?? announcement.description;
+    String title =
+        announcement.l10n[selectedLocale]?["title"] ?? announcement.title;
+    String description = announcement.l10n[selectedLocale]?["description"] ??
+        announcement.description;
 
     return Card(
       margin: const EdgeInsets.fromLTRB(8, 8, 8, 0),
