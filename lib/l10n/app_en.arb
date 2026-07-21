@@ -84,6 +84,24 @@
     "showOnPlatforms": "Display on Platforms",
     "webPlatform": "Prayer Times Display",
     "mobilePlatform": "Mobile App",
+    "englishLanguage": "English",
+    "arabicLanguage": "Arabic",
+    "enterTitleForLanguage": "Enter a Title ({language})",
+    "@enterTitleForLanguage": {
+        "placeholders": {
+            "language": {
+                "type": "String"
+            }
+        }
+    },
+    "enterDescriptionForLanguage": "Enter a Description ({language})",
+    "@enterDescriptionForLanguage": {
+        "placeholders": {
+            "language": {
+                "type": "String"
+            }
+        }
+    },
     "errorCouldntOpenLink": "Couldn't open link, something went wrong.",
     "fajr": "Fajr - الفجر",
     "shurooq": "Shurooq - الشروق",

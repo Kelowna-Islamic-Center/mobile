@@ -84,6 +84,24 @@
     "showOnPlatforms": "عرض على المنصات",
     "webPlatform": "عرض أوقات الصلاة",
     "mobilePlatform": "تطبيق الهاتف",
+    "englishLanguage": "الإنجليزية",
+    "arabicLanguage": "العربية",
+    "enterTitleForLanguage": "اكتب عنوانا ({language})",
+    "@enterTitleForLanguage": {
+        "placeholders": {
+            "language": {
+                "type": "String"
+            }
+        }
+    },
+    "enterDescriptionForLanguage": "اكتب وصفا ({language})",
+    "@enterDescriptionForLanguage": {
+        "placeholders": {
+            "language": {
+                "type": "String"
+            }
+        }
+    },
     "errorCouldntOpenLink": "لم أتمكن من فتح الرابط، حدث خطأ ما",
     "fajr": "الفجر",
     "shurooq": "الشروق",

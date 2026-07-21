@@ -7,6 +7,24 @@ import "package:shared_preferences/shared_preferences.dart";
 import "package:kelowna_islamic_center/structs/announcement.dart";
 
 class AnnouncementsController {
+  
+  static String _firstNonEmpty(List<String?> candidates) {
+    for (String? value in candidates) {
+      if (value != null && value.trim().isNotEmpty) {
+        return value.trim();
+      }
+    }
+    return "";
+  }
+
+  static Map<String, Map<String, String>> _normalizeL10n(Map<String, Map<String, String>> rawL10n) {
+    return rawL10n.map<String, Map<String, String>>((locale, values) {
+      return MapEntry(locale, {
+        "title": (values["title"] ?? "").trim(),
+        "description": (values["description"] ?? "").trim(),
+      });
+    });
+  }
 
   static Future<Map<String, dynamic>> fetchAnnouncements() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -35,5 +53,67 @@ class AnnouncementsController {
       "data": Announcement.listFromJSON(parsedList)
     };
   }
-  
+
+  static Future<void> createAnnouncement({
+    required Map<String, Map<String, String>> l10n,
+    required List<String> platforms,
+  }) async {
+    
+    Map<String, Map<String, String>> normalizedL10n = _normalizeL10n(l10n);
+
+    String fallbackTitle = _firstNonEmpty([
+      normalizedL10n["en"]?["title"],
+      normalizedL10n["ar"]?["title"],
+    ]);
+
+    String fallbackDescription = _firstNonEmpty([
+      normalizedL10n["en"]?["description"],
+      normalizedL10n["ar"]?["description"],
+    ]);
+
+    await FirebaseFirestore.instance
+        .collection(Config.announcementCollection)
+        .add({
+      "title": fallbackTitle,
+      "description": fallbackDescription,
+      "platforms": platforms,
+      "l10n": normalizedL10n,
+    });
+  }
+
+  static Future<void> updateAnnouncement({
+    required String announcementID,
+    required Map<String, Map<String, String>> l10n,
+    required List<String> platforms,
+  }) async {
+    
+    Map<String, Map<String, String>> normalizedL10n = _normalizeL10n(l10n);
+
+    String fallbackTitle = _firstNonEmpty([
+      normalizedL10n["en"]?["title"],
+      normalizedL10n["ar"]?["title"],
+    ]);
+
+    String fallbackDescription = _firstNonEmpty([
+      normalizedL10n["en"]?["description"],
+      normalizedL10n["ar"]?["description"],
+    ]);
+
+    await FirebaseFirestore.instance
+        .collection(Config.announcementCollection)
+        .doc(announcementID)
+        .update({
+      "title": fallbackTitle,
+      "description": fallbackDescription,
+      "platforms": platforms,
+      "l10n": normalizedL10n,
+    });
+  }
+
+  static Future<void> deleteAnnouncement(String announcementID) async {
+    await FirebaseFirestore.instance
+        .collection(Config.announcementCollection)
+        .doc(announcementID)
+        .delete();
+  }
 }
