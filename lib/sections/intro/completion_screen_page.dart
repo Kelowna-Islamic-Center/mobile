@@ -2,8 +2,9 @@ import "package:flutter/material.dart";
 import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
 class CompletionScreenPage extends StatelessWidget {
+  final Future<void> Function() onFinish;
 
-  const CompletionScreenPage({super.key});
+  const CompletionScreenPage({super.key, required this.onFinish});
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +39,11 @@ class CompletionScreenPage extends StatelessWidget {
                     AppLocalizations.of(context)!.setupComplete,
                     style:
                         const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                  ),
+                  const SizedBox(height: 25),
+                  FilledButton(
+                    onPressed: onFinish,
+                    child: Text(AppLocalizations.of(context)!.finishSetup),
                   ),
                 ],
               ))

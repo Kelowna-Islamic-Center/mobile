@@ -1,6 +1,5 @@
 import "package:firebase_messaging/firebase_messaging.dart";
 import "package:intl/date_symbol_data_local.dart";
-import "package:permission_handler/permission_handler.dart";
 import "package:flutter/material.dart";
 
 import "package:kelowna_islamic_center/sections/announcements/announcements_view.dart";
@@ -22,24 +21,8 @@ class _HomeScreenState extends State<HomeScreenView> {
   @override
   void initState() {
     super.initState();
-    requestPermissions();
     initializeDateFormatting();
     setupNotificationInteractions();
-  }
-
-  Future<void> requestPermissions() async {
-    // Notification and alarm requests
-    await Permission.notification.isDenied.then((value) {
-      if (value) {
-        Permission.notification.request();
-      }
-    });
-
-    await Permission.scheduleExactAlarm.isDenied.then((value) {
-      if (value) {
-        Permission.scheduleExactAlarm.request();
-      }
-    });
   }
 
   // Notification click handler

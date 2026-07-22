@@ -2,8 +2,9 @@ import "package:flutter/material.dart";
 import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
 class WelcomeScreenPage extends StatelessWidget {
-  
-  const WelcomeScreenPage({super.key});
+  final Future<void> Function() onContinue;
+
+  const WelcomeScreenPage({super.key, required this.onContinue});
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +51,14 @@ class WelcomeScreenPage extends StatelessWidget {
                     AppLocalizations.of(context)!.beginSetup,
                     style:
                         const TextStyle(fontWeight: FontWeight.bold, fontSize: 45),
+                  ),
+                  const SizedBox(height: 25),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: FilledButton(
+                      onPressed: onContinue,
+                      child: Text(AppLocalizations.of(context)!.continueSetup),
+                    ),
                   ),
                 ],
               ))

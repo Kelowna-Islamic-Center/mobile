@@ -1,9 +1,5 @@
-import "dart:io";
-
-import "package:disable_battery_optimization/disable_battery_optimization.dart";
 import "package:flutter/material.dart";
 import "package:firebase_core/firebase_core.dart";
-import "package:flutter_local_notifications/flutter_local_notifications.dart";
 import "package:kelowna_islamic_center/firebase_options.dart";
 import "package:kelowna_islamic_center/locales/locale_provider.dart";
 import "package:kelowna_islamic_center/sections/intro/intro_view.dart";
@@ -43,27 +39,6 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  if (Platform.isAndroid) {
-    // Request Notification Permissions for Android 13+
-    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
-    await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestExactAlarmsPermission();
-
-    // Request Auto Start Permission
-    bool? isAutoStartEnabled = await DisableBatteryOptimization.isAutoStartEnabled;
-    if (isAutoStartEnabled == true) {
-      await DisableBatteryOptimization.showDisableBatteryOptimizationSettings();
-    }
-
-    // Request user to disable battery optimizations
-    bool? isManBatteryOptimizationDisabled = await DisableBatteryOptimization.isManufacturerBatteryOptimizationDisabled;
-    if (isManBatteryOptimizationDisabled == true) {
-      await DisableBatteryOptimization.showDisableManufacturerBatteryOptimizationSettings(
-          "Your device has battery optimization enabled.",
-          "Please follow the steps and disable the optimizations to allow smooth functioning of this app");
-    }
-  }
 
   // Initialize app services
   await Workmanager().initialize(callbackDispatcher);
