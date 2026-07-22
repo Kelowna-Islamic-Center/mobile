@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:kelowna_islamic_center/config.dart";
 import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 import "package:kelowna_islamic_center/sections/settings/settings_controller.dart";
 import "package:shared_preferences/shared_preferences.dart";
@@ -16,18 +17,35 @@ class AlertPreferencesScreenPage extends StatefulWidget {
 class _AlertPreferencesScreenPageState extends State<AlertPreferencesScreenPage> {
   bool _athanEnabled = true;
   bool _iqamahEnabled = true;
+  bool _didTouchAthanToggle = false;
+  bool _didTouchIqamahToggle = false;
   bool _isSaving = false;
+
+  Future<void> _persistAlertPreference(String key, bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(key, value);
+    await SettingsController.subscriptionHandler(key, value);
+  }
+
+  Future<void> _persistIqamahAlertTimeDefault() async {
+    int defaultIqamahAlertTime = Config.defaultSettings["iqamahTimeAlertTime"] as int;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt("iqamahTimeAlertTime", defaultIqamahAlertTime);
+    await SettingsController.subscriptionHandler("iqamahTimeAlertTime", defaultIqamahAlertTime);
+  }
 
   Future<void> _saveAndContinue() async {
     setState(() {
       _isSaving = true;
     });
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool("athanTimeAlert", _athanEnabled);
-    await prefs.setBool("iqamahTimeAlert", _iqamahEnabled);
-    await SettingsController.subscriptionHandler("athanTimeAlert", _athanEnabled);
-    await SettingsController.subscriptionHandler("iqamahTimeAlert", _iqamahEnabled);
+    // Persist explicit defaults when the user continues without touching toggles.
+    bool savedAthanValue = _didTouchAthanToggle ? _athanEnabled : true;
+    bool savedIqamahValue = _didTouchIqamahToggle ? _iqamahEnabled : true;
+
+    await _persistAlertPreference("athanTimeAlert", savedAthanValue);
+    await _persistAlertPreference("iqamahTimeAlert", savedIqamahValue);
+    await _persistIqamahAlertTimeDefault();
 
     if (!mounted) {
       return;
@@ -98,10 +116,13 @@ class _AlertPreferencesScreenPageState extends State<AlertPreferencesScreenPage>
                   title: Text(l10n.introAthanToggleLabel),
                   subtitle: Text(l10n.introAthanToggleDescription),
                   value: _athanEnabled,
-                  onChanged: (value) {
+                  onChanged: (value) async {
                     setState(() {
+                      _didTouchAthanToggle = true;
                       _athanEnabled = value;
                     });
+
+                    await _persistAlertPreference("athanTimeAlert", value);
                   },
                 ),
                 SwitchListTile(
@@ -109,10 +130,13 @@ class _AlertPreferencesScreenPageState extends State<AlertPreferencesScreenPage>
                   title: Text(l10n.introIqamahToggleLabel),
                   subtitle: Text(l10n.introIqamahToggleDescription),
                   value: _iqamahEnabled,
-                  onChanged: (value) {
+                  onChanged: (value) async {
                     setState(() {
+                      _didTouchIqamahToggle = true;
                       _iqamahEnabled = value;
                     });
+
+                    await _persistAlertPreference("iqamahTimeAlert", value);
                   },
                 ),
                 const SizedBox(height: 16),
