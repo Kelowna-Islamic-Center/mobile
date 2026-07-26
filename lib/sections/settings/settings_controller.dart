@@ -72,33 +72,15 @@ class SettingsController {
     }
 
     if (key == "athanTimeAlert" && value is bool) {
-      if (value) {
-        unawaited(CloudMessagingService.subscribeToTopic(Config.athanAlertTopic));
-      } else {
-        unawaited(CloudMessagingService.unsubscribeFromTopic(Config.athanAlertTopic));
-      }
+      // TODO: Implement this locally
     }
 
     if (key == "iqamahTimeAlert" && value is bool) {
-      if (value) {
-        unawaited(CloudMessagingService.subscribeToTopic(Config.iqamahAlertTopic));
-      } else {
-        unawaited(CloudMessagingService.unsubscribeFromTopic(Config.iqamahAlertTopic));
-      }
+      // TODO: Implement this locally
     }
 
     if (key == "iqamahTimeAlertTime" && value is int) {
-      // Remove previous value and unsubscribe from previous topic
-      SharedPreferences staticPrefs = await SharedPreferences.getInstance();
-      int? previousValue = staticPrefs.getInt(key);
-      if (previousValue != null) {
-        String oldTopic = Config.getIqamahAlertTopic(previousValue);
-        unawaited(CloudMessagingService.unsubscribeFromTopic(oldTopic));
-      }
-
-      // Set new value and subscribe to new topic
-      String newTopic = Config.getIqamahAlertTopic(value);
-      unawaited(CloudMessagingService.subscribeToTopic(newTopic));
+      // TODO: Implement this locally
     }
   }
 }

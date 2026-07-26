@@ -64,8 +64,6 @@ class CloudMessagingService {
       
       await prefs.setStringList(Config.announcementCollection, Announcement.toJsonStringFromList(Announcement.listFromJSON(fsSnapshot.docs)));
     }
-
-    // For athan notifications, Android has its own native specific implimentation of Athan Audio player found in FirebaseAthanMessagingService.java
   }
 
   static void foregroundMessageHandler(RemoteMessage message) async {
@@ -117,15 +115,6 @@ class CloudMessagingService {
 
   static Future<void>? _createAndroidNotificationChannel(AndroidNotificationChannel channel) {
     return flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
-  }
-
-  static Future<void> startAndroidAthanService({ required String channelId, required String title, required String text }) async {
-    const platform = MethodChannel("com.kelownamasjid.athan");
-    await platform.invokeMethod("startAndroidAthanService", {
-      "channelId": channelId,
-      "title": title,
-      "text": text
-    });
   }
 
   // Subscribtions if the user has never set any settings (first time launch)

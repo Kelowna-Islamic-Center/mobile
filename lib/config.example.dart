@@ -7,12 +7,7 @@ class Config {
 
   // Cloud messaging topics and firestore collections for announcements
   static String announcementTopic = "announcements";
-  static String athanAlertTopic = "athanAlert";
-  static String iqamahAlertTopic = "iqamahAlert";
   static String localeTopicPrefix = "lang-";
-  static String getIqamahAlertTopic(int minutes) {
-    return "iqamah${minutes}MinuteAlert";
-  }
   static String announcementCollection = "announcements";
 
 
