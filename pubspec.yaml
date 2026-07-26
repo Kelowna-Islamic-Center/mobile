@@ -63,6 +63,23 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+
+# Generate icons with 'dart run flutter_launcher_icons'
+flutter_launcher_icons:
+  image_path: assets/icons/icon.png
+
+  android: true
+  min_sdk_android: 21
+  adaptive_icon_background: "#81C784"
+  adaptive_icon_foreground: assets/icons/android_foreground.png
+  adaptive_icon_monochrome: assets/icons/android_monochrome.png
+  adaptive_icon_foreground_inset: 16
+
+  ios: true
+  image_path_ios: assets/icons/icon.png
+  remove_alpha_ios: true
+  background_color_ios: "#81C784"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
