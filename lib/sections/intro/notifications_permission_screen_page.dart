@@ -79,9 +79,9 @@ class _NotificationsPermissionScreenPageState
                   children: [
                     const Image(
                       image: AssetImage("assets/images/ic_launcher.png"),
-                      width: 50,
+                      width: 45,
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 15),
                     Text(
                       l10n.kelownaIslamicCenter,
                       style: const TextStyle(fontSize: 18),
