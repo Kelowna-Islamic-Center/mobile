@@ -1,8 +1,10 @@
 import "dart:ui";
+import "dart:async";
 import "package:flutter/material.dart";
 import "package:kelowna_islamic_center/config.dart";
 import "package:kelowna_islamic_center/locales/global_localization_service.dart";
 import "package:kelowna_islamic_center/services/cloud_messaging_service.dart";
+import "package:kelowna_islamic_center/services/prayer_alert_scheduler_service.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
 class LocaleProvider with ChangeNotifier {
@@ -55,6 +57,7 @@ class LocaleProvider with ChangeNotifier {
         _lastLocale = stringValue;
       }
 
+      unawaited(PrayerAlertSchedulerService.reconcileSchedules(force: true));
       notifyListeners();
     } catch (e) {
       // This should be handled in the future by showing an error message.

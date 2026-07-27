@@ -57,6 +57,20 @@ class _SettingsWidgetState extends State<SettingsView> {
     });
   }
 
+  void _showExactAlarmDeniedMessage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.exactAlarmPermissionRequired),
+        action: SnackBarAction(
+          label: AppLocalizations.of(context)!.openSettings,
+          onPressed: () {
+            openAppSettings();
+          },
+        ),
+      ),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -191,8 +205,11 @@ class _SettingsWidgetState extends State<SettingsView> {
             /* Iqamah Alert Settings */
             SwitchListTile(
                 value: settings["athanTimeAlert"] ?? false,
-                onChanged: (bool newValue) {
-                  controller.updateValue("athanTimeAlert", newValue);
+                onChanged: (bool newValue) async {
+                  bool applied = await controller.updateValue("athanTimeAlert", newValue);
+                  if (!applied && context.mounted) {
+                    _showExactAlarmDeniedMessage();
+                  }
                 },
                 secondary: const Icon(Icons.timer_rounded),
                 title: Text(AppLocalizations.of(context)!.athanReminder),

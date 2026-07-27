@@ -3,6 +3,7 @@ import "package:firebase_core/firebase_core.dart";
 import "package:kelowna_islamic_center/firebase_options.dart";
 import "package:kelowna_islamic_center/locales/locale_provider.dart";
 import "package:kelowna_islamic_center/sections/intro/intro_view.dart";
+import "package:kelowna_islamic_center/services/prayer_alert_scheduler_service.dart";
 import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "package:workmanager/workmanager.dart";
@@ -20,8 +21,14 @@ import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     switch (task) {
+      case PrayerAlertSchedulerService.taskUniqueName:
+        await PrayerAlertSchedulerService.reconcileSchedules(fromBackground: true);
       case ApiFetchService.taskUniqueName:
         await ApiFetchService.updateSharedPreferencesTimes();
+        await PrayerAlertSchedulerService.reconcileSchedules(
+          fromBackground: true,
+          force: true,
+        );
     }
 
     return Future.value(true);
@@ -43,6 +50,10 @@ Future<void> main() async {
   // Initialize app services
   await Workmanager().initialize(callbackDispatcher);
   await ApiFetchService.initBackgroundService();
+  await PrayerAlertSchedulerService.initBackgroundService();
+  await ApiFetchService.updateSharedPreferencesTimes();
+  await PrayerAlertSchedulerService.reconcileIfNativeDirty();
+  await PrayerAlertSchedulerService.reconcileSchedules(force: true);
 
   // Check if user has skipped the intro
   bool? isIntroComplete = prefs.getBool("isIntroComplete");
@@ -66,11 +77,36 @@ Future<void> main() async {
 }
 
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
 
   final bool isIntroComplete; 
   
   const App({super.key, required this.isIntroComplete});
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      PrayerAlertSchedulerService.reconcileIfNativeDirty();
+      PrayerAlertSchedulerService.reconcileSchedules();
+    }
+  }
 
   // This widget is the root of your application.
   @override
@@ -86,7 +122,7 @@ class App extends StatelessWidget {
       darkTheme: AppTheme.dark,
       themeMode: Provider.of<ThemeModeProvider>(context).themeMode,
 
-      home: isIntroComplete ? const HomeScreenView() : const IntroView(),
+      home: widget.isIntroComplete ? const HomeScreenView() : const IntroView(),
     );
   }
 }

@@ -53,6 +53,8 @@
     "timesToShowOnAppLaunch": "Preferred prayer times to show when app launches",
     "notifications": "Notifications",
     "notificationsDisabledWarning": "Notifications are disabled. Enable them in settings to receive notifications.",
+    "exactAlarmPermissionRequired": "To enable Athan alerts, allow exact alarms in app settings.",
+    "openSettings": "Open Settings",
     "athanReminder": "Athan Reminder Alarm",
     "athanReminderDescription": "Show a notification and play Athan audio when it's athan time.",
     "minutes": "{minutes} minutes",

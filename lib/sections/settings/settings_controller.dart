@@ -1,7 +1,10 @@
 import "dart:async";
+import "dart:io";
 
 import "package:kelowna_islamic_center/config.dart";
 import "package:kelowna_islamic_center/services/cloud_messaging_service.dart";
+import "package:kelowna_islamic_center/services/prayer_alert_scheduler_service.dart";
+import "package:permission_handler/permission_handler.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
 class SettingsController {
@@ -44,7 +47,18 @@ class SettingsController {
     onSettingsChanged(settings);
   }
 
-  Future<void> updateValue(String key, dynamic value) async {
+  Future<bool> updateValue(String key, dynamic value) async {
+    if (key == "athanTimeAlert" && value is bool && value && Platform.isAndroid) {
+      PermissionStatus status = await Permission.scheduleExactAlarm.status;
+      if (!status.isGranted) {
+        status = await Permission.scheduleExactAlarm.request();
+      }
+
+      if (!status.isGranted) {
+        return false;
+      }
+    }
+
     await subscriptionHandler(key, value);
 
     if (value is int) {
@@ -58,6 +72,8 @@ class SettingsController {
     // Update internal map and notify the widget
     settings[key] = value;
     onSettingsChanged(settings);
+    
+    return true;
   }
 
   // Individual handlers for each settings change
@@ -72,15 +88,15 @@ class SettingsController {
     }
 
     if (key == "athanTimeAlert" && value is bool) {
-      // TODO: Implement this locally
+      unawaited(PrayerAlertSchedulerService.reconcileSchedules(force: true));
     }
 
     if (key == "iqamahTimeAlert" && value is bool) {
-      // TODO: Implement this locally
+      unawaited(PrayerAlertSchedulerService.reconcileSchedules(force: true));
     }
 
     if (key == "iqamahTimeAlertTime" && value is int) {
-      // TODO: Implement this locally
+      unawaited(PrayerAlertSchedulerService.reconcileSchedules(force: true));
     }
   }
 }
