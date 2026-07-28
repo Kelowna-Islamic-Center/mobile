@@ -15,6 +15,7 @@ import "package:kelowna_islamic_center/theme/theme_mode_provider.dart";
 import "package:kelowna_islamic_center/locales/locale_provider.dart";
 import "package:kelowna_islamic_center/sections/settings/settings_controller.dart";
 import "package:kelowna_islamic_center/config.dart";
+import "package:kelowna_islamic_center/services/prayer_alert_scheduler_service.dart";
 
 import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
@@ -255,6 +256,28 @@ class _SettingsWidgetState extends State<SettingsView> {
                 secondary: const Icon(Icons.notification_important_rounded),
                 title: Text(AppLocalizations.of(context)!.newAnnouncements),
                 subtitle: Text(AppLocalizations.of(context)!.newAnnouncementsDescription)),
+
+            if (Platform.isAndroid)
+              ListTile(
+                enabled: settings["athanTimeAlert"] ?? false,
+                leading: const Icon(Icons.play_circle_fill_rounded),
+                title: const Text("Test Athan Alert"),
+                subtitle: const Text("Play Athan now using the Android alarm service"),
+                onTap: (settings["athanTimeAlert"] ?? false)
+                    ? () async {
+                        await PrayerAlertSchedulerService.triggerTestAthanAlert(
+                          title: AppLocalizations.of(context)!.athanReminder,
+                          body: AppLocalizations.of(context)!.athanReminderDescription,
+                        );
+
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Running Athan test now")),
+                          );
+                        }
+                      }
+                    : null,
+              ),
 
             // Info Section
             ListTile(

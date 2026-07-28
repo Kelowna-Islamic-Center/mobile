@@ -4,9 +4,11 @@ import "dart:ui";
 
 import "package:flutter_timezone/flutter_timezone.dart";
 import "package:flutter_local_notifications/flutter_local_notifications.dart";
+import "package:flutter/services.dart";
 import "package:intl/intl.dart";
 import "package:kelowna_islamic_center/config.dart";
 import "package:kelowna_islamic_center/l10n/app_localizations.dart";
+import "package:kelowna_islamic_center/services/athan_alarm_service.dart";
 import "package:kelowna_islamic_center/structs/prayer_item.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "package:timezone/data/latest.dart" as tz;
@@ -17,7 +19,8 @@ class PrayerAlertSchedulerService {
   static const String taskUniqueName = "prayerAlertSchedulerTaskV2";
   static const String managedIdsKey = "scheduledPrayerAlertIdsV2";
   static const String nativeDirtyKey = "prayerAlertNativeDirty";
-
+  // Key for native Android Athan scheduling state. If true, the app will not schedule prayer alerts in the background to avoid dual scheduling.
+  static const String nativeAthanActiveKey = "nativeAthanSchedulingActive"; 
   // Fingerprint of the last scheduled prayer alerts. If this fingerprint changes, the app will reschedule prayer alerts. 
   // Ensures that user changes that affect prayer alerts (e.g. language, iqamah offset, etc.) are reflected in the scheduled notifications.
   static const String scheduleFingerprintKey = "scheduledPrayerAlertFingerprintV2";
@@ -46,6 +49,16 @@ class PrayerAlertSchedulerService {
     bool iqamahEnabled = prefs.getBool("iqamahTimeAlert") ?? true;
     int iqamahOffsetMinutes = prefs.getInt("iqamahTimeAlertTime") ?? 15;
 
+    String athanSoundResName = prefs.getString("athanAudioAndroid") ?? "athan_full";
+    bool useNativeAthanOnAndroid = Platform.isAndroid && await AthanAlarmService.isAvailable();
+    bool nativeAthanWasActive = prefs.getBool(nativeAthanActiveKey) ?? false;
+
+    // Workmanager runs in a background isolate where custom Activity channels may not be attached.
+    // When native Athan scheduling is already active, skip background reconcile to avoid dual scheduling.
+    if (fromBackground && Platform.isAndroid && nativeAthanWasActive && !useNativeAthanOnAndroid) {
+      return;
+    }
+
     List<PrayerItem> todayItems = _readPrayerItemsFromPrefs(prefs, key: "prayerTimes");
     List<PrayerItem> nextDayItems = _readPrayerItemsFromPrefs(prefs, key: "prayerTimesNextDay");
 
@@ -61,6 +74,7 @@ class PrayerAlertSchedulerService {
       athanEnabled: athanEnabled,
       iqamahEnabled: iqamahEnabled,
       iqamahOffsetMinutes: iqamahOffsetMinutes,
+      athanSoundResName: athanSoundResName,
       todayItems: todayItems,
       nextDayItems: nextDayItems,
     );
@@ -68,6 +82,7 @@ class PrayerAlertSchedulerService {
     List<PendingNotificationRequest> pendingRequests = await _notifications.pendingNotificationRequests();
     
     bool hasManagedPending = pendingRequests.any((request) => request.payload?.startsWith("prayer_alert_v2:") ?? false,);
+    bool hasNativeAthanPending = useNativeAthanOnAndroid && await AthanAlarmService.hasScheduledAthanAlarm();
 
     // If not forced and not from background, and there is not change in user preferences, skip rescheduling.
     if (!force && !fromBackground && prefs.getString(scheduleFingerprintKey) == fingerprint) {
@@ -75,7 +90,7 @@ class PrayerAlertSchedulerService {
     }
 
     // If not forced but from background, and there is not change in user preferences, skip rescheduling.
-    if (!force && fromBackground && hasManagedPending && prefs.getString(scheduleFingerprintKey) == fingerprint) {
+    if (!force && fromBackground && (hasManagedPending || hasNativeAthanPending) && prefs.getString(scheduleFingerprintKey) == fingerprint) {
       return;
     }
 
@@ -90,6 +105,8 @@ class PrayerAlertSchedulerService {
       athanEnabled: athanEnabled,
       iqamahEnabled: iqamahEnabled,
       iqamahOffsetMinutes: iqamahOffsetMinutes,
+      athanSoundResName: athanSoundResName,
+      useNativeAthanOnAndroid: useNativeAthanOnAndroid,
       l10n: l10n,
       append: true,
     );
@@ -101,6 +118,8 @@ class PrayerAlertSchedulerService {
         athanEnabled: athanEnabled,
         iqamahEnabled: iqamahEnabled,
         iqamahOffsetMinutes: iqamahOffsetMinutes,
+        athanSoundResName: athanSoundResName,
+        useNativeAthanOnAndroid: useNativeAthanOnAndroid,
         l10n: l10n,
         append: true,
       );
@@ -110,6 +129,10 @@ class PrayerAlertSchedulerService {
     List<String> managedIds = prefs.getStringList(managedIdsKey) ?? <String>[];
     await prefs.setStringList(managedIdsKey, managedIds);
     await prefs.setString(scheduleFingerprintKey, fingerprint);
+
+    if (Platform.isAndroid) {
+      await prefs.setBool(nativeAthanActiveKey, useNativeAthanOnAndroid && athanEnabled);
+    }
   }
 
   // If the native side of the app has been marked as dirty, this method will reconcile the schedules and reset the dirty flag.
@@ -130,6 +153,8 @@ class PrayerAlertSchedulerService {
     required bool athanEnabled,
     required bool iqamahEnabled,
     required int iqamahOffsetMinutes,
+    required String athanSoundResName,
+    required bool useNativeAthanOnAndroid,
     required AppLocalizations l10n,
     required bool append
   }) async {
@@ -158,34 +183,44 @@ class PrayerAlertSchedulerService {
 
           int athanId = _notificationId(date: date, prayerId: prayerItem.id, kind: "athan");
 
-          await _notifications.zonedSchedule(
-            id: athanId,
-            title: "${l10n.athanReminder}: ${_localizedPrayerName(l10n, prayerItem.id)}",
-            body: _localizedPrayerName(l10n, prayerItem.id),
-            scheduledDate: tz.TZDateTime.from(athanTime, tz.local),
-            notificationDetails: NotificationDetails(
-              android: AndroidNotificationDetails(
-                Config.athanAlertChannel.id,
-                Config.athanAlertChannel.name,
-                channelDescription: Config.athanAlertChannel.description,
-                importance: Importance.max,
-                priority: Priority.high,
-                category: AndroidNotificationCategory.alarm,
-                fullScreenIntent: true,
-                sound: const RawResourceAndroidNotificationSound("athan_full"),
-                audioAttributesUsage: AudioAttributesUsage.alarm,
-              ),
-              iOS: const DarwinNotificationDetails(
-                presentAlert: true,
-                presentBadge: true,
-                presentSound: true,
-                sound: "athan_short.caf",
-                interruptionLevel: InterruptionLevel.timeSensitive,
-              ),
-            ),
-            payload: "prayer_alert_v2:athan:$athanId",
-            androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-          );
+          String title = "${l10n.athanReminder}: ${_localizedPrayerName(l10n, prayerItem.id)}";
+          String body = _localizedPrayerName(l10n, prayerItem.id);
+
+          if (Platform.isAndroid && useNativeAthanOnAndroid) {
+            // Try to use the native implementation of Athan scheduling for Android.
+            try {
+              await AthanAlarmService.scheduleAthanAlarm(
+                id: athanId,
+                triggerAt: athanTime,
+                title: title,
+                body: body,
+                soundResName: athanSoundResName,
+              );
+            // Default notification if it fails, this usually doesn't play audio
+            } on MissingPluginException {
+              await _scheduleAthanNotificationFallback(
+                athanId: athanId,
+                athanTime: athanTime,
+                title: title,
+                body: body,
+              );
+            } on PlatformException {
+              await _scheduleAthanNotificationFallback(
+                athanId: athanId,
+                athanTime: athanTime,
+                title: title,
+                body: body,
+              );
+            }
+          // For iOS, use just notification scheduling
+          } else {
+            await _scheduleAthanNotificationFallback(
+              athanId: athanId,
+              athanTime: athanTime,
+              title: title,
+              body: body,
+            );
+          }
 
           managedIds.add(athanId);
         }
@@ -242,15 +277,66 @@ class PrayerAlertSchedulerService {
   // Cancels all managed notifications and clears the managed ids and schedule fingerprint from shared preferences. Just in case API fails.
   static Future<void> _cancelManagedNotifications(SharedPreferences prefs) async {
     List<String> managedIds = prefs.getStringList(managedIdsKey) ?? <String>[];
+    List<int> parsedIds = <int>[];
+
     for (String idText in managedIds) {
       int? id = int.tryParse(idText);
       if (id != null) {
+        parsedIds.add(id);
         await _notifications.cancel(id: id);
+      }
+    }
+
+    if (Platform.isAndroid) {
+      try {
+        await AthanAlarmService.cancelAthanAlarms(parsedIds);
+      } on MissingPluginException {
+        // Ignore when native channel is unavailable.
+      } on PlatformException {
+        // Keep iqamah notification cancellations even if native alarm cancel fails.
       }
     }
 
     await prefs.setStringList(managedIdsKey, <String>[]);
     await prefs.remove(scheduleFingerprintKey);
+    await prefs.setBool(nativeAthanActiveKey, false);
+  }
+
+  // Notification scheduling using notifications only used for athan when native android implementation doesn't work or if it's iOS
+  static Future<void> _scheduleAthanNotificationFallback({
+    required int athanId,
+    required DateTime athanTime,
+    required String title,
+    required String body,
+  }) async {
+    await _notifications.zonedSchedule(
+      id: athanId,
+      title: title,
+      body: body,
+      scheduledDate: tz.TZDateTime.from(athanTime, tz.local),
+      notificationDetails: NotificationDetails(
+        android: AndroidNotificationDetails(
+          Config.athanAlertChannel.id,
+          Config.athanAlertChannel.name,
+          channelDescription: Config.athanAlertChannel.description,
+          importance: Importance.max,
+          priority: Priority.high,
+          category: AndroidNotificationCategory.alarm,
+          fullScreenIntent: true,
+          sound: const RawResourceAndroidNotificationSound("athan_full"),
+          audioAttributesUsage: AudioAttributesUsage.alarm,
+        ),
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+          sound: "athan_short.caf",
+          interruptionLevel: InterruptionLevel.timeSensitive,
+        ),
+      ),
+      payload: "prayer_alert_v2:athan:$athanId",
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    );
   }
 
 
@@ -326,6 +412,7 @@ class PrayerAlertSchedulerService {
     required bool athanEnabled,
     required bool iqamahEnabled,
     required int iqamahOffsetMinutes,
+    required String athanSoundResName,
     required List<PrayerItem> todayItems,
     required List<PrayerItem> nextDayItems,
   }) {
@@ -336,6 +423,7 @@ class PrayerAlertSchedulerService {
       athanEnabled,
       iqamahEnabled,
       iqamahOffsetMinutes,
+      athanSoundResName,
       encode(todayItems),
       encode(nextDayItems),
     ].join("::");
@@ -369,5 +457,35 @@ class PrayerAlertSchedulerService {
     }
 
     _isInitialized = true;
+  }
+
+
+
+  // For Debugging:
+  // Runs a test notification to verify that the notification system for Athan is working. 
+  static Future<void> triggerTestAthanAlert({
+    required String title,
+    required String body,
+  }) async {
+    await _initNotifications();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String athanSoundResName = prefs.getString("athanAudioAndroid") ?? "athan_full";
+
+    if (Platform.isAndroid && await AthanAlarmService.isAvailable()) {
+      await AthanAlarmService.triggerTestAthanNow(
+        title: title,
+        body: body,
+        soundResName: athanSoundResName,
+      );
+      return;
+    }
+
+    int id = DateTime.now().millisecondsSinceEpoch & 0x7fffffff;
+    await _scheduleAthanNotificationFallback(
+      athanId: id,
+      athanTime: DateTime.now().add(const Duration(seconds: 1)),
+      title: title,
+      body: body,
+    );
   }
 }
