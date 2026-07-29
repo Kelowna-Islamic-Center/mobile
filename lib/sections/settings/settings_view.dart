@@ -34,6 +34,18 @@ class _SettingsWidgetState extends State<SettingsView> {
   final List<int> iqamahTimeValues = [5, 10, 15, 20, 30, 45];
   bool isNotificationsDisabled = false;
 
+  String _localizedAthanAudioName(AppLocalizations l10n, String audioResName) {
+    switch (audioResName) {
+      case "athan_makkah":
+        return l10n.athanAudioMakkah;
+      case "athan_medina":
+        return l10n.athanAudioMedina;
+      case "athan_full":
+      default:
+        return l10n.athanAudioDefault;
+    }
+  }
+
   @override
   void initState() {
     controller = SettingsController(onSettingsChanged: (newSettings) {
@@ -216,6 +228,41 @@ class _SettingsWidgetState extends State<SettingsView> {
                 title: Text(AppLocalizations.of(context)!.athanReminder),
                 subtitle: Text(AppLocalizations.of(context)!.athanReminderDescription)),
 
+            if (Platform.isAndroid)
+              ListTile(
+                enabled: settings["athanTimeAlert"] ?? false,
+                leading: const Icon(Icons.library_music_rounded),
+                title: Text(AppLocalizations.of(context)!.athanAudioSelection),
+                subtitle: Text(AppLocalizations.of(context)!.athanAudioSelectionDescription),
+                trailing: Builder(
+                  builder: (context) {
+                    List<String> options = Config.androidAthanAudioOptions;
+                    String selected = settings["athanAudio"] ?? "athan_full";
+
+                    if (!options.contains(selected)) {
+                      selected = "athan_full";
+                    }
+
+                    return DropdownButton<String>(
+                      value: selected,
+                      items: options
+                          .map((value) => DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(_localizedAthanAudioName(AppLocalizations.of(context)!, value)),
+                              ))
+                          .toList(),
+                      onChanged: (settings["athanTimeAlert"] ?? false)
+                          ? (value) {
+                              if (value != null) {
+                                controller.updateValue("athanAudio", value);
+                              }
+                            }
+                          : null,
+                    );
+                  },
+                ),
+              ),
+
             SwitchListTile(
                 value: settings["iqamahTimeAlert"] ?? false,
                 onChanged: (bool newValue) {
@@ -257,24 +304,19 @@ class _SettingsWidgetState extends State<SettingsView> {
                 title: Text(AppLocalizations.of(context)!.newAnnouncements),
                 subtitle: Text(AppLocalizations.of(context)!.newAnnouncementsDescription)),
 
+            // TODO: Remove this test button when Athan alert testing is no longer needed
             if (Platform.isAndroid)
               ListTile(
                 enabled: settings["athanTimeAlert"] ?? false,
                 leading: const Icon(Icons.play_circle_fill_rounded),
-                title: const Text("Test Athan Alert"),
-                subtitle: const Text("Play Athan now using the Android alarm service"),
+                title: Text("Test Athan Alert"),
+                subtitle: Text("Debugging test to see if Athan alert works."),
                 onTap: (settings["athanTimeAlert"] ?? false)
                     ? () async {
                         await PrayerAlertSchedulerService.triggerTestAthanAlert(
                           title: AppLocalizations.of(context)!.athanReminder,
                           body: AppLocalizations.of(context)!.athanReminderDescription,
                         );
-
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Running Athan test now")),
-                          );
-                        }
                       }
                     : null,
               ),

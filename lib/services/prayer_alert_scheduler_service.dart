@@ -49,7 +49,7 @@ class PrayerAlertSchedulerService {
     bool iqamahEnabled = prefs.getBool("iqamahTimeAlert") ?? true;
     int iqamahOffsetMinutes = prefs.getInt("iqamahTimeAlertTime") ?? 15;
 
-    String athanSoundResName = prefs.getString("athanAudioAndroid") ?? "athan_full";
+    String athanAudio = prefs.getString("athanAudio") ?? "athan_full";
     bool useNativeAthanOnAndroid = Platform.isAndroid && await AthanAlarmService.isAvailable();
     bool nativeAthanWasActive = prefs.getBool(nativeAthanActiveKey) ?? false;
 
@@ -74,7 +74,7 @@ class PrayerAlertSchedulerService {
       athanEnabled: athanEnabled,
       iqamahEnabled: iqamahEnabled,
       iqamahOffsetMinutes: iqamahOffsetMinutes,
-      athanSoundResName: athanSoundResName,
+      athanAudio: athanAudio,
       todayItems: todayItems,
       nextDayItems: nextDayItems,
     );
@@ -105,7 +105,7 @@ class PrayerAlertSchedulerService {
       athanEnabled: athanEnabled,
       iqamahEnabled: iqamahEnabled,
       iqamahOffsetMinutes: iqamahOffsetMinutes,
-      athanSoundResName: athanSoundResName,
+      athanAudio: athanAudio,
       useNativeAthanOnAndroid: useNativeAthanOnAndroid,
       l10n: l10n,
       append: true,
@@ -118,7 +118,7 @@ class PrayerAlertSchedulerService {
         athanEnabled: athanEnabled,
         iqamahEnabled: iqamahEnabled,
         iqamahOffsetMinutes: iqamahOffsetMinutes,
-        athanSoundResName: athanSoundResName,
+        athanAudio: athanAudio,
         useNativeAthanOnAndroid: useNativeAthanOnAndroid,
         l10n: l10n,
         append: true,
@@ -153,7 +153,7 @@ class PrayerAlertSchedulerService {
     required bool athanEnabled,
     required bool iqamahEnabled,
     required int iqamahOffsetMinutes,
-    required String athanSoundResName,
+    required String athanAudio,
     required bool useNativeAthanOnAndroid,
     required AppLocalizations l10n,
     required bool append
@@ -194,13 +194,14 @@ class PrayerAlertSchedulerService {
                 triggerAt: athanTime,
                 title: title,
                 body: body,
-                soundResName: athanSoundResName,
+                soundResName: athanAudio,
               );
             // Default notification if it fails, this usually doesn't play audio
             } on MissingPluginException {
               await _scheduleAthanNotificationFallback(
                 athanId: athanId,
                 athanTime: athanTime,
+                athanAudio: athanAudio,
                 title: title,
                 body: body,
               );
@@ -208,6 +209,7 @@ class PrayerAlertSchedulerService {
               await _scheduleAthanNotificationFallback(
                 athanId: athanId,
                 athanTime: athanTime,
+                athanAudio: athanAudio,
                 title: title,
                 body: body,
               );
@@ -217,6 +219,7 @@ class PrayerAlertSchedulerService {
             await _scheduleAthanNotificationFallback(
               athanId: athanId,
               athanTime: athanTime,
+              athanAudio: athanAudio,
               title: title,
               body: body,
             );
@@ -306,9 +309,12 @@ class PrayerAlertSchedulerService {
   static Future<void> _scheduleAthanNotificationFallback({
     required int athanId,
     required DateTime athanTime,
+    required String athanAudio,
     required String title,
     required String body,
   }) async {
+    String iosSoundFileName = "${athanAudio}_short.caf";
+
     await _notifications.zonedSchedule(
       id: athanId,
       title: title,
@@ -323,14 +329,14 @@ class PrayerAlertSchedulerService {
           priority: Priority.high,
           category: AndroidNotificationCategory.alarm,
           fullScreenIntent: true,
-          sound: const RawResourceAndroidNotificationSound("athan_full"),
+          sound: RawResourceAndroidNotificationSound(athanAudio),
           audioAttributesUsage: AudioAttributesUsage.alarm,
         ),
-        iOS: const DarwinNotificationDetails(
+        iOS: DarwinNotificationDetails(
           presentAlert: true,
           presentBadge: true,
           presentSound: true,
-          sound: "athan_short.caf",
+          sound: iosSoundFileName,
           interruptionLevel: InterruptionLevel.timeSensitive,
         ),
       ),
@@ -412,7 +418,7 @@ class PrayerAlertSchedulerService {
     required bool athanEnabled,
     required bool iqamahEnabled,
     required int iqamahOffsetMinutes,
-    required String athanSoundResName,
+    required String athanAudio,
     required List<PrayerItem> todayItems,
     required List<PrayerItem> nextDayItems,
   }) {
@@ -423,7 +429,7 @@ class PrayerAlertSchedulerService {
       athanEnabled,
       iqamahEnabled,
       iqamahOffsetMinutes,
-      athanSoundResName,
+      athanAudio,
       encode(todayItems),
       encode(nextDayItems),
     ].join("::");
@@ -469,13 +475,13 @@ class PrayerAlertSchedulerService {
   }) async {
     await _initNotifications();
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String athanSoundResName = prefs.getString("athanAudioAndroid") ?? "athan_full";
+    String athanAudio = prefs.getString("athanAudio") ?? "athan_full";
 
     if (Platform.isAndroid && await AthanAlarmService.isAvailable()) {
       await AthanAlarmService.triggerTestAthanNow(
         title: title,
         body: body,
-        soundResName: athanSoundResName,
+        soundResName: athanAudio,
       );
       return;
     }
@@ -484,6 +490,7 @@ class PrayerAlertSchedulerService {
     await _scheduleAthanNotificationFallback(
       athanId: id,
       athanTime: DateTime.now().add(const Duration(seconds: 1)),
+      athanAudio: athanAudio,
       title: title,
       body: body,
     );

@@ -21,8 +21,21 @@ class Config {
     "iqamahTimeAlert": true,
     "iqamahTimeAlertTime": 15,
     "athanTimeAlert": true,
+    "athanAudio": "athan_full",
     "announcementAlert": true,
   };
+
+  // Ordered list of raw resource names selectable for Athan audio tracks.
+  // Add matching files under android/app/src/main/res/raw/ and within the iOS projectas you expand this list.
+  // Android files have these exact names with .wav extension that gets appended.
+  // iOS files have the same name but with _short.caf extension that gets appended.
+  static const List<String> androidAthanAudioOptions = <String>[
+    // Android .wav audio files do not have size or duration limits
+    // iOS .caf audio files must be less than 30 seconds (hence why they are _short.caf)
+    "athan_full",
+    "athan_makkah",
+    "athan_medina",
+  ];
 
   // Android notification channels (don't change unless you know what you are doing)
   static const AndroidNotificationChannel announcementsChannel = AndroidNotificationChannel(

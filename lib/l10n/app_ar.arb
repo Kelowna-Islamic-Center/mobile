@@ -57,6 +57,13 @@
     "timesToShowOnAppLaunch": "أوقات الصلاة المفضلة التي تظهر عند فتح التطبيق",
     "athanReminder": "تذكير بالاذان",
     "athanReminderDescription": "إظهار الإشعار وتشغيل الأذان عندما يحين وقت الأذان.",
+    "athanAudioSelection": "صوت الأذان",
+    "athanAudioSelectionDescription": "اختر صوت الأذان الذي يجب تشغيله للتنبيهات.",
+
+    "athanAudioDefault": "الأذان الافتراضي",
+    "athanAudioMakkah": "مكة",
+    "athanAudioMedina": "المدينة",
+    
     "minutes": "دقائق {minutes}",
     "iqamaahReminder": "تذكير الإقامة",
     "iqamaahReminderDescription": "عرض إشعار قبل دقائق من موعد الإقامة في المسجد",

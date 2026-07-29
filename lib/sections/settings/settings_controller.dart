@@ -98,5 +98,9 @@ class SettingsController {
     if (key == "iqamahTimeAlertTime" && value is int) {
       unawaited(PrayerAlertSchedulerService.reconcileSchedules(force: true));
     }
+
+    if (key == "athanAudio" && value is String) {
+      unawaited(PrayerAlertSchedulerService.reconcileSchedules(force: true));
+    }
   }
 }

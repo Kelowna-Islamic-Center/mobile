@@ -57,6 +57,13 @@
     "openSettings": "Open Settings",
     "athanReminder": "Athan Reminder Alarm",
     "athanReminderDescription": "Show a notification and play Athan audio when it's athan time.",
+    "athanAudioSelection": "Athan Audio",
+    "athanAudioSelectionDescription": "Choose which Athan audio should play for alerts.",
+
+    "athanAudioDefault": "Default Athan",
+    "athanAudioMakkah": "Makkah",
+    "athanAudioMedina": "Medina",
+
     "minutes": "{minutes} minutes",
     "iqamaahReminder": "Iqamah Reminder",
     "iqamaahReminderDescription": "Show a notification a few minutes before Iqamaah time at Masjid",
