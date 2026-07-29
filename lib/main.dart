@@ -56,7 +56,7 @@ Future<void> main() async {
   await PrayerAlertSchedulerService.reconcileSchedules(force: true);
 
   // Check if user has skipped the intro
-  bool? isIntroComplete = prefs.getBool("isIntroComplete");
+  bool? isIntroComplete = prefs.getBool("isIntroV2Complete");
   isIntroComplete ??= false;
 
   if (!isIntroComplete) {
