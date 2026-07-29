@@ -288,40 +288,39 @@ class _SettingsWidgetState extends State<SettingsView> {
                 title: Text(l10n.athanReminder),
                 subtitle: Text(l10n.athanReminderDescription)),
 
-            if (Platform.isAndroid)
-              ListTile(
-                enabled: settings["athanTimeAlert"] ?? false,
-                leading: const Icon(Icons.library_music_rounded),
-                title: Text(l10n.athanAudioSelection),
-                subtitle: Text(l10n.athanAudioSelectionDescription),
-                trailing: Builder(
-                  builder: (context) {
-                    List<String> options = Config.androidAthanAudioOptions;
-                    String selected = settings["athanAudio"] ?? "athan_default";
+            ListTile(
+              enabled: settings["athanTimeAlert"] ?? false,
+              leading: const Icon(Icons.library_music_rounded),
+              title: Text(l10n.athanAudioSelection),
+              subtitle: Text(l10n.athanAudioSelectionDescription),
+              trailing: Builder(
+                builder: (context) {
+                  List<String> options = Config.androidAthanAudioOptions;
+                  String selected = settings["athanAudio"] ?? "athan_default";
 
-                    if (!options.contains(selected)) {
-                      selected = "athan_default";
-                    }
+                  if (!options.contains(selected)) {
+                    selected = "athan_default";
+                  }
 
-                    return DropdownButton<String>(
-                      value: selected,
-                      items: options
-                          .map((value) => DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(_localizedAthanAudioName(l10n, value)),
-                              ))
-                          .toList(),
-                      onChanged: (settings["athanTimeAlert"] ?? false)
-                          ? (value) {
-                              if (value != null) {
-                                controller.updateValue("athanAudio", value);
-                              }
+                  return DropdownButton<String>(
+                    value: selected,
+                    items: options
+                        .map((value) => DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(_localizedAthanAudioName(l10n, value)),
+                            ))
+                        .toList(),
+                    onChanged: (settings["athanTimeAlert"] ?? false)
+                        ? (value) {
+                            if (value != null) {
+                              controller.updateValue("athanAudio", value);
                             }
-                          : null,
-                    );
-                  },
-                ),
+                          }
+                        : null,
+                  );
+                },
               ),
+            ),
 
             ListTile(
               leading: const Icon(Icons.play_circle_fill_rounded),
