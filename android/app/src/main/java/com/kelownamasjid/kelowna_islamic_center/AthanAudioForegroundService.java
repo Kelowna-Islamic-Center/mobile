@@ -51,7 +51,7 @@ public class AthanAudioForegroundService extends Service {
     );
 
     startForeground(alarmId, notification);
-    playAthan(soundResName == null ? "athan_full" : soundResName);
+    playAthan(soundResName == null ? "athan_default" : soundResName);
 
     return START_NOT_STICKY;
   }
@@ -74,7 +74,7 @@ public class AthanAudioForegroundService extends Service {
 
     int soundResId = getResources().getIdentifier(soundResName, "raw", getPackageName());
     if (soundResId == 0) {
-      soundResId = getResources().getIdentifier("athan_full", "raw", getPackageName());
+      soundResId = getResources().getIdentifier("athan_default", "raw", getPackageName());
     }
 
     requestAudioFocus();

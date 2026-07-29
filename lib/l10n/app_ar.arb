@@ -55,6 +55,7 @@
     "exactAlarmPermissionRequired": "لتفعيل تنبيهات الأذان، اسمح بالتنبيهات الدقيقة من إعدادات التطبيق.",
     "openSettings": "فتح الإعدادات",
     "timesToShowOnAppLaunch": "أوقات الصلاة المفضلة التي تظهر عند فتح التطبيق",
+    "athan": "الأذان",
     "athanReminder": "تذكير بالاذان",
     "athanReminderDescription": "إظهار الإشعار وتشغيل الأذان عندما يحين وقت الأذان.",
     "athanAudioSelection": "صوت الأذان",
@@ -63,7 +64,11 @@
     "athanAudioDefault": "الأذان الافتراضي",
     "athanAudioMakkah": "مكة",
     "athanAudioMedina": "المدينة",
-    
+    "athanAudioHafizMustafa": "تركيا (حافظ مصطفى)",
+    "athanAudioMishary": "مشاري راشد العفاسي",
+    "athanAudioAlSharqawe": "الشرقاوي",
+    "athanAudioMansour": "منصور القتامي",
+
     "minutes": "دقائق {minutes}",
     "iqamaahReminder": "تذكير الإقامة",
     "iqamaahReminderDescription": "عرض إشعار قبل دقائق من موعد الإقامة في المسجد",

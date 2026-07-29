@@ -41,7 +41,7 @@ public class MainActivity extends FlutterActivity {
 							triggerAtMillis,
 							title,
 							body,
-							soundResName == null ? "athan_full" : soundResName
+							soundResName == null ? "athan_default" : soundResName
 						);
 
 						result.success(null);
@@ -86,7 +86,7 @@ public class MainActivity extends FlutterActivity {
 							Math.abs((int) System.currentTimeMillis()),
 							title == null ? "Athan Reminder" : title,
 							body == null ? "Test Athan alert" : body,
-							soundResName == null ? "athan_full" : soundResName
+							soundResName == null ? "athan_default" : soundResName
 						);
 
 						result.success(null);

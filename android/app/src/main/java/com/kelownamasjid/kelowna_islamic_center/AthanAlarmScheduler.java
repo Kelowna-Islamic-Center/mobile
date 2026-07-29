@@ -50,7 +50,7 @@ public final class AthanAlarmScheduler {
   public static void cancelAthanAlarm(Context context, int id) {
     AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     if (alarmManager != null) {
-      PendingIntent pendingIntent = buildAlarmPendingIntent(context, id, "", "", "athan_full");
+      PendingIntent pendingIntent = buildAlarmPendingIntent(context, id, "", "", "athan_default");
       alarmManager.cancel(pendingIntent);
       pendingIntent.cancel();
     }

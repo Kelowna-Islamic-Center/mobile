@@ -19,7 +19,7 @@ public class AthanAlarmReceiver extends BroadcastReceiver {
       id,
       title == null ? "Athan Reminder" : title,
       body == null ? "Prayer time" : body,
-      soundRes == null ? "athan_full" : soundRes
+      soundRes == null ? "athan_default" : soundRes
     );
   }
 }

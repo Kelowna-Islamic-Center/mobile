@@ -36,11 +36,20 @@ class _SettingsWidgetState extends State<SettingsView> {
 
   String _localizedAthanAudioName(AppLocalizations l10n, String audioResName) {
     switch (audioResName) {
+      case "athan_default":
+        return l10n.athanAudioDefault;
       case "athan_makkah":
         return l10n.athanAudioMakkah;
       case "athan_medina":
         return l10n.athanAudioMedina;
-      case "athan_full":
+      case "athan_mishary":
+        return l10n.athanAudioMishary;
+      case "athan_hafiz_mustafa":
+        return l10n.athanAudioHafizMustafa;
+      case "athan_alsharqawe":
+        return l10n.athanAudioAlSharqawe;
+      case "athan_mansour":
+        return l10n.athanAudioMansour;
       default:
         return l10n.athanAudioDefault;
     }
@@ -86,7 +95,10 @@ class _SettingsWidgetState extends State<SettingsView> {
 
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) {
+    AppLocalizations l10n = AppLocalizations.of(context)!;
+
+    return Scaffold(
           body: SingleChildScrollView(
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,7 +114,7 @@ class _SettingsWidgetState extends State<SettingsView> {
                     image: DecorationImage(
                         image: AssetImage("assets/images/pattern_bitmap.png"),
                         repeat: ImageRepeat.repeat)),
-                child: Text(AppLocalizations.of(context)!.settings,
+                child: Text(l10n.settings,
                     style: const TextStyle(fontSize: 30, color: Colors.white))),
 
             ListTile(
@@ -113,15 +125,15 @@ class _SettingsWidgetState extends State<SettingsView> {
                     items: [
                       DropdownMenuItem<String>(
                           value: null,
-                          child: Text(AppLocalizations.of(context)!.defaultTheme),
+                          child: Text(l10n.defaultTheme),
                         ),
                       DropdownMenuItem<String>(
                           value: "Light",
-                          child: Text(AppLocalizations.of(context)!.lightTheme),
+                          child: Text(l10n.lightTheme),
                         ),
                       DropdownMenuItem<String>(
                           value: "Dark",
-                          child: Text(AppLocalizations.of(context)!.darkTheme),
+                          child: Text(l10n.darkTheme),
                         )
                     ],
                     onChanged: (value) {
@@ -130,13 +142,13 @@ class _SettingsWidgetState extends State<SettingsView> {
 
             ListTile(
                 leading: const Icon(Icons.language),
-                title: Text(AppLocalizations.of(context)!.appLanguage),
+                title: Text(l10n.appLanguage),
                 trailing: DropdownButton<String>(
                     value: Provider.of<LocaleProvider>(context).localeStringValue,
                     items: [
                       DropdownMenuItem<String>(
                         value: null,
-                        child: Text(AppLocalizations.of(context)!.defaultLanguage),
+                        child: Text(l10n.defaultLanguage),
                       ),
                       for (Locale locale in context.findAncestorWidgetOfExactType<MaterialApp>()!.supportedLocales)
                         DropdownMenuItem<String>(
@@ -151,17 +163,17 @@ class _SettingsWidgetState extends State<SettingsView> {
             // Calculation Method
             ListTile(
               leading: const Icon(Icons.mosque),
-              title: Text(AppLocalizations.of(context)!.calculationMethod),
+              title: Text(l10n.calculationMethod),
               trailing: DropdownButton<String>(
                 value: settings["calculationMethod"],
                 items: [
                   DropdownMenuItem<String>(
                     value: "hanafi",
-                    child: Text(AppLocalizations.of(context)!.hanafi),
+                    child: Text(l10n.hanafi),
                   ),
                   DropdownMenuItem<String>(
                     value: "hanbali",
-                    child: Text(AppLocalizations.of(context)!.hanbaliShafiMaliki),
+                    child: Text(l10n.hanbaliShafiMaliki),
                   )
                 ],
                 onChanged: (value) {
@@ -170,17 +182,17 @@ class _SettingsWidgetState extends State<SettingsView> {
 
             ListTile(
               leading: const Icon(Icons.launch_rounded),
-              title: Text(AppLocalizations.of(context)!.timesToShowOnAppLaunch),
+              title: Text(l10n.timesToShowOnAppLaunch),
               trailing: DropdownButton<int>(
                 value: settings["launchDefaultIndex"],
                 items: [
                   DropdownMenuItem<int>(
                     value: 0,
-                    child: Text(AppLocalizations.of(context)!.iqamahTimes),
+                    child: Text(l10n.iqamahTimes),
                   ),
                   DropdownMenuItem<int>(
                     value: 1,
-                    child: Text(AppLocalizations.of(context)!.athanTimes),
+                    child: Text(l10n.athanTimes),
                   )
                 ],
                 onChanged: (value) {
@@ -190,7 +202,7 @@ class _SettingsWidgetState extends State<SettingsView> {
 
             // Notifications Section
             ListTile(
-                title: Text(AppLocalizations.of(context)!.notifications,
+                title: Text(l10n.notifications,
                     style:
                         const TextStyle(fontWeight: FontWeight.bold, fontSize: 15))),
 
@@ -209,7 +221,7 @@ class _SettingsWidgetState extends State<SettingsView> {
                             const SizedBox(width: 10),
                             Flexible(
                                 child: Text(
-                                    AppLocalizations.of(context)!.notificationsDisabledWarning,
+                                    l10n.notificationsDisabledWarning,
                                     style: const TextStyle(fontWeight: FontWeight.bold)))
                           ]))),
                   )),
@@ -217,75 +229,28 @@ class _SettingsWidgetState extends State<SettingsView> {
 
             /* Iqamah Alert Settings */
             SwitchListTile(
-                value: settings["athanTimeAlert"] ?? false,
-                onChanged: (bool newValue) async {
-                  bool applied = await controller.updateValue("athanTimeAlert", newValue);
-                  if (!applied && context.mounted) {
-                    _showExactAlarmDeniedMessage();
-                  }
-                },
-                secondary: const Icon(Icons.timer_rounded),
-                title: Text(AppLocalizations.of(context)!.athanReminder),
-                subtitle: Text(AppLocalizations.of(context)!.athanReminderDescription)),
-
-            if (Platform.isAndroid)
-              ListTile(
-                enabled: settings["athanTimeAlert"] ?? false,
-                leading: const Icon(Icons.library_music_rounded),
-                title: Text(AppLocalizations.of(context)!.athanAudioSelection),
-                subtitle: Text(AppLocalizations.of(context)!.athanAudioSelectionDescription),
-                trailing: Builder(
-                  builder: (context) {
-                    List<String> options = Config.androidAthanAudioOptions;
-                    String selected = settings["athanAudio"] ?? "athan_full";
-
-                    if (!options.contains(selected)) {
-                      selected = "athan_full";
-                    }
-
-                    return DropdownButton<String>(
-                      value: selected,
-                      items: options
-                          .map((value) => DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(_localizedAthanAudioName(AppLocalizations.of(context)!, value)),
-                              ))
-                          .toList(),
-                      onChanged: (settings["athanTimeAlert"] ?? false)
-                          ? (value) {
-                              if (value != null) {
-                                controller.updateValue("athanAudio", value);
-                              }
-                            }
-                          : null,
-                    );
-                  },
-                ),
-              ),
-
-            SwitchListTile(
                 value: settings["iqamahTimeAlert"] ?? false,
                 onChanged: (bool newValue) {
                   controller.updateValue("iqamahTimeAlert", newValue);
                 },
                 secondary: const Icon(Icons.record_voice_over_rounded),
-                title: Text(AppLocalizations.of(context)!.iqamaahReminder),
-                subtitle: Text(AppLocalizations.of(context)!.iqamaahReminderDescription)),
+                title: Text(l10n.iqamaahReminder),
+                subtitle: Text(l10n.iqamaahReminderDescription)),
 
             ListTile(
                 enabled: settings["iqamahTimeAlert"] ?? false,
                 leading: const SizedBox(),
-                subtitle: Text(AppLocalizations.of(context)!.howManyMinutesBefore),
+                subtitle: Text(l10n.howManyMinutesBefore),
                 trailing: DropdownButton<int>(
                     value: settings["iqamahTimeAlertTime"],
                     items:
                       iqamahTimeValues.map<DropdownMenuItem<int>>((int value) {
-                        String locale = AppLocalizations.of(context)!.localeName;
+                        String locale = l10n.localeName;
                         String localeWithCountry = (locale == "ar") ? "${locale}_EG" : locale;
                         return DropdownMenuItem<int>(
                           value: value,
                           child: Text(
-                            AppLocalizations.of(context)!.minutes(
+                            l10n.minutes(
                               NumberFormat("###", localeWithCountry).format(value))),
                         );
                       }).toList(),
@@ -301,8 +266,62 @@ class _SettingsWidgetState extends State<SettingsView> {
                   controller.updateValue("announcementAlert", newValue);
                 },
                 secondary: const Icon(Icons.notification_important_rounded),
-                title: Text(AppLocalizations.of(context)!.newAnnouncements),
-                subtitle: Text(AppLocalizations.of(context)!.newAnnouncementsDescription)),
+                title: Text(l10n.newAnnouncements),
+                subtitle: Text(l10n.newAnnouncementsDescription)),
+
+            /* Athan Alert Settings */
+            ListTile(
+                title: Text(l10n.athan,
+                    style:
+                        const TextStyle(fontWeight: FontWeight.bold, fontSize: 15))),
+
+
+            SwitchListTile(
+                value: settings["athanTimeAlert"] ?? false,
+                onChanged: (bool newValue) async {
+                  bool applied = await controller.updateValue("athanTimeAlert", newValue);
+                  if (!applied && context.mounted) {
+                    _showExactAlarmDeniedMessage();
+                  }
+                },
+                secondary: const Icon(Icons.timer_rounded),
+                title: Text(l10n.athanReminder),
+                subtitle: Text(l10n.athanReminderDescription)),
+
+            if (Platform.isAndroid)
+              ListTile(
+                enabled: settings["athanTimeAlert"] ?? false,
+                leading: const Icon(Icons.library_music_rounded),
+                title: Text(l10n.athanAudioSelection),
+                subtitle: Text(l10n.athanAudioSelectionDescription),
+                trailing: Builder(
+                  builder: (context) {
+                    List<String> options = Config.androidAthanAudioOptions;
+                    String selected = settings["athanAudio"] ?? "athan_default";
+
+                    if (!options.contains(selected)) {
+                      selected = "athan_default";
+                    }
+
+                    return DropdownButton<String>(
+                      value: selected,
+                      items: options
+                          .map((value) => DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(_localizedAthanAudioName(l10n, value)),
+                              ))
+                          .toList(),
+                      onChanged: (settings["athanTimeAlert"] ?? false)
+                          ? (value) {
+                              if (value != null) {
+                                controller.updateValue("athanAudio", value);
+                              }
+                            }
+                          : null,
+                    );
+                  },
+                ),
+              ),
 
             // TODO: Remove this test button when Athan alert testing is no longer needed
             if (Platform.isAndroid)
@@ -314,8 +333,8 @@ class _SettingsWidgetState extends State<SettingsView> {
                 onTap: (settings["athanTimeAlert"] ?? false)
                     ? () async {
                         await PrayerAlertSchedulerService.triggerTestAthanAlert(
-                          title: AppLocalizations.of(context)!.athanReminder,
-                          body: AppLocalizations.of(context)!.athanReminderDescription,
+                          title: l10n.athanReminder,
+                          body: l10n.athanReminderDescription,
                         );
                       }
                     : null,
@@ -323,12 +342,12 @@ class _SettingsWidgetState extends State<SettingsView> {
 
             // Info Section
             ListTile(
-                title: Text(AppLocalizations.of(context)!.information,
+                title: Text(l10n.information,
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 15))),
 
             ListTile(
-              title: Text(AppLocalizations.of(context)!.adminTools),
+              title: Text(l10n.adminTools),
               leading: const Icon(Icons.admin_panel_settings),
               onTap: () => {
                 Navigator.push(
@@ -343,20 +362,20 @@ class _SettingsWidgetState extends State<SettingsView> {
             ),
 
             ListTile(
-              title: Text(AppLocalizations.of(context)!.sourceCode),
-              subtitle: Text(AppLocalizations.of(context)!.appIsOpenSource),
+              title: Text(l10n.sourceCode),
+              subtitle: Text(l10n.appIsOpenSource),
               leading: const Icon(Icons.code),
               onTap: () => {launchURL("https://github.com/Kelowna-Islamic-Center")}
             ),
 
             ListTile(
-              title: Text(AppLocalizations.of(context)!.masjidWebsite),
+              title: Text(l10n.masjidWebsite),
               leading: const Icon(Icons.link),
               onTap: () => {launchURL("http://org.thebcma.com/kelowna")},
             ),
 
             ListTile(
-              title: Text(AppLocalizations.of(context)!.emailAddress),
+              title: Text(l10n.emailAddress),
               leading: const Icon(Icons.link),
               onTap: () => {launchURL("mailto:kelowna.secretary@thebcma.com")},
             ),
@@ -387,7 +406,7 @@ class _SettingsWidgetState extends State<SettingsView> {
                           const SizedBox(width: 10),
                           Flexible(
                               child: Text(
-                                  AppLocalizations.of(context)!.supportTheApp,
+                                  l10n.supportTheApp,
                                   style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -396,4 +415,4 @@ class _SettingsWidgetState extends State<SettingsView> {
                   )),
             
     ])));
-}
+}}

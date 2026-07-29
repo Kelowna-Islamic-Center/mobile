@@ -49,7 +49,7 @@ class PrayerAlertSchedulerService {
     bool iqamahEnabled = prefs.getBool("iqamahTimeAlert") ?? true;
     int iqamahOffsetMinutes = prefs.getInt("iqamahTimeAlertTime") ?? 15;
 
-    String athanAudio = prefs.getString("athanAudio") ?? "athan_full";
+    String athanAudio = prefs.getString("athanAudio") ?? "athan_default";
     bool useNativeAthanOnAndroid = Platform.isAndroid && await AthanAlarmService.isAvailable();
     bool nativeAthanWasActive = prefs.getBool(nativeAthanActiveKey) ?? false;
 
@@ -475,7 +475,7 @@ class PrayerAlertSchedulerService {
   }) async {
     await _initNotifications();
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String athanAudio = prefs.getString("athanAudio") ?? "athan_full";
+    String athanAudio = prefs.getString("athanAudio") ?? "athan_default";
 
     if (Platform.isAndroid && await AthanAlarmService.isAvailable()) {
       await AthanAlarmService.triggerTestAthanNow(
