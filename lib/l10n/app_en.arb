@@ -57,7 +57,9 @@
     "openSettings": "Open Settings",
     "athan": "Athan",
     "athanReminder": "Athan Reminder Alarm",
-    "athanReminderDescription": "Show a notification and play Athan audio when it's athan time.",
+    "athanReminderDescription": "Athan notifications will look like this when it's time for Athan.",
+    "athanNotificationPreviewTitle": "Preview Athan notification",
+    "athanNotificationPreviewDescription": "See and hear a sample Athan notification using your selected Athan audio.",
     "athanAudioSelection": "Athan Audio",
     "athanAudioSelectionDescription": "Choose which Athan audio should play for alerts.",
 

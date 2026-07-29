@@ -57,7 +57,9 @@
     "timesToShowOnAppLaunch": "أوقات الصلاة المفضلة التي تظهر عند فتح التطبيق",
     "athan": "الأذان",
     "athanReminder": "تذكير بالاذان",
-    "athanReminderDescription": "إظهار الإشعار وتشغيل الأذان عندما يحين وقت الأذان.",
+    "athanReminderDescription": "ستبدو إشعارات الأذان هكذا عند دخول وقت الأذان",
+    "athanNotificationPreviewTitle": "معاينة إشعار الأذان",
+    "athanNotificationPreviewDescription": "شاهد واستمع إلى نموذج لإشعار الأذان باستخدام صوت الأذان المحدد.",
     "athanAudioSelection": "صوت الأذان",
     "athanAudioSelectionDescription": "اختر صوت الأذان الذي يجب تشغيله للتنبيهات.",
 

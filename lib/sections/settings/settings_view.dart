@@ -323,22 +323,17 @@ class _SettingsWidgetState extends State<SettingsView> {
                 ),
               ),
 
-            // TODO: Remove this test button when Athan alert testing is no longer needed
-            if (Platform.isAndroid)
-              ListTile(
-                enabled: settings["athanTimeAlert"] ?? false,
-                leading: const Icon(Icons.play_circle_fill_rounded),
-                title: Text("Test Athan Alert"),
-                subtitle: Text("Debugging test to see if Athan alert works."),
-                onTap: (settings["athanTimeAlert"] ?? false)
-                    ? () async {
-                        await PrayerAlertSchedulerService.triggerTestAthanAlert(
-                          title: l10n.athanReminder,
-                          body: l10n.athanReminderDescription,
-                        );
-                      }
-                    : null,
-              ),
+            ListTile(
+              leading: const Icon(Icons.play_circle_fill_rounded),
+              title: Text(l10n.athanNotificationPreviewTitle),
+              subtitle: Text(l10n.athanNotificationPreviewDescription),
+              onTap: () async {
+                await PrayerAlertSchedulerService.triggerAthanNotificationPreview(
+                  title: l10n.athanReminder,
+                  body: l10n.athanReminderDescription,
+                );
+              },
+            ),
 
             // Info Section
             ListTile(

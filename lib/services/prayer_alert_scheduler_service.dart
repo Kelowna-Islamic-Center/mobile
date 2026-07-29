@@ -467,9 +467,8 @@ class PrayerAlertSchedulerService {
 
 
 
-  // For Debugging:
-  // Runs a test notification to verify that the notification system for Athan is working. 
-  static Future<void> triggerTestAthanAlert({
+  // Runs a user-facing preview: native Athan alarm on Android, notification fallback on iOS.
+  static Future<void> triggerAthanNotificationPreview({
     required String title,
     required String body,
   }) async {
