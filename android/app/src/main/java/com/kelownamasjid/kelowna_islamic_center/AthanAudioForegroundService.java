@@ -158,6 +158,14 @@ public class AthanAudioForegroundService extends Service {
       PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
     );
 
+    PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(
+      this,
+      alarmId + 1,
+      new Intent(this, AthanServiceActionReceiver.class)
+        .setAction(AthanServiceActionReceiver.ACTION_DISMISS_ATHAN),
+      PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+    );
+
     return new NotificationCompat.Builder(this, CHANNEL_ID)
       .setSmallIcon(R.mipmap.ic_launcher)
       .setContentTitle(title)
@@ -165,7 +173,8 @@ public class AthanAudioForegroundService extends Service {
       .setPriority(NotificationCompat.PRIORITY_HIGH)
       .setCategory(NotificationCompat.CATEGORY_ALARM)
       .setContentIntent(contentPendingIntent)
-      .setOngoing(true)
+      .setOngoing(false)
+      .setDeleteIntent(dismissPendingIntent)
       .setAutoCancel(false)
       .addAction(0, "Stop", stopPendingIntent)
       .build();
