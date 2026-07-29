@@ -27,10 +27,10 @@ class Config {
 
   // Ordered list of raw resource names selectable for Athan audio tracks.
   // Add matching files under android/app/src/main/res/raw/ and within the iOS projectas you expand this list.
-  // Android files have these exact names with .wav extension that gets appended.
-  // iOS files have the same name but with _short.caf extension that gets appended.
+  // Android files have these exact names in .ogg format.
+  // iOS files have the same name but with _short.caf extension that gets appended to the string passed within the notification payload.
   static const List<String> androidAthanAudioOptions = <String>[
-    // Android .wav audio files do not have size or duration limits
+    // Android .ogg audio files do not have size or duration limits
     // iOS .caf audio files must be less than 30 seconds (hence why they are _short.caf)
     "athan_default",
     "athan_hafiz_mustafa",
