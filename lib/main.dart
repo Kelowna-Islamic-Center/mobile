@@ -1,39 +1,34 @@
-import "dart:io";
-
 import "package:flutter/material.dart";
 import "package:firebase_core/firebase_core.dart";
-import "package:flutter_local_notifications/flutter_local_notifications.dart";
 import "package:kelowna_islamic_center/firebase_options.dart";
 import "package:kelowna_islamic_center/locales/locale_provider.dart";
 import "package:kelowna_islamic_center/sections/intro/intro_view.dart";
+import "package:kelowna_islamic_center/services/prayer_alert_scheduler_service.dart";
 import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
-import "package:workmanager/workmanager.dart"; 
-import "package:alarm/alarm.dart";
+import "package:workmanager/workmanager.dart";
 
 import "package:kelowna_islamic_center/sections/home_screen_view.dart";
 import "package:kelowna_islamic_center/theme/theme.dart";
-import "package:kelowna_islamic_center/services/announcements_message_service.dart";
-import "package:kelowna_islamic_center/services/prayer_notification_service.dart";
+import "package:kelowna_islamic_center/services/cloud_messaging_service.dart";
 import "package:kelowna_islamic_center/services/api_fetch_service.dart";
 import "package:kelowna_islamic_center/theme/theme_mode_provider.dart";
 
-import "package:flutter_gen/gen_l10n/app_localizations.dart";
+import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
 
 // WorkManager callbackDispatcher for handling background services
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     switch (task) {
-      case PrayerNotificationService.taskUniqueName:
-        await PrayerNotificationService.scheduleNextNotifications();
-        break;
-      case PrayerNotificationService.iOSBackgroundAppRefreshName:
-        await PrayerNotificationService.scheduleNextNotifications();
-        break;
+      case PrayerAlertSchedulerService.taskUniqueName:
+        await PrayerAlertSchedulerService.reconcileSchedules(fromBackground: true);
       case ApiFetchService.taskUniqueName:
         await ApiFetchService.updateSharedPreferencesTimes();
-        break;
+        await PrayerAlertSchedulerService.reconcileSchedules(
+          fromBackground: true,
+          force: true,
+        );
     }
 
     return Future.value(true);
@@ -47,28 +42,24 @@ Future<void> main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   // Firebase services
-  await AnnouncementsMessageService.init();
+  await CloudMessagingService.init();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  if (Platform.isAndroid) {
-    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
-    await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestExactAlarmsPermission();
-  }
-
   // Initialize app services
-  await Alarm.init();
-  await Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
+  await Workmanager().initialize(callbackDispatcher);
   await ApiFetchService.initBackgroundService();
-  await PrayerNotificationService.initBackgroundService();
+  await PrayerAlertSchedulerService.initBackgroundService();
+  await ApiFetchService.updateSharedPreferencesTimes();
+  await PrayerAlertSchedulerService.reconcileIfNativeDirty();
+  await PrayerAlertSchedulerService.reconcileSchedules(force: true);
 
   // Check if user has skipped the intro
-  bool? isIntroDone = prefs.getBool("isIntroDone");
-  isIntroDone ??= false;
+  bool? isIntroComplete = prefs.getBool("isIntroV2Complete");
+  isIntroComplete ??= false;
 
-  if (!isIntroDone) {
+  if (!isIntroComplete) {
     await prefs.clear();
   }
 
@@ -81,16 +72,41 @@ Future<void> main() async {
         create: (context) => LocaleProvider(prefs: prefs),
       ),
     ],
-    child: App(isIntroDone: isIntroDone),
+    child: App(isIntroComplete: isIntroComplete),
   ));
 }
 
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
 
-  final bool isIntroDone; 
+  final bool isIntroComplete; 
   
-  const App({Key? key, required this.isIntroDone}) : super(key: key);
+  const App({super.key, required this.isIntroComplete});
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      PrayerAlertSchedulerService.reconcileIfNativeDirty();
+      PrayerAlertSchedulerService.reconcileSchedules();
+    }
+  }
 
   // This widget is the root of your application.
   @override
@@ -106,7 +122,7 @@ class App extends StatelessWidget {
       darkTheme: AppTheme.dark,
       themeMode: Provider.of<ThemeModeProvider>(context).themeMode,
 
-      home: isIntroDone ? const HomeScreenView() : const IntroView(),
+      home: widget.isIntroComplete ? const HomeScreenView() : const IntroView(),
     );
   }
 }

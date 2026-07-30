@@ -6,14 +6,13 @@ import "package:skeletonizer/skeletonizer.dart";
 import "package:kelowna_islamic_center/sections/prayer/prayer_controller.dart";
 import "package:kelowna_islamic_center/structs/prayer_item.dart";
 import "package:kelowna_islamic_center/theme/theme.dart";
-
-import "package:flutter_gen/gen_l10n/app_localizations.dart";
+import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
 class PrayerList extends StatefulWidget {
   final bool isAthanTimesActive;
   final bool isTodayActive;
 
-  const PrayerList({Key? key, required this.isAthanTimesActive, required this.isTodayActive}) : super(key: key);
+  const PrayerList({super.key, required this.isAthanTimesActive, required this.isTodayActive});
 
   @override
   State<PrayerList> createState() => _PrayerListState();
@@ -104,7 +103,7 @@ class _PrayerListState extends State<PrayerList> {
                                 boxShadow: [
                                   BoxShadow(
                                       color: Colors.black
-                                          .withOpacity(0.2),
+                                          .withAlpha((0.2 * 255).round()),
                                       spreadRadius: 1,
                                       blurRadius: 4,
                                       offset: const Offset(0, 2))
@@ -155,7 +154,7 @@ class _PrayerListState extends State<PrayerList> {
                                       ? [
                                           BoxShadow(
                                               color: Colors.black45
-                                                  .withOpacity(0.4),
+                                                  .withAlpha((0.4 * 255).round()),
                                               spreadRadius: 0,
                                               blurRadius: 3,
                                               offset:

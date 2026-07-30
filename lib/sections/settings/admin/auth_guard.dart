@@ -1,11 +1,11 @@
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
+import "package:kelowna_islamic_center/locales/global_localization_service.dart";
 import "package:kelowna_islamic_center/sections/settings/admin/admin_page.dart";
-
-import "package:flutter_gen/gen_l10n/app_localizations.dart";
+import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
 class AdminAuthPage extends StatefulWidget {
-  const AdminAuthPage({Key? key}) : super(key: key);
+  const AdminAuthPage({super.key});
 
   @override
   AdminAuthPageState createState() => AdminAuthPageState();
@@ -38,17 +38,19 @@ class AdminAuthPageState extends State<AdminAuthPage> {
           "message": "Failure",
         };
       }
+
+      AppLocalizations localizedStrings = await GlobalLocalizationService().strings;
       
       if (e.code == "user-not-found" ||
           e.code == "wrong-password" ||
           e.code == "invalid-email") {
-        message = AppLocalizations.of(context)!.incorrectPassword;
+        message = localizedStrings.incorrectPassword;
       } else if (e.code == "user-disabled") {
-        message = AppLocalizations.of(context)!.disabledAccount;
+        message = localizedStrings.disabledAccount;
       } else if (e.code == "network-request-failed") {
-        message = AppLocalizations.of(context)!.offlineLogin;
+        message = localizedStrings.offlineLogin;
       } else {
-        message = AppLocalizations.of(context)!.errorLogin;
+        message = localizedStrings.errorLogin;
       }
 
       return {
@@ -59,7 +61,7 @@ class AdminAuthPageState extends State<AdminAuthPage> {
   }
 
   // Route to admin tools page on success
-  _navigateOnSuccess() {
+  void _navigateOnSuccess() {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const AdminPage()),
@@ -154,12 +156,14 @@ class AdminAuthPageState extends State<AdminAuthPage> {
                                                 if (auth["success"]) {
                                                   _navigateOnSuccess();
                                                 } else {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    SnackBar(
-                                                        content: Text(
-                                                            auth["message"])),
-                                                  );
+                                                  if (context.mounted) {
+                                                    ScaffoldMessenger.of(context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                          content: Text(
+                                                              auth["message"])),
+                                                    );
+                                                  }
                                                 }
                                               }
                                             },

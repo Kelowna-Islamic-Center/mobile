@@ -1,15 +1,15 @@
 import "package:flutter/material.dart";
-
-import "package:flutter_gen/gen_l10n/app_localizations.dart";
+import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
 class WelcomeScreenPage extends StatelessWidget {
-  
-  const WelcomeScreenPage({Key? key}) : super(key: key);
+  final Future<void> Function() onContinue;
+
+  const WelcomeScreenPage({super.key, required this.onContinue});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: const EdgeInsets.only(bottom: 80),
+        padding: const EdgeInsets.only(bottom: 120),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Expanded(
               child: ShaderMask(
@@ -38,9 +38,9 @@ class WelcomeScreenPage extends StatelessWidget {
                   Row(children: [
                     const Image(
                       image: AssetImage("assets/images/ic_launcher.png"),
-                      width: 50,
+                      width: 45,
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 15),
                     Text(
                       AppLocalizations.of(context)!.kelownaIslamicCenter,
                       style: const TextStyle(fontSize: 18),
@@ -48,9 +48,17 @@ class WelcomeScreenPage extends StatelessWidget {
                   ]),
                   const SizedBox(height: 25),
                   Text(
-                    AppLocalizations.of(context)!.yourConnectionWithMasjid,
+                    AppLocalizations.of(context)!.beginSetup,
                     style:
                         const TextStyle(fontWeight: FontWeight.bold, fontSize: 45),
+                  ),
+                  const SizedBox(height: 25),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: FilledButton(
+                      onPressed: onContinue,
+                      child: Text(AppLocalizations.of(context)!.continueSetup),
+                    ),
                   ),
                 ],
               ))

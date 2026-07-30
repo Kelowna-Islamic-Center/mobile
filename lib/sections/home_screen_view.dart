@@ -1,17 +1,15 @@
 import "package:firebase_messaging/firebase_messaging.dart";
 import "package:intl/date_symbol_data_local.dart";
-import "package:kelowna_islamic_center/config.dart";
-import "package:permission_handler/permission_handler.dart";
 import "package:flutter/material.dart";
 
 import "package:kelowna_islamic_center/sections/announcements/announcements_view.dart";
 import "package:kelowna_islamic_center/sections/prayer/prayer_view.dart";
 import "package:kelowna_islamic_center/sections/settings/settings_view.dart";
 
-import "package:flutter_gen/gen_l10n/app_localizations.dart";
+import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 
 class HomeScreenView extends StatefulWidget {
-  const HomeScreenView({Key? key}) : super(key: key);
+  const HomeScreenView({super.key});
 
   @override
   State<HomeScreenView> createState() => _HomeScreenState();
@@ -23,24 +21,8 @@ class _HomeScreenState extends State<HomeScreenView> {
   @override
   void initState() {
     super.initState();
-    requestPermissions();
     initializeDateFormatting();
     setupNotificationInteractions();
-  }
-
-  Future<void> requestPermissions() async {
-    // Notification and alarm requests
-    await Permission.notification.isDenied.then((value) {
-      if (value) {
-        Permission.notification.request();
-      }
-    });
-
-    await Permission.scheduleExactAlarm.isDenied.then((value) {
-      if (value) {
-        Permission.scheduleExactAlarm.request();
-      }
-    });
   }
 
   // Notification click handler
@@ -56,7 +38,7 @@ class _HomeScreenState extends State<HomeScreenView> {
   }
 
   void _navigateToAnnouncements(RemoteMessage message) {
-    if (message.from == "/topics/${Config.announcementTopic}") {
+    if (message.data["notificationType"] == "announcements") {
       setState(() => currentIndex = 1);
     }
   }

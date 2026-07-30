@@ -1,15 +1,15 @@
 import "dart:async";
 import "package:flutter/material.dart";
+import "package:flutter_timezone/flutter_timezone.dart";
 import "package:intl/intl.dart";
 
 import "package:kelowna_islamic_center/sections/prayer/prayer_list.dart";
 import "package:kelowna_islamic_center/theme/theme.dart";
-
-import "package:flutter_gen/gen_l10n/app_localizations.dart";
+import "package:kelowna_islamic_center/l10n/app_localizations.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
 class PrayerView extends StatefulWidget {
-  const PrayerView({Key? key}) : super(key: key);
+  const PrayerView({super.key});
 
   @override
   State<PrayerView> createState() => _PrayerWidgetState();
@@ -19,10 +19,12 @@ class _PrayerWidgetState extends State<PrayerView> {
   String selectedDay = "today";
   Timer? timer;
   String timeString = "";
+  bool? isKelownaTimezone;
 
   @override
   void initState() {
     super.initState();
+    _loadTimezoneMatch();
     timer = Timer.periodic(const Duration(seconds: 1),
         (Timer t) => updateTimeDisplay()); // Realtime Clock timer
   }
@@ -31,6 +33,29 @@ class _PrayerWidgetState extends State<PrayerView> {
   void dispose() {
     super.dispose();
     timer!.cancel();
+  }
+
+  Future<void> _loadTimezoneMatch() async {
+    try {
+      var timezoneInfo = await FlutterTimezone.getLocalTimezone();
+      const kelownaTimezones = <String>{
+        "America/Vancouver",
+        "America/Pacific",
+        "Canada/Pacific",
+      };
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() { isKelownaTimezone = kelownaTimezones.contains(timezoneInfo.identifier); });
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() { isKelownaTimezone = null; });
+    }
   }
 
   // Clock and highlight checker update
@@ -53,6 +78,8 @@ class _PrayerWidgetState extends State<PrayerView> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l10n = AppLocalizations.of(context)!;
+
     updateTimeDisplay();
 
     return Scaffold(
@@ -101,9 +128,7 @@ class _PrayerWidgetState extends State<PrayerView> {
                                 child: ListTile(
                                     leading: const Icon(
                                         Icons.calendar_month_rounded),
-                                    title: Text(
-                                        AppLocalizations.of(context)!
-                                            .prayerTimesFor,
+                                    title: Text(l10n.prayerTimesFor,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.normal,
                                             fontSize: 18)),
@@ -117,29 +142,42 @@ class _PrayerWidgetState extends State<PrayerView> {
                                       items: [
                                         DropdownMenuItem(
                                           value: "today",
-                                          child: Text(
-                                              AppLocalizations.of(context)!
-                                                  .today),
+                                          child: Text(l10n.today),
                                         ),
                                         DropdownMenuItem(
                                           value: "tomorrow",
-                                          child: Text(
-                                              AppLocalizations.of(context)!
-                                                  .tomorrow),
+                                          child: Text(l10n.tomorrow),
                                         )
                                       ],
                                     ))),
+
+                            if (isKelownaTimezone == false)
+                              Container(
+                                  margin: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                                  child: SizedBox(
+                                      width: double.infinity,
+                                      child: Card(
+                                          color: Theme.of(context).colorScheme.tertiaryContainer,
+                                          child: Container(
+                                              padding: const EdgeInsets.fromLTRB(15, 17, 15, 17),
+                                              child: Row(children: [
+                                                const Icon(Icons.warning_amber_rounded),
+                                                const SizedBox(width: 10),
+                                                Flexible(
+                                                    child: Text(l10n.kelownaTimezoneWarning,
+                                                        style: const TextStyle(
+                                                            fontWeight: FontWeight.bold)))
+                                              ]))
+                                      ))),
                             TabBar(
                               tabs: <Widget>[
                                 Tab(
                                     icon: const Icon(
                                         Icons.record_voice_over_rounded),
-                                    text: AppLocalizations.of(context)!
-                                        .iqamahTimes),
+                                    text: l10n.iqamahTimes),
                                 Tab(
                                   icon: const Icon(Icons.mosque_rounded),
-                                  text:
-                                      AppLocalizations.of(context)!.athanTimes,
+                                  text: l10n.athanTimes,
                                 ),
                               ],
                             ),
