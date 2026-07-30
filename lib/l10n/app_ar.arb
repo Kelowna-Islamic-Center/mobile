@@ -52,6 +52,7 @@
     "hanbaliShafiMaliki": "الحنبلي، الشافعي، المالكي",
     "notifications": "إشعارات",
     "notificationsDisabledWarning": "تم تعطيل الإشعارات. قم بتفعيل الإشعارات في الإعدادات لتلقي الإشعارات.",
+    "kelownaTimezoneWarning": "قد تكون أوقات الصلاة والإشعارات غير صحيحة لأن المنطقة الزمنية في جهازك ليست مضبوطة على توقيت كيلونا (America/Vancouver).",
     "exactAlarmPermissionRequired": "لتفعيل تنبيهات الأذان، اسمح بالتنبيهات الدقيقة من إعدادات التطبيق.",
     "openSettings": "فتح الإعدادات",
     "timesToShowOnAppLaunch": "أوقات الصلاة المفضلة التي تظهر عند فتح التطبيق",

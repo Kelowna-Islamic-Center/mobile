@@ -53,6 +53,7 @@
     "timesToShowOnAppLaunch": "Preferred prayer times to show when app launches",
     "notifications": "Notifications",
     "notificationsDisabledWarning": "Notifications are disabled. Enable them in settings to receive notifications.",
+    "kelownaTimezoneWarning": "Prayer times and notifications may be incorrect because your device timezone is not set to Kelowna time (America/Vancouver).",
     "exactAlarmPermissionRequired": "To enable Athan alerts, allow exact alarms in app settings.",
     "openSettings": "Open Settings",
     "athan": "Athan",
