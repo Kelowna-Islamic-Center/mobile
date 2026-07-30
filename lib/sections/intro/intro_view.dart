@@ -34,7 +34,7 @@ class _IntroViewState extends State<IntroView> {
 
   Future<void> _completeIntro() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool("isIntroComplete", true);
+    await prefs.setBool("isIntroV2Complete", true);
 
     if (!mounted) {
       return;

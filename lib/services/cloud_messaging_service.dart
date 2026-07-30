@@ -3,7 +3,6 @@ import "dart:io";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_core/firebase_core.dart";
 import "package:firebase_messaging/firebase_messaging.dart";
-import "package:flutter/services.dart";
 import "package:flutter_local_notifications/flutter_local_notifications.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "package:shared_preferences_android/shared_preferences_android.dart";
@@ -35,8 +34,6 @@ class CloudMessagingService {
       );
 
       await _createAndroidNotificationChannel(Config.announcementsChannel);
-      await _createAndroidNotificationChannel(Config.iqamahAlertChannel);
-      await _createAndroidNotificationChannel(Config.athanAlertChannel);
     }
 
     // Request iOS Permissions
@@ -64,8 +61,6 @@ class CloudMessagingService {
       
       await prefs.setStringList(Config.announcementCollection, Announcement.toJsonStringFromList(Announcement.listFromJSON(fsSnapshot.docs)));
     }
-
-    // For athan notifications, Android has its own native specific implimentation of Athan Audio player found in FirebaseAthanMessagingService.java
   }
 
   static void foregroundMessageHandler(RemoteMessage message) async {
@@ -117,15 +112,6 @@ class CloudMessagingService {
 
   static Future<void>? _createAndroidNotificationChannel(AndroidNotificationChannel channel) {
     return flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
-  }
-
-  static Future<void> startAndroidAthanService({ required String channelId, required String title, required String text }) async {
-    const platform = MethodChannel("com.kelownamasjid.athan");
-    await platform.invokeMethod("startAndroidAthanService", {
-      "channelId": channelId,
-      "title": title,
-      "text": text
-    });
   }
 
   // Subscribtions if the user has never set any settings (first time launch)
