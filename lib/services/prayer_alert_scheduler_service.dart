@@ -5,6 +5,7 @@ import "dart:ui";
 import "package:flutter_timezone/flutter_timezone.dart";
 import "package:flutter_local_notifications/flutter_local_notifications.dart";
 import "package:flutter/services.dart";
+import "package:intl/date_symbol_data_local.dart";
 import "package:intl/intl.dart";
 import "package:kelowna_islamic_center/config.dart";
 import "package:kelowna_islamic_center/l10n/app_localizations.dart";
@@ -180,6 +181,8 @@ class PrayerAlertSchedulerService {
         DateTime? athanTime = _parsePrayerTimeForDate(prayerItem.startTime, date);
 
         if (athanTime != null && athanTime.isAfter(now)) {
+
+          await initializeDateFormatting();
 
           int athanId = _notificationId(date: date, prayerId: prayerItem.id, kind: "athan");
 

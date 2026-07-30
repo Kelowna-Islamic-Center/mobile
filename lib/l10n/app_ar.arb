@@ -72,7 +72,7 @@
     "athanAudioAlSharqawe": "الشرقاوي",
     "athanAudioMansour": "منصور القتامي",
 
-    "iqamaahReminderNotificationDescription": "تبقّى {minutes} قبل إقامة صلاة {prayer} في المسجد.",
+    "iqamaahReminderNotificationDescription": "تبقّى {minutes} دقيقة على إقامة صلاة {prayer} في المسجد.",
     "@iqamaahReminderNotificationDescription": {
         "placeholders": {
             "prayer": {
@@ -83,7 +83,7 @@
             }
         }
     },
-    "athanReminderNotificationDescription": "حان وقت صلاة {prayer}. موعد صلاة {prayer} اليوم في كيلونا هو {time}.",
+    "athanReminderNotificationDescription": "حان وقت أذان {prayer}. موعد أذان {prayer} اليوم هو {time} في كيلونا.",
     "@athanReminderNotificationDescription": {
         "placeholders": {
             "prayer": {
