@@ -72,6 +72,29 @@
     "athanAudioAlSharqawe": "الشرقاوي",
     "athanAudioMansour": "منصور القتامي",
 
+    "iqamaahReminderNotificationDescription": "تبقّى {minutes} قبل إقامة صلاة {prayer} في المسجد.",
+    "@iqamaahReminderNotificationDescription": {
+        "placeholders": {
+            "prayer": {
+                "type": "String"
+            },
+            "minutes": {
+                "type": "String"
+            }
+        }
+    },
+    "athanReminderNotificationDescription": "حان وقت صلاة {prayer}. موعد صلاة {prayer} اليوم في كيلونا هو {time}.",
+    "@athanReminderNotificationDescription": {
+        "placeholders": {
+            "prayer": {
+                "type": "String"
+            },
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+
     "minutes": "دقائق {minutes}",
     "iqamaahReminder": "تذكير الإقامة",
     "iqamaahReminderDescription": "عرض إشعار قبل دقائق من موعد الإقامة في المسجد",

@@ -184,7 +184,12 @@ class PrayerAlertSchedulerService {
           int athanId = _notificationId(date: date, prayerId: prayerItem.id, kind: "athan");
 
           String title = "${l10n.athanReminder}: ${_localizedPrayerName(l10n, prayerItem.id)}";
-          String body = _localizedPrayerName(l10n, prayerItem.id);
+          String body = l10n.athanReminderNotificationDescription(
+            _localizedPrayerName(l10n, prayerItem.id),
+            DateFormat.jm(l10n.localeName).format(athanTime),
+          );
+          
+          _localizedPrayerName(l10n, prayerItem.id);
 
           if (Platform.isAndroid && useNativeAthanOnAndroid) {
             // Try to use the native implementation of Athan scheduling for Android.
@@ -242,7 +247,10 @@ class PrayerAlertSchedulerService {
             await _notifications.zonedSchedule(
               id: iqamahId,
               title: "${l10n.iqamaahReminder}: ${_localizedPrayerName(l10n, prayerItem.id)}",
-              body: "${l10n.minutes(iqamahOffsetMinutes.toString())} • ${_localizedPrayerName(l10n, prayerItem.id)}",
+              body: l10n.iqamaahReminderNotificationDescription(
+                  _localizedPrayerName(l10n, prayerItem.id),
+                  iqamahOffsetMinutes.toString(),
+                ),
               scheduledDate: tz.TZDateTime.from(reminderTime, tz.local),
               notificationDetails: NotificationDetails(
                 android: AndroidNotificationDetails(

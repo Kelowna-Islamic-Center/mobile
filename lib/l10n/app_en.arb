@@ -72,6 +72,29 @@
     "athanAudioAlSharqawe": "Al Sharqawe",
     "athanAudioMansour": "Mansour AlQatami",
 
+    "iqamaahReminderNotificationDescription": "{minutes} left before {prayer} iqamaah at the Masjid.",
+    "@iqamaahReminderNotificationDescription": {
+        "placeholders": {
+            "prayer": {
+                "type": "String"
+            },
+            "minutes": {
+                "type": "String"
+            }
+        }
+    },
+    "athanReminderNotificationDescription": "It's time for {prayer}. {prayer} is at {time} today in Kelowna.",
+    "@athanReminderNotificationDescription": {
+        "placeholders": {
+            "prayer": {
+                "type": "String"
+            },
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+
     "minutes": "{minutes} minutes",
     "iqamaahReminder": "Iqamah Reminder",
     "iqamaahReminderDescription": "Show a notification a few minutes before Iqamaah time at Masjid",
