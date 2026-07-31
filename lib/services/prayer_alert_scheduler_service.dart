@@ -5,6 +5,7 @@ import "dart:ui";
 import "package:flutter_timezone/flutter_timezone.dart";
 import "package:flutter_local_notifications/flutter_local_notifications.dart";
 import "package:flutter/services.dart";
+import "package:intl/date_symbol_data_local.dart";
 import "package:intl/intl.dart";
 import "package:kelowna_islamic_center/config.dart";
 import "package:kelowna_islamic_center/l10n/app_localizations.dart";
@@ -168,23 +169,24 @@ class PrayerAlertSchedulerService {
         continue;
       }
 
-      if (prayerItem.id.toLowerCase() == "jumuah" && date.weekday != DateTime.friday) {
-        continue;
-      }
+      // Skip Jumuah athan, duhr athan replaces it on Fridays.
+      if (athanEnabled && prayerItem.id.toLowerCase() != "jumuah") {
 
-      if (prayerItem.id.toLowerCase() == "duhr" && date.weekday == DateTime.friday) {
-        continue;
-      }
-
-      if (athanEnabled) {
         DateTime? athanTime = _parsePrayerTimeForDate(prayerItem.startTime, date);
 
         if (athanTime != null && athanTime.isAfter(now)) {
 
+          await initializeDateFormatting();
+
           int athanId = _notificationId(date: date, prayerId: prayerItem.id, kind: "athan");
 
           String title = "${l10n.athanReminder}: ${_localizedPrayerName(l10n, prayerItem.id)}";
-          String body = _localizedPrayerName(l10n, prayerItem.id);
+          String body = l10n.athanReminderNotificationDescription(
+            _localizedPrayerName(l10n, prayerItem.id),
+            DateFormat.jm(l10n.localeName).format(athanTime),
+          );
+          
+          _localizedPrayerName(l10n, prayerItem.id);
 
           if (Platform.isAndroid && useNativeAthanOnAndroid) {
             // Try to use the native implementation of Athan scheduling for Android.
@@ -230,6 +232,17 @@ class PrayerAlertSchedulerService {
       }
 
       if (iqamahEnabled) {
+
+        // Skip Jumuah iqamah scheduling on non-Friday days.
+        if (prayerItem.id.toLowerCase() == "jumuah" && date.weekday != DateTime.friday) {
+          continue;
+        }
+
+        // Skip Duhr iqamah scheduling on Fridays.
+        if (prayerItem.id.toLowerCase() == "duhr" && date.weekday == DateTime.friday) {
+          continue;
+        }
+
         DateTime? iqamahTime = _parsePrayerTimeForDate(prayerItem.iqamahTime, date);
 
         if (iqamahTime != null) {
@@ -242,7 +255,10 @@ class PrayerAlertSchedulerService {
             await _notifications.zonedSchedule(
               id: iqamahId,
               title: "${l10n.iqamaahReminder}: ${_localizedPrayerName(l10n, prayerItem.id)}",
-              body: "${l10n.minutes(iqamahOffsetMinutes.toString())} • ${_localizedPrayerName(l10n, prayerItem.id)}",
+              body: l10n.iqamaahReminderNotificationDescription(
+                  _localizedPrayerName(l10n, prayerItem.id),
+                  iqamahOffsetMinutes.toString(),
+                ),
               scheduledDate: tz.TZDateTime.from(reminderTime, tz.local),
               notificationDetails: NotificationDetails(
                 android: AndroidNotificationDetails(
