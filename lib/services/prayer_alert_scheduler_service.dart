@@ -169,15 +169,9 @@ class PrayerAlertSchedulerService {
         continue;
       }
 
-      if (prayerItem.id.toLowerCase() == "jumuah" && date.weekday != DateTime.friday) {
-        continue;
-      }
+      // Skip Jumuah athan, duhr athan replaces it on Fridays.
+      if (athanEnabled && prayerItem.id.toLowerCase() != "jumuah") {
 
-      if (prayerItem.id.toLowerCase() == "duhr" && date.weekday == DateTime.friday) {
-        continue;
-      }
-
-      if (athanEnabled) {
         DateTime? athanTime = _parsePrayerTimeForDate(prayerItem.startTime, date);
 
         if (athanTime != null && athanTime.isAfter(now)) {
@@ -238,6 +232,17 @@ class PrayerAlertSchedulerService {
       }
 
       if (iqamahEnabled) {
+
+        // Skip Jumuah iqamah scheduling on non-Friday days.
+        if (prayerItem.id.toLowerCase() == "jumuah" && date.weekday != DateTime.friday) {
+          continue;
+        }
+
+        // Skip Duhr iqamah scheduling on Fridays.
+        if (prayerItem.id.toLowerCase() == "duhr" && date.weekday == DateTime.friday) {
+          continue;
+        }
+
         DateTime? iqamahTime = _parsePrayerTimeForDate(prayerItem.iqamahTime, date);
 
         if (iqamahTime != null) {
